@@ -42,7 +42,8 @@ class MatrixFactoryTest < Test::Unit::TestCase
   end
   
   def setup
-
+    @m1 = SparseMatrix[[1,2,3],[4,5,6]]
+	@i1 = SparseMatrix[[1,0,0],[0,1,0],[0,0,1]]
   end
 
   def teardown
@@ -57,15 +58,35 @@ class MatrixFactoryTest < Test::Unit::TestCase
 #  ::diagonal
 #  ::scalar(n, value)
 #  ::identity
-#  ::unit
-#  Matrix.I(n)
 #  ::zero
-#  ::row_vector
-#  ::column_vector
   
   def test_rows
     arr = [[0,1],[2,3]]
     creationTest(arr) { |matrixClassType| MatrixFactory.rows(matrixClassType, arr) }
   end
-
+  
+  def test_columns
+    assert_equal(@m1, SparseMatrix.columns([[1,4],[2,5],[3,6]]))
+  end
+  
+  def test_build
+	assert_equal(@m1, SparseMatrix.build(2,3) {|row, col| col + 1 + (3 * row)})
+  end
+  
+  def test_diagonal
+    assert_equal(@i1, SparseMatrix.diagonal(1,1,1))
+  end
+  
+  def test_scalar
+    assert_equal(@i1, SparseMatrix.scalar(3,1))
+  end
+  
+  def test_identity
+    assert_equal(@i1, SparseMatrix.identity(3))
+  end
+  
+  def test_zero
+    assert_equal(SparseMatrix.zero(2), SparseMatrix[[0,0],[0,0]])
+  end
+  
 end
