@@ -175,13 +175,13 @@ class TestSparseMatrix < Test::Unit::TestCase
 
   def test_inverse
     assert_equal(SparseMatrix[[-1, 1], [0, -1]], SparseMatrix[[-1, -1], [0, -1]].inverse)
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3].inverse }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]].inverse }
   end
 
   def test_determinant
     assert_equal(45, SparseMatrix[[7,6], [3,9]].determinant)
     assert_equal(-18, SparseMatrix[[2,0,1],[0,-2,2],[1,2,3]].determinant)
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3].determinant }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]].determinant }
   end
 
   def test_new_matrix
@@ -287,7 +287,7 @@ class TestSparseMatrix < Test::Unit::TestCase
   end
 
   def test_mul
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3] * SparseMatrix[[4],[5]] }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]] * SparseMatrix[[4],[5]] }
     assert_equal(SparseMatrix[[2,4],[6,8]], SparseMatrix[[2,4],[6,8]] * SparseMatrix.I(2))
     assert_equal(SparseMatrix[[4,8],[12,16]], SparseMatrix[[2,4],[6,8]] * 2)
     assert_equal(SparseMatrix[[4,8],[12,16]], 2 * SparseMatrix[[2,4],[6,8]])
@@ -307,7 +307,7 @@ class TestSparseMatrix < Test::Unit::TestCase
     assert_equal(SparseMatrix[[3,5,7],[9,11,13]], @n1 + @m1)
     assert_equal(SparseMatrix[[2],[4],[6]], SparseMatrix[[1],[2],[3]] + Vector[1,2,3])
     assert_raise(SparseMatrix::ErrOperationNotDefined) { @m1 + 1 }
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3] + SparseMatrix[[4],[5]] }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]] + SparseMatrix[[4],[5]] }
     o = Object.new
     def o.coerce(m)
       [m, m]
@@ -321,7 +321,7 @@ class TestSparseMatrix < Test::Unit::TestCase
     assert_equal(SparseMatrix[[1,1,1],[1,1,1]], @n1 - @m1)
     assert_equal(SparseMatrix[[0],[0],[0]], SparseMatrix[[1],[2],[3]] - Vector[1,2,3])
     assert_raise(SparseMatrix::ErrOperationNotDefined) { @m1 - 1 }
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3] - SparseMatrix[[4],[5]] }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]] - SparseMatrix[[4],[5]] }
     o = Object.new
     def o.coerce(m)
       [m, m]
@@ -332,7 +332,7 @@ class TestSparseMatrix < Test::Unit::TestCase
   def test_div
     assert_equal(SparseMatrix[[0,1,1],[2,2,3]], @m1 / 2)
     assert_equal(SparseMatrix[[1,1],[1,1]], SparseMatrix[[2,2],[2,2]] / SparseMatrix.scalar(2,2))
-    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[1, 2, 3] / SparseMatrix[[4],[5]] }
+    assert_raise(SparseMatrix::ErrDimensionMismatch) { SparseMatrix[[1, 2, 3]] / SparseMatrix[[4],[5]] }
     o = Object.new
     def o.coerce(m)
       [m, SparseMatrix.scalar(2,2)]
