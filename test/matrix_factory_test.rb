@@ -77,7 +77,7 @@ class MatrixFactoryTest < Test::Unit::TestCase
   end
   
   def test_scalar
-    creationTest([[3,0],[0,3]]) { |matrixClassType| MatrixFactory.rows(matrixClassType,2,3) }
+    creationTest([[3,0],[0,3]]) { |matrixClassType| MatrixFactory.scalar(matrixClassType,2,3) }
   end
   
   def test_identity
