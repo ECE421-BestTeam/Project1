@@ -12,6 +12,22 @@ class TestSparseMatrix < Test::Unit::TestCase
     @m3 = @m1.clone
     @m4 = SparseMatrix[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
     @n1 = SparseMatrix[[2,3,4], [5,6,7]]
+    
+    check_invariant
+  end
+  
+  def teardown
+    check_invariant
+  end
+  
+  def check_invariant
+    iv = self.instance_variables
+    iv.each do |i|
+      m = self.instance_variable_get(i)
+      assert(m.row_count >= 0)
+      assert(m.column_count >= 0)
+      assert_kind_of(Matrix, m)
+    end
   end
 
   def test_matrix
