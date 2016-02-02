@@ -16,7 +16,7 @@ class SparseMatrixTest < Test::Unit::TestCase
     end
   end
   
-	def createMatrices(size)
+	def createRandomSparseMatrices(size)
     ar1 = Array.new(size) { Array.new(size) {sparseNum()} }
     ar2 = Array.new(size) { Array.new(size) {sparseNum()} }
     dm1 = Matrix.rows(ar1)
@@ -31,7 +31,11 @@ class SparseMatrixTest < Test::Unit::TestCase
 	end
 
   def doBenchmarkTest(name, size, runs, &function)
-    m = createMatrices(size)
+    if (size.class == Array)
+      m = size
+    else 
+      m = createRandomSparseMatrices(size)
+    end
     dm1, dm2, sm1, sm2 = m[0], m[1], m[2], m[3]
     bmd, bms = 0, 0
     Benchmark.bm do |x|
@@ -63,6 +67,15 @@ class SparseMatrixTest < Test::Unit::TestCase
   
   def test_transpose
     doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
+  end
+  
+  def test_zero
+    # Zero arrays
+    size = 4000
+    arr = Array.new(size) { Array.new(size) {0} }
+    dm = Matrix.rows(arr);
+    sm = SparseMatrix.rows(arr);
+    doBenchmarkTest("zero true", [dm, dm, sm, sm], 3) {|m1| m1.zero? }
   end
   
 end
