@@ -42,8 +42,7 @@ class MatrixFactoryTest < Test::Unit::TestCase
   end
   
   def setup
-    @m1 = SparseMatrix[[1,2,3],[4,5,6]]
-	@i1 = SparseMatrix[[1,0,0],[0,1,0],[0,0,1]]
+    # do nothing
   end
 
   def teardown
@@ -66,27 +65,43 @@ class MatrixFactoryTest < Test::Unit::TestCase
   end
   
   def test_columns
-    assert_equal(@m1, SparseMatrix.columns([[1,4],[2,5],[3,6]]))
+    creationTest([[1,2,3],[4,5,6]]) { |matrixClassType| MatrixFactory.columns(matrixClassType, [[1,4],[2,5],[3,6]]) }
   end
   
   def test_build
-	assert_equal(@m1, SparseMatrix.build(2,3) {|row, col| col + 1 + (3 * row)})
+    creationTest([[1,2,3],[4,5,6]]) { |matrixClassType| MatrixFactory.build(matrixClassType,2,3) { |row, col| col + 1 + (3 * row) } }
   end
   
   def test_diagonal
-    assert_equal(@i1, SparseMatrix.diagonal(1,1,1))
+    creationTest([[1,0,0],[0,2,0],[0,0,3]]) { |matrixClassType| MatrixFactory.diagonal(matrixClassType,1,2,3) }
   end
   
   def test_scalar
-    assert_equal(@i1, SparseMatrix.scalar(3,1))
+    creationTest([[3,0],[0,3]]) { |matrixClassType| MatrixFactory.rows(matrixClassType,2,3) }
   end
   
   def test_identity
-    assert_equal(@i1, SparseMatrix.identity(3))
+    creationTest([[1,0,0],[0,1,0],[0,0,1]]) { |matrixClassType| MatrixFactory.identity(matrixClassType,3) }
+  end
+  
+  def test_unit
+    creationTest([[1,0,0],[0,1,0],[0,0,1]]) { |matrixClassType| MatrixFactory.unit(matrixClassType,3) }
+  end
+   
+  def test_i
+    creationTest([[1,0,0],[0,1,0],[0,0,1]]) { |matrixClassType| MatrixFactory.I(matrixClassType,3) }
   end
   
   def test_zero
-    assert_equal(SparseMatrix.zero(2), SparseMatrix[[0,0],[0,0]])
+    creationTest([[0,0],[0,0]]) { |matrixClassType| MatrixFactory.zero(matrixClassType, 2) }
+  end
+  
+  def test_rowvector
+    creationTest([[1,2,3]]) { |matrixClassType| MatrixFactory.rowVector(matrixClassType, [1,2,3]) }
+  end
+  
+  def test_columnvector
+    creationTest([[1],[2],[3]]) { |matrixClassType| MatrixFactory.columnVector(matrixClassType, [1,2,3]) }
   end
   
 end
