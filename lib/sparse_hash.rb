@@ -3,7 +3,8 @@ class SparseHash < Hash
 
   def initialize (size, default = nil, &block)
     @size = size
-    super() { |h,k| k.between?(0, @size-1) ? block.call(h,k) : nil}
+    @block = block || Proc.new { default }
+    super() { |h,k| k.between?(0, @size-1) ? @block.call(h,k) : nil}
     self
   end
 
@@ -12,12 +13,14 @@ class SparseHash < Hash
   end
   
   def each
+    return to_enum :each unless block_given?
     (0...size).each do |i|
       yield self[i]
     end
   end
   
   def map
+    return to_enum :each unless block_given?
     (0..size).map do |i|
       yield self[i]
     end
