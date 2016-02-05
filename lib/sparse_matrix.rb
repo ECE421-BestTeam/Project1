@@ -1,4 +1,5 @@
 require 'Matrix'
+require './sparse_hash.rb'
 
 class SparseMatrix < Matrix 
 
@@ -9,6 +10,6 @@ class SparseMatrix < Matrix
 #  determinant
 #  inverse
 #  transpose
-#  zero
+#  zero    
 
 end

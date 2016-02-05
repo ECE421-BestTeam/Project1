@@ -1,15 +1,16 @@
 class SparseHash < Hash
   attr_reader :size
 
-  def initialize (size, default = nil, &block)
-    @size = size
+  def initialize (rows, cols, default = nil, &block)
+    @rows = rows
+    @cols = cols
     @block = block || Proc.new { default }
-    super() { |h,k| k.between?(0, @size-1) ? @block.call(h,k) : nil}
-    self
+    
+    super() { |h,r| r.between?(0, @rows-1) ? @block.call(h,r) : nil}
   end
 
-  def get(i)
-    self[i].nil? && block_given? ? yield(i) : self[i]
+  def get(row, col)
+    self[row][col].nil? && block_given? ? yield(i) : self[i]
   end
   
   def each
