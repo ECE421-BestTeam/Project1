@@ -28,6 +28,17 @@ class SparseMatrix < Matrix
   def SparseMatrix.forceNew(rows, column_count = rows[0].size, row_count = rows.size)
     new(rows, column_count, row_count)
   end
+  
+  def SparseMatrix.I(size)
+	iRows = SparseHash.new(size)
+	(0..(size - 1)).each do |i|
+	  iRows[i] = SparseHash.new(size)
+	  iRows[i][i] = 1
+	end
+	new(iRows)
+  end
+  alias_method :identity, :I
+  alias_method :unit, :I
     
   def SparseMatrix.rows(rows)
     # populate the hash based on rows
