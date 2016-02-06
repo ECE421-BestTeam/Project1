@@ -16,6 +16,17 @@ class SparseMatrix < Matrix
   attr_accessor :column_count
   attr_accessor :row_count
   
+  def rows(rows)
+    @column_count = rows[0].length
+    # populate the hash!
+    @rows = new SparseHash(rows.length)
+    rows.each_with_index do |row, rowNum|
+      @rows[rowNum] = new SparseHash(row.length)
+      row.each_with_index do |val, colNum|
+        @rows.set(rowNum, colNum, val)
+      end
+    end
+  end
   
   # Is just (matrix * thing.inverse) so it should be faster just by using our inverse+determinant functions
 #  def /(thing)
@@ -23,6 +34,14 @@ class SparseMatrix < Matrix
 #  end
   
   def inverse
+    det = determinant
+    Matrix.Raise ErrNotRegular if det == 0
+    
+    a = @rows  #Make a deep copy!
+
+  end
+  
+  def inverse0
     det = determinant
     Matrix.Raise ErrNotRegular if det == 0
     
@@ -72,37 +91,47 @@ class SparseMatrix < Matrix
       SparseMatrix.Raise ErrDimensionMismatch
     end
     
-    # build cols
-    cols = {}
-    (0..@column_count - 1).each do |val|
-      if (val % 2 == 0)
-        cols[val] = :+
-      else
-        cols[val] = :-
-      end
-    end
-
-    return innerDeterminant(-1, @column_count, cols)
+    return innerDeterminant(-1, @column_count, (0..@column_count - 1))
   end
   
   # x, y - the coords of the previous coefficient
-  # cols - data about the cols being considered
+  # cols - data about the cols being considered (or the range [inclusive] to consider)
   private
   def innerDeterminant(x, y, cols)
     # create the new cols
     newCols = {}
-    cols.each_sparse do |entry|
-      colNum = entry[0]
-      op = entry[1]
-      if (colNum < y)
-        newCols[colNum] = op
-      elsif (colNum > y)
-          if (op == :+)
+    if (cols.class == Range) 
+      # We need to create a fresh newCols
+      cols.each do |colNum|
+        if (colNum < y)
+          if (colNum % 2 == 0)
+            newCols[colNum] = :+
+          else
+            newCols[colNum] = :-
+          end
+        elsif (colNum > y)
+          if (colNum % 2 == 0)
             newCols[colNum] = :-
           else
             newCols[colNum] = :+
           end
-      end
+        end
+      end        
+    else
+      # We need to modify newCols from existing cols
+      cols.each_sparse do |entry|
+        colNum = entry[0]
+        op = entry[1]
+        if (colNum < y)
+          newCols[colNum] = op
+        elsif (colNum > y)
+            if (op == :+)
+              newCols[colNum] = :-
+            else
+              newCols[colNum] = :+
+            end
+        end
+      end  
     end
     
     x += 1 # new coefficient will be on this row
