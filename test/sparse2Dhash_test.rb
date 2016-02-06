@@ -19,6 +19,8 @@ class TestSparse2DHash < Test::Unit::TestCase
   def test_get
     assert_equal(0, @s1.get(1,2))
     assert_equal(0, @s1.get(0,0))
+    assert_nil(@s1.get(3,4))
+    assert_nil(@s1.get(0,4))
     assert_equal(2, @s1.get(1,1))
   end
   
@@ -26,9 +28,11 @@ class TestSparse2DHash < Test::Unit::TestCase
     s1 = @s1.get_row(0)
     assert_equal(s1[0],0)
     assert_equal(s1[1],1)
+
     s2 = @s2.get_row(2)
     assert_equal(s2[0],0)
     assert_equal(s2[1],3)
+    assert_nil(@s1.get_row(3))
     
   end
   

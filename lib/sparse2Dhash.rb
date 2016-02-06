@@ -4,7 +4,7 @@ class Sparse2DHash
     @rows = rows
     @cols = cols
     @block = block || Proc.new { default }
-    @hash = Hash.new { |h,k| h[k] = Hash.new }
+    @hash = Hash.new { |h,k| h[k] = Hash.new { @block.call }}
 
     # initialize empty rows
     rows.times do |x|
@@ -17,13 +17,15 @@ class Sparse2DHash
   end
 
   def get(i,j)
-    h = @hash[i][j]
-    return check_bounds(i,j) ? h : 0 unless h.nil?
+    return nil if !check_bounds(i,j)
+    h = @hash
+    return h[i].nil? ? 0 : h[i][j] unless h[i][j].nil?
     return 0
   end
   alias [] get
 
   def get_row(i)
+    return nil if !check_bounds(i,0)
     h=Hash.new{|h,k| k.between?(0, @cols-1)}
     @cols.times do |x|
       h[x] = 0

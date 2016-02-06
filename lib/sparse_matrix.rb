@@ -1,8 +1,15 @@
 require 'Matrix'
-require './sparse_hash.rb'
+require './sparse2Dhash.rb'
+
 
 class SparseMatrix < Matrix 
-
+  
+  attr_accessor :rows
+  attr_accessor :column_count
+  attr_accessor :row_count
+  
+  
+  
 #  +
 #  -
 #  *
@@ -11,10 +18,33 @@ class SparseMatrix < Matrix
 #  inverse
 #  transpose
 #  zero    
+  def dimensions
+    @row_count, @column_count
+  end
 
-  attr_accessor :rows
-  attr_accessor :column_count
-  attr_accessor :row_count
+  def +(other)
+
+      
+    case m
+      when Numeric
+        Matrix.Raise ErrOperationNotDefined, "+", self.class, m.class
+      when Vector
+        m = self.class.column_vector(m)
+      when Matrix
+      else
+      return apply_through_coercion(m, __method__)
+    Sparse2DHash.new(row_count,col_count) {
+    @row_count.times do |r|
+      @col_count.times do |c|
+        h[r,c] = self[r,c] + other[r,c]
+      end
+    end
+    h
+  end
+    
+
+  end
+
   
   def rows(rows)
     @column_count = rows[0].length
