@@ -37,8 +37,6 @@ class SparseMatrix < Matrix
 	end
 	new(iRows)
   end
-  alias_method :identity, :I
-  alias_method :unit, :I
     
   def SparseMatrix.rows(rows)
     # populate the hash based on rows
