@@ -17,19 +17,22 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
-  
+  def initialize(rows, column_count = rows[0].size, row_count = rows.length)
+    @rows = rows
+    @column_count = column_count
+    @row_count = row_count
+  end
     
-  def rows(rows)
-    @row_count = rows.length
-    @column_count = rows[0].length
+  def SparseMatrix.rows(rows)
     # populate the hash based on rows
-    @rows = new SparseHash(rows.length)
+    newRows = SparseHash.new(rows.length)
     rows.each_with_index do |row, rowNum|
-      @rows[rowNum] = new SparseHash(row.length)
+      newRows[rowNum] = SparseHash.new(row.length)
       row.each_with_index do |val, colNum|
-        @rows.set(rowNum, colNum, val)
+        newRows[rowNum][colNum] = val
       end
     end
+    new(newRows)
   end
   
   def dimensions
