@@ -17,6 +17,21 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
+  
+    
+  def rows(rows)
+    @row_count = rows.length
+    @column_count = rows[0].length
+    # populate the hash based on rows
+    @rows = new SparseHash(rows.length)
+    rows.each_with_index do |row, rowNum|
+      @rows[rowNum] = new SparseHash(row.length)
+      row.each_with_index do |val, colNum|
+        @rows.set(rowNum, colNum, val)
+      end
+    end
+  end
+  
   def dimensions
     [@row_count, @column_count]
   end
@@ -38,18 +53,6 @@ class SparseMatrix < Matrix
         end
       end
       h
-    end
-  end
-  
-  def rows(rows)
-    @column_count = rows[0].length
-    # populate the hash based on rows
-    @rows = new SparseHash(rows.length)
-    rows.each_with_index do |row, rowNum|
-      @rows[rowNum] = new SparseHash(row.length)
-      row.each_with_index do |val, colNum|
-        @rows.set(rowNum, colNum, val)
-      end
     end
   end
   
