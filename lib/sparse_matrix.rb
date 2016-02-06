@@ -37,6 +37,14 @@ class SparseMatrix < Matrix
 	end
 	new(iRows)
   end
+  
+  def SparseMatrix.identity(size)
+    SparseMatrix.I(size)
+  end
+  
+  def SparseMatrix.unit(size)
+    SparseMatrix.I(size)
+  end
     
   def SparseMatrix.rows(rows)
     # populate the hash based on rows
