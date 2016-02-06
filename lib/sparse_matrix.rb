@@ -8,23 +8,20 @@ class SparseMatrix < Matrix
   attr_accessor :column_count
   attr_accessor :row_count
   
-  
-  
-#  +
-#  -
-#  *
-#  /
-#  determinant
-#  inverse
-#  transpose
-#  zero    
+#  #+
+#  #-
+#  #*
+#  #/
+#  #determinant
+#  #inverse
+#  #transpose
+#  #zero  
+
   def dimensions
-    @row_count, @column_count
+    [@row_count, @column_count]
   end
-
+  
   def +(other)
-
-      
     case m
       when Numeric
         Matrix.Raise ErrOperationNotDefined, "+", self.class, m.class
@@ -33,22 +30,20 @@ class SparseMatrix < Matrix
       when Matrix
       else
       return apply_through_coercion(m, __method__)
-    Sparse2DHash.new(row_count,col_count) {
-    @row_count.times do |r|
-      @col_count.times do |c|
-        h[r,c] = self[r,c] + other[r,c]
+      Sparse2DHash.new(row_count,col_count) do
+        @row_count.times do |r|
+          @col_count.times do |c|
+            h[r,c] = self[r,c] + other[r,c]
+          end
+        end
       end
+      h
     end
-    h
   end
-    
-
-  end
-
   
   def rows(rows)
     @column_count = rows[0].length
-    # populate the hash!
+    # populate the hash based on rows
     @rows = new SparseHash(rows.length)
     rows.each_with_index do |row, rowNum|
       @rows[rowNum] = new SparseHash(row.length)
