@@ -150,7 +150,7 @@ class SparseMatrix < Matrix
       end        
     else
       # We need to modify newCols from existing cols
-      cols.each_sparse do |entry|
+      cols.each do |entry|
         colNum = entry[0]
         op = entry[1]
         if (colNum < y)
@@ -168,14 +168,14 @@ class SparseMatrix < Matrix
     x += 1 # new coefficient will be on this row
     
     if (newCols.length == 1) # we have reached the lowest level
-      newCols.each_sparse do |entry|
+      newCols.each do |entry|
         colNum = entry[0] 
         return @rows[x][colNum]
       end
     end
     
     result = 0
-    newCols.each_sparse do |entry|
+    newCols.each do |entry|
       colNum = entry[0]
       op = entry[1]
       temp = @rows[x][colNum] * innerDeterminant(x, colNum, newCols)
