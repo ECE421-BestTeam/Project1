@@ -29,16 +29,18 @@ class SparseMatrix < Matrix
     new(rows, column_count, row_count)
   end
   
-  def SparseMatrix.I(size)
-	iRows = SparseHash.new(size)
-	(0..(size - 1)).each do |i|
-	  iRows[i] = SparseHash.new(size)
-	  iRows[i][i] = 1
-	end
-	new(iRows)
+  def SparseMatrix.identity(size)
+    iRows = SparseHash.new(size)
+    (0..(size - 1)).each do |i|
+      iRows[i] = SparseHash.new(size)
+      iRows[i][i] = 1
+    end
+    new(iRows)
   end
-  alias_method :identity, :I
-  alias_method :unit, :I
+#  class << Matrix
+#    alias unit identity
+#    alias I identity
+#  end
     
   def SparseMatrix.rows(rows)
     # populate the hash based on rows
@@ -86,51 +88,11 @@ class SparseMatrix < Matrix
     Matrix.Raise ErrNotRegular if det == 0
     
     a = @rows.deep_copy  #Make a deep copy!
-    return SparseMatrix.I(@column_count).innerInverse(a)
     
+    b = SparseMatrix.identity(@column_count)
+    b.innerInverse(a)
   end
-  
-  private
-  def innerInverse(a)
-    (0..(@column_count - 1)).each do |k|
-      i = k
-      akk = a[k][k].abs
-      ((k + 1)..(@column_count - 1)).each do |j|
-        v = a[j][k].abs
-        if v > akk
-          i = j
-          akk = v
-        end
-      end
-      Matrix.Raise ErrNotRegular if akk == 0
-      if i != k
-        a[i], a[k] = a[k], a[i]
-        @rows[i], @rows[k] = @rows[k], @rows[i]
-      end
-      akk = a[k][k]
-
-      (0..(@column_count - 1)).each do |ii|
-        next if ii == k
-        q = a[ii][k].quo(akk)
-        a[ii][k] = 0
-
-        ((k + 1)..(@column_count - 1)).each do |j|
-          a[ii][j] -= a[k][j] * q
-        end
-        (0..(@column_count - 1)).each do |j|
-          @rows[ii][j] -= @rows[k][j] * q
-        end
-      end
-
-      ((k + 1)..(@column_count - 1)).each do |j|
-        a[k][j] = a[k][j].quo(akk)
-      end
-      (0..(@column_count - 1)).each do |j|
-        @rows[k][j] = @rows[k][j].quo(akk)
-      end
-    end
-  end
-  
+    
   def determinant()
     if (@column_count != @row_count)
       SparseMatrix.Raise ErrDimensionMismatch
@@ -141,7 +103,6 @@ class SparseMatrix < Matrix
   
   # x, y - the coords of the previous coefficient
   # cols - data about the cols being considered (or the range [inclusive] to consider)
-  private
   def innerDeterminant(x, y, cols)
     # create the new cols
     newCols = {}
@@ -202,4 +163,45 @@ class SparseMatrix < Matrix
     return result
   end
 
+  def innerInverse(a)
+    (0..(@column_count - 1)).each do |k|
+      i = k
+      akk = a[k][k].abs
+      ((k + 1)..(@column_count - 1)).each do |j|
+        v = a[j][k].abs
+        if v > akk
+          i = j
+          akk = v
+        end
+      end
+      Matrix.Raise ErrNotRegular if akk == 0
+      if i != k
+        a[i], a[k] = a[k], a[i]
+        @rows[i], @rows[k] = @rows[k], @rows[i]
+      end
+      akk = a[k][k]
+
+      (0..(@column_count - 1)).each do |ii|
+        next if ii == k
+        q = a[ii][k].quo(akk)
+        a[ii][k] = 0
+
+        ((k + 1)..(@column_count - 1)).each do |j|
+          a[ii][j] -= a[k][j] * q
+        end
+        (0..(@column_count - 1)).each do |j|
+          @rows[ii][j] -= @rows[k][j] * q
+        end
+      end
+
+      ((k + 1)..(@column_count - 1)).each do |j|
+        a[k][j] = a[k][j].quo(akk)
+      end
+      (0..(@column_count - 1)).each do |j|
+        @rows[k][j] = @rows[k][j].quo(akk)
+      end
+    end
+    self
+  end
+  
 end
