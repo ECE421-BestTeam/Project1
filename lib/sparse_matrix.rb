@@ -1,5 +1,6 @@
+require 'json'
 require 'Matrix'
-require './sparse2Dhash.rb'
+require './sparse_hash'
 
 
 class SparseMatrix < Matrix 
@@ -17,10 +18,15 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
-  def initialize(rows, column_count = rows[0].size, row_count = rows.length)
+  def initialize(rows, column_count = rows[0].size, row_count = rows.size)
     @rows = rows
     @column_count = column_count
     @row_count = row_count
+  end
+  alias_method :new, :initialize
+  
+  def SparseMatrix.forceNew(rows, column_count = rows[0].size, row_count = rows.size)
+    new(rows, column_count, row_count)
   end
     
   def SparseMatrix.rows(rows)
@@ -59,7 +65,7 @@ class SparseMatrix < Matrix
     end
   end
   
-  # Is just (matrix * thing.inverse) so it should be faster just by using our inverse+determinant functions
+# Is just (matrix * thing.inverse) so it should be faster just by using our inverse+determinant functions
 #  def /(thing)
 #    
 #  end
@@ -68,21 +74,18 @@ class SparseMatrix < Matrix
     det = determinant
     Matrix.Raise ErrNotRegular if det == 0
     
-    a = @rows  #Make a deep copy!
-
+    a = @rows.deep_copy  #Make a deep copy!
+    return SparseMatrix.I(@column_count).innerInverse(a)
+    
   end
   
-  def inverse0
-    det = determinant
-    Matrix.Raise ErrNotRegular if det == 0
-    
-    a = @rows  #Make a deep copy!
-
+  private
+  def innerInverse(a)
     (0..(@column_count - 1)).each do |k|
       i = k
-      akk = a[k, k].abs
+      akk = a[k][k].abs
       ((k + 1)..(@column_count - 1)).each do |j|
-        v = a[j, k].abs
+        v = a[j][k].abs
         if v > akk
           i = j
           akk = v
@@ -93,15 +96,15 @@ class SparseMatrix < Matrix
         a[i], a[k] = a[k], a[i]
         @rows[i], @rows[k] = @rows[k], @rows[i]
       end
-      akk = a[k, k]
+      akk = a[k][k]
 
       (0..(@column_count - 1)).each do |ii|
         next if ii == k
-        q = a[ii, k].quo(akk)
-        a[ii, k] = 0
+        q = a[ii][k].quo(akk)
+        a[ii][k] = 0
 
-        (k + 1).upto(last) do |j|
-          a[ii, j] -= a[k, j] * q
+        ((k + 1)..(@column_count - 1)).each do |j|
+          a[ii][j] -= a[k][j] * q
         end
         (0..(@column_count - 1)).each do |j|
           @rows[ii][j] -= @rows[k][j] * q
