@@ -37,7 +37,7 @@ class SparseHash < Hash
   
   def map
     result = SparseHash.new(size)
-    hashsize.each do |i|
+    @size.times do |i|
       result[i] = yield(self[i])
     end
     result
