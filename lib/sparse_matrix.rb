@@ -22,7 +22,6 @@ class SparseMatrix < Matrix
     @rows = rows
     @column_count = column_count
     @row_count = row_count
-    self
   end
   alias_method :new, :initialize
   
@@ -30,18 +29,9 @@ class SparseMatrix < Matrix
     new(rows, column_count, row_count)
   end
   
-  def SparseMatrix.identity(size)
-    iRows = SparseHash.new(size)
-    (0..(size - 1)).each do |i|
-      iRows[i] = SparseHash.new(size)
-      iRows[i][i] = 1
-    end
-    new(iRows)
+  def SparseMatrix.[](*rows)
+    SparseMatrix.rows(rows)
   end
-#  class << Matrix
-#    alias unit identity
-#    alias I identity
-#  end
     
   def SparseMatrix.rows(rows)
     # populate the hash based on rows
@@ -55,8 +45,24 @@ class SparseMatrix < Matrix
     new(newRows)
   end
   
-  def dimensions
-    [@row_count, @column_count]
+  def SparseMatrix.I(size)
+    # create a hash for an identity matrix
+	iRows = SparseHash.new(size)
+	(0..(size - 1)).each do |i|
+	  iRows[i] = SparseHash.new(size)
+	  iRows[i][i] = 1
+	end
+	new(iRows)
+  end
+  
+  def SparseMatrix.identity(size)
+    # create a hash for an identity matrix
+    SparseMatrix.I(size)
+  end
+  
+  def SparseMatrix.unit(size)
+    # create a hash for an identity matrix
+    SparseMatrix.I(size)
   end
   
   def get(i,j)
@@ -70,6 +76,10 @@ class SparseMatrix < Matrix
   end
   alias []= set
   
+  def dimensions
+    [@row_count, @column_count]
+  end
+  
   def +(other)
     if other.respond_to?(:combine)
       self.combine(other) {|e1,e2| e1+e2}
@@ -80,7 +90,7 @@ class SparseMatrix < Matrix
 
   def -(other)
     if other.respond_to?(:combine)
-      self.combine(other) {|e1,e2| e1-e2}
+      self.combine(other) {|e1,e2| e1+e2}
     else
       super(other)
     end
@@ -94,8 +104,8 @@ class SparseMatrix < Matrix
       column.each_pair do |j, __|
         result[i,j] = yield(self[i,j], other[i,j])
       end
+      
     end
-
     result
   end
 
@@ -104,9 +114,10 @@ class SparseMatrix < Matrix
       rows.map {|x| x*other}
     elsif other.kind_of? Matrix
       super(other)
+      h
     end
   end
-
+  
 # Is just (matrix * thing.inverse) so it should be faster just by using our inverse+determinant functions
 #  def /(thing)
 #    
@@ -117,41 +128,10 @@ class SparseMatrix < Matrix
     Matrix.Raise ErrNotRegular if det == 0
     
     a = @rows.deep_copy  #Make a deep copy!
+    return SparseMatrix.I(@column_count).innerInverse(a)
     
-    b = SparseMatrix.identity(@column_count)
-    b.innerInverse(a)
   end
   
-  def determinant
-    SparseMatrix.Raise ErrDimensionMismatch if (@column_count != @row_count)
-
-    return innerDeterminant()
-  end
-  
-  # x, y - the coords of the previous coefficient
-  # cols - data about the cols being considered (or the range [inclusive] to consider)
-  def innerDeterminant(x = -1, ys = [])
-    x += 1 # new coefficient will be on this row
-    if (x == @row_count - 1) # we have reached the lowest level
-      index = (0..x).find() {|n| !(ys.include? n) }
-      return @rows[x][index]
-    end
-    
-    result = 0
-    op = -1
-    @rows[x].each_with_index do |val, colNum|
-      if (!(ys.include? colNum))
-        op = op * -1
-        if (val != 0)
-          temp = ys.dup
-          result += op * val * innerDeterminant(x, temp.push(colNum))
-        end
-      end
-    end
-    
-    return result
-  end
-
   def innerInverse(a)
     (0..(@column_count - 1)).each do |k|
       i = k
@@ -190,7 +170,36 @@ class SparseMatrix < Matrix
         @rows[k][j] = @rows[k][j].quo(akk)
       end
     end
-    self
   end
   
+  def determinant
+    SparseMatrix.Raise ErrDimensionMismatch if (@column_count != @row_count)
+
+    return innerDeterminant()
+  end
+  
+  # x, y - the coords of the previous coefficient
+  # cols - data about the cols being considered (or the range [inclusive] to consider)
+  def innerDeterminant(x = -1, ys = [])
+    x += 1 # new coefficient will be on this row
+    if (x == @row_count - 1) # we have reached the lowest level
+      index = (0..x).find() {|n| !(ys.include? n) }
+      return @rows[x][index]
+    end
+    
+    result = 0
+    op = -1
+    @rows[x].each_with_index do |val, colNum|
+      if (!(ys.include? colNum))
+        op = op * -1
+        if (val != 0)
+          temp = ys.dup
+          result += op * val * innerDeterminant(x, temp.push(colNum))
+        end
+      end
+    end
+    
+    return result
+  end
+
 end

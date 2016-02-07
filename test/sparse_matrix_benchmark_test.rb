@@ -9,7 +9,7 @@ class SparseMatrixTest < Test::Unit::TestCase
   $min, $max = -100, 100
 
   def sparseNum     
-    if (rand(0..4))
+    if (rand(0..50) == 0)
       return rand($min..$max)
     else
       return 	0
@@ -45,37 +45,35 @@ class SparseMatrixTest < Test::Unit::TestCase
     assert_operator bms, :<=, bmd * 1.1 #apply a constant because the sparse may be faster programmatically but the computer may have just been slwer for it's runs
   end
   
-	def test_addition
-    doBenchmarkTest("addition", 1900, 3) {|m1, m2| m1 + m2}
-  end
-  
+#	def test_addition
+#    doBenchmarkTest("addition", 1900, 3) {|m1, m2| m1 + m2}
+#  end
+#  
   def test_determinant  
     doBenchmarkTest("determinant", 115, 3) {|m1, m2| m1.determinant()}
   end
   
-  def test_inverse
-    doBenchmarkTest("inverse", 33, 2) {|m1, m2| m1.inverse()}
-  end
-  
-  def test_multiplication
-    doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
-  end
-  
-  def test_subtraction
-    doBenchmarkTest("subtraction", 1900, 3) {|m1, m2| m1 - m2}
-  end
-  
-  def test_transpose
-    doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
-  end
-  
-  def test_zero
-    # Zero arrays
-    size = 4000
-    arr = Array.new(size) { Array.new(size) {0} }
-    dm = Matrix.rows(arr);
-    sm = SparseMatrix.rows(arr);
-    doBenchmarkTest("zero true", [dm, dm, sm, sm], 3) {|m1| m1.zero? }
-  end
+#  dSnd
+#  
+#  def test_multiplication
+#    doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
+#  end
+#  
+#  def test_subtraction
+#    doBenchmarkTest("subtraction", 1900, 3) {|m1, m2| m1 - m2}
+#  end
+#  
+#  def test_transpose
+#    doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
+#  end
+#  
+#  def test_zero
+#    # Zero arrays
+#    size = 4000
+#    arr = Array.new(size) { Array.new(size) {0} }
+#    dm = Matrix.rows(arr);
+#    sm = SparseMatrix.rows(arr);
+#    doBenchmarkTest("zero true", [dm, dm, sm, sm], 3) {|m1| m1.zero? }
+#  end
   
 end
