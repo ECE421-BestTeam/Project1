@@ -4,7 +4,7 @@
 # Added assertions for ErrDimensionMismatch to tests for: +, -, *, /, determinant, inverse
 
 require 'test/unit'
-require_relative '../lib/sparse_matrix'
+require '../lib/sparse_matrix'
 
 class TestSparseMatrix < Test::Unit::TestCase
   def setup
