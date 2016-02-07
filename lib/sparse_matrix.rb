@@ -45,24 +45,87 @@ class SparseMatrix < Matrix
     new(newRows)
   end
   
-  def SparseMatrix.I(size)
-    # create a hash for an identity matrix
-	iRows = SparseHash.new(size)
-	(0..(size - 1)).each do |i|
-	  iRows[i] = SparseHash.new(size)
-	  iRows[i][i] = 1
+  def SparseMatrix.columns(columns)
+    # populate the hash based on columns
+	newRows = SparseHash.new(columns[0].length)
+    columns.each_with_index do |col, colNum|
+      newRows[colNum] = SparseHash.new(columns.length)
+      col.each_with_index do |val, rowNum|
+        newRows[rowNum][colNum] = val
+      end
+    end
+    new(newRows)
+  end
+  
+  def SparseMatrix.build(row_count, column_count = row_count, &block)
+    # populate the hash based on rows
+    newRows = SparseHash.new(row_count)
+    (0..(row_count-1)).each do |row|
+      newRows[row] = SparseHash.new(column_count)
+      (0..(column_count-1)).each do |col|
+        newRows[row][col] = block.call(row,col)
+      end
+    end
+    new(newRows)
+  end
+  
+  def SparseMatrix.diagonal(*values)
+	dRows = SparseHash.new(values.size)
+	values.each_with_index do |val, i|
+	  dRows[i] = SparseHash.new(values.size)
+	  dRows[i][i] = val
 	end
-	new(iRows)
+	new(dRows)
+  end
+  
+  def SparseMatrix.scalar(n, value)
+	sRows = SparseHash.new(n)
+	(0..(n - 1)).each do |i|
+	  sRows[i] = SparseHash.new(n)
+	  sRows[i][i] = value
+	end
+	new(sRows)
   end
   
   def SparseMatrix.identity(size)
     # create a hash for an identity matrix
-    SparseMatrix.I(size)
+    SparseMatrix.scalar(size, 1)
   end
   
   def SparseMatrix.unit(size)
     # create a hash for an identity matrix
-    SparseMatrix.I(size)
+    SparseMatrix.identity(size)
+  end
+  
+  def SparseMatrix.I(size)
+    # create a hash for an identity matrix
+    SparseMatrix.identity(size)
+  end
+  
+  def SparseMatrix.zero(row_count, column_count = row_count)
+    zRows = SparseHash.new(row_count)
+	(0..(rowCount - 1)).each do |i|
+	  zRows[i] = SparseHash.new(column_count)
+	end
+	new(sRows)
+  end
+  
+  def SparseMatrix.row_vector(rows)
+    row = SparseHash.new(1);
+    row[0] = SparseHash.new(rows.size);
+	rows.each_with_index do |val,i|
+	  row[0][i] = val
+	end
+	new(row)
+  end
+  
+  def SparseMatrix.column_vector(columns)
+    col = SparseHash.new(columns.size);
+	rows.each_with_index do |val,i|
+      col[i] = SparseHash.new(1);
+	  col[i][0] = val
+	end
+	new(col)
   end
   
   def get(i,j)
