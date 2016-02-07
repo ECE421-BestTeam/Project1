@@ -58,5 +58,9 @@ class SparseHash < Hash
     end
     return result
   end
+  
+  def join (str)
+    self.to_s + str
+  end
 
 end # end of SparseHash

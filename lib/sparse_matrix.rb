@@ -121,74 +121,34 @@ class SparseMatrix < Matrix
     b = SparseMatrix.identity(@column_count)
     b.innerInverse(a)
   end
-    
-  def determinant()
-    if (@column_count != @row_count)
-      SparseMatrix.Raise ErrDimensionMismatch
-    end
-    
-    return innerDeterminant(-1, @column_count, (0..@column_count - 1))
+  
+  def determinant
+    SparseMatrix.Raise ErrDimensionMismatch if (@column_count != @row_count)
+
+    return innerDeterminant()
   end
   
   # x, y - the coords of the previous coefficient
   # cols - data about the cols being considered (or the range [inclusive] to consider)
-  def innerDeterminant(x, y, cols)
-    # create the new cols
-    newCols = {}
-    if (cols.class == Range) 
-      # We need to create a fresh newCols
-      cols.each do |colNum|
-        if (colNum < y)
-          if (colNum % 2 == 0)
-            newCols[colNum] = :+
-          else
-            newCols[colNum] = :-
-          end
-        elsif (colNum > y)
-          if (colNum % 2 == 0)
-            newCols[colNum] = :-
-          else
-            newCols[colNum] = :+
-          end
-        end
-      end        
-    else
-      # We need to modify newCols from existing cols
-      cols.each do |entry|
-        colNum = entry[0]
-        op = entry[1]
-        if (colNum < y)
-          newCols[colNum] = op
-        elsif (colNum > y)
-            if (op == :+)
-              newCols[colNum] = :-
-            else
-              newCols[colNum] = :+
-            end
-        end
-      end  
-    end
-    
+  def innerDeterminant(x = -1, ys = [])
     x += 1 # new coefficient will be on this row
-    
-    if (newCols.length == 1) # we have reached the lowest level
-      newCols.each do |entry|
-        colNum = entry[0] 
-        return @rows[x][colNum]
-      end
+    if (x == @row_count - 1) # we have reached the lowest level
+      index = (0..x).find() {|n| !(ys.include? n) }
+      return @rows[x][index]
     end
     
     result = 0
-    newCols.each do |entry|
-      colNum = entry[0]
-      op = entry[1]
-      temp = @rows[x][colNum] * innerDeterminant(x, colNum, newCols)
-      if (op == :+)
-        result += temp
-      else
-        result -= temp
+    op = -1
+    @rows[x].each_with_index do |val, colNum|
+      if (!(ys.include? colNum))
+        op = op * -1
+        if (val != 0)
+          temp = ys.dup
+          result += op * val * innerDeterminant(x, temp.push(colNum))
+        end
       end
     end
+    
     return result
   end
 
