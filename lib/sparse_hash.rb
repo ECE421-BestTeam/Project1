@@ -9,7 +9,7 @@ class SparseHash < Hash
   end
   
   def hashsize
-    self.length
+    (0...self.length)
   end
 
   def [](i)
@@ -35,6 +35,14 @@ class SparseHash < Hash
     end
   end
   
+  def map
+    result = SparseHash.new(size)
+    hashsize.each do |i|
+      result[i] = yield(self[i])
+    end
+    result
+  end
+  alias_method :collect, :map
   
   def check_bound(i)
     return i.between?(0, @size-1)
@@ -43,7 +51,7 @@ class SparseHash < Hash
   def deep_copy (item = self)
     result = SparseHash.new(item.size)
     item.each_pair do |i, v|
-      if (v.class == SparseHash)
+      if (v.is_a? SparseHash)
         v = deep_copy(v)
       end
       result[i] = v
