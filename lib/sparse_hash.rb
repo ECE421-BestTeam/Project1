@@ -4,36 +4,46 @@ class SparseHash < Hash
   def initialize (size, default = nil, &block)
     @size = size
     @block = block || Proc.new { default }
-    
-    super() { |h,k| @block.call(h,k)}
-  end
+#    super()
+    super() { |h,k| k.between?(0,@size-1) ? @block.call(h,k) : nil}
+  end #end init
   
   def hashsize
     self.length
-  end
+  end #end hashsize
 
   def [](i)
-    return !has_key?(i) && check_bound(i) ? 0 :
-    super(i).nil? && block_given? ? yield(i) : super(i)
+    return check_bound(i) && !has_key?(i) ? 0 : super(i)
+#    super(i)
   end
   alias get []
   
   def []=(i,v)
-    super(i,v) unless v==0
+    return if !check_bound(i) || v==0
+    super(i,v)
   end
   alias set []=
   
   def each
     @size.times do |i|
-      yield self[i]
+      yield(i)
     end
   end
   
   def each_sparse
-    self.each_pair do |i,v|
-      yield (v)
+    self.keys.each do |i|
+      yield (i)
     end
   end
+  
+  def map
+    result = SparseHash.new(size)
+    @size.times do |i|
+      result[i] = yield(self[i])
+    end
+    result
+  end
+  alias_method :collect, :map
   
   
   def check_bound(i)

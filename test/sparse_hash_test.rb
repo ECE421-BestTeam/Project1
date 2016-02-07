@@ -31,28 +31,29 @@ class TestSparseHash < Test::Unit::TestCase
   def test_each
     rry1 = []
     @s1.each do |x|
-      rry1 << x
+      rry1 << @s1[x]
     end
     assert_equal([0,1,0,2], rry1)
     rry2 = []
     @s2.each do |x|
-      rry2 << x
+      rry2 << @s2[x]
     end
     assert_equal([0,1,2,0], rry2)
   end
   
   def test_each_sparse
     rry = []
-    @s2.each_sparse do |x|
-      rry << x
+    @s2.each_sparse do |i|
+      rry << @s2[i]
     end
     assert_equal([1,2], rry)
     
     h = Hash.new(4)
     @s1.each_sparse do |i|
       h[i] = @s1[i] + @s2[i]
+      puts h[i]
     end
-    assert_equal({1=>2,2=>2} , h)
+    assert_equal({1=>2,3=>2} , h)
   end
   
   def test_map

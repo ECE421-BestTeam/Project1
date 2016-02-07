@@ -1,6 +1,6 @@
 require 'json'
 require 'Matrix'
-require './sparse_hash'
+require_relative './sparse_hash'
 
 
 class SparseMatrix < Matrix 
@@ -145,7 +145,7 @@ class SparseMatrix < Matrix
   
   def +(other)
     if other.respond_to?(:combine)
-      self.combine(other) {|e1,e2| e1+e2}
+      return self.combine(other) {|e1,e2| e1+e2}
     else
       super(other)
     end
@@ -153,7 +153,7 @@ class SparseMatrix < Matrix
 
   def -(other)
     if other.respond_to?(:combine)
-      self.combine(other) {|e1,e2| e1+e2}
+      return self.combine(other) {|e1,e2| e1-e2}
     else
       super(other)
     end
@@ -162,13 +162,12 @@ class SparseMatrix < Matrix
   # Common iteration for element-element operation
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
-    result = SparseMatrix.rows(rows)
-    rows.each_pair do |i,column|
-      column.each_pair do |j, __|
-        result[i,j] = yield(self[i,j], other[i,j])
-      end
-      
-    end
+    result = other.clone
+    rows.each_sparse {|i|
+      rows[i].each_sparse {|j|
+        result[i,j] = yield(result[i,j], self[i,j])
+      }
+    }
     result
   end
 
@@ -177,10 +176,14 @@ class SparseMatrix < Matrix
       rows.map {|x| x*other}
     elsif other.kind_of? Matrix
       super(other)
-      h
     end
   end
   
+#  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
+#  def clone
+#    new_matrix @rows.map(&:dup)
+#  end
+
 # Is just (matrix * thing.inverse) so it should be faster just by using our inverse+determinant functions
 #  def /(thing)
 #    
