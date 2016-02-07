@@ -129,7 +129,6 @@ class SparseMatrix < Matrix
     
     a = @rows.deep_copy  #Make a deep copy!
     return SparseMatrix.I(@column_count).innerInverse(a)
-    
   end
   
   def innerInverse(a)
@@ -170,6 +169,7 @@ class SparseMatrix < Matrix
         @rows[k][j] = @rows[k][j].quo(akk)
       end
     end
+    self
   end
   
   def determinant
