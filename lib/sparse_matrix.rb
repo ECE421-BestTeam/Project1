@@ -29,21 +29,8 @@ class SparseMatrix < Matrix
     new(rows, column_count, row_count)
   end
   
-  def SparseMatrix.I(size)
-	iRows = SparseHash.new(size)
-	(0..(size - 1)).each do |i|
-	  iRows[i] = SparseHash.new(size)
-	  iRows[i][i] = 1
-	end
-	new(iRows)
-  end
-  
-  def SparseMatrix.identity(size)
-    SparseMatrix.I(size)
-  end
-  
-  def SparseMatrix.unit(size)
-    SparseMatrix.I(size)
+  def SparseMatrix.[](*rows)
+    SparseMatrix.rows(rows)
   end
     
   def SparseMatrix.rows(rows)
@@ -56,6 +43,26 @@ class SparseMatrix < Matrix
       end
     end
     new(newRows)
+  end
+  
+  def SparseMatrix.I(size)
+    # create a hash for an identity matrix
+	iRows = SparseHash.new(size)
+	(0..(size - 1)).each do |i|
+	  iRows[i] = SparseHash.new(size)
+	  iRows[i][i] = 1
+	end
+	new(iRows)
+  end
+  
+  def SparseMatrix.identity(size)
+    # create a hash for an identity matrix
+    SparseMatrix.I(size)
+  end
+  
+  def SparseMatrix.unit(size)
+    # create a hash for an identity matrix
+    SparseMatrix.I(size)
   end
   
   def dimensions
