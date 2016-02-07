@@ -65,26 +65,46 @@ class SparseMatrix < Matrix
     SparseMatrix.I(size)
   end
   
+  def get(i,j)
+    @rows[i][j] if @rows[i]
+  end
+  alias [] get
+  
+  def set(i,j,v)
+    return nil unless i.between?(0, @row_count-1) && j.between?(0, @column_count-1)
+    @rows[i][j]=v
+  end
+  alias []= set
+  
   def dimensions
     [@row_count, @column_count]
   end
   
   def +(other)
-    case m
-      when Numeric
-        Matrix.Raise ErrOperationNotDefined, "+", self.class, m.class
-      when Vector
-        m = self.class.column_vector(m)
-      when Matrix
-      else
-      return apply_through_coercion(m, __method__)
-      Sparse2DHash.new(row_count,col_count) do
-        @row_count.times do |r|
-          @col_count.times do |c|
-            h[r,c] = self[r,c] + other[r,c]
-          end
-        end
+    if other.respond_to?(:combine)
+      self.combine(other) {|e1,e2| e1+e2}
+    else
+      super(other)
+    end
+  end
+
+  def -(other)
+    if other.respond_to?(:combine)
+      self.combine(other) {|e1,e2| e1+e2}
+    else
+      super(other)
+    end
+  end
+
+  # Common iteration for element-element operation
+  def combine(other)
+    SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
+    result = SparseMatrix.rows(rows)
+    rows.each_pair do |i,column|
+      column.each_pair do |j, __|
+        result[i,j] = yield(self[i,j], other[i,j])
       end
+      
     end
     result
   end
