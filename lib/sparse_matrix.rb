@@ -58,7 +58,7 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.build(row_count, column_count = row_count, &block)
-    # populate the hash based on rows
+    # populate the hash based on a code block
     newRows = SparseHash.new(row_count)
     (0..(row_count-1)).each do |row|
       newRows[row] = SparseHash.new(column_count)
@@ -107,7 +107,7 @@ class SparseMatrix < Matrix
 	(0..(rowCount - 1)).each do |i|
 	  zRows[i] = SparseHash.new(column_count)
 	end
-	new(sRows)
+	new(zRows)
   end
   
   def SparseMatrix.row_vector(rows)
