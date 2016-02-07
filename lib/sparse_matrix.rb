@@ -95,7 +95,6 @@ class SparseMatrix < Matrix
         result[i,j] = yield(self[i,j], other[i,j])
       end
     end
-
     result
   end
 
