@@ -280,4 +280,8 @@ class SparseMatrix < Matrix
       }.join(", ")+"]"
     end
   end
+  
+  def inspect
+    self.to_s
+  end
 end
