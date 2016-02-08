@@ -34,6 +34,10 @@ class SparseMatrix < Matrix
   end
     
   def SparseMatrix.rows(rows)
+    rows = convert_to_array(rows)
+    rows.map! do |row|
+      convert_to_array(row)
+    end
     # populate the hash based on rows
     newRows = SparseHash.new(rows.length)
     rows.each_with_index do |row, rowNum|
