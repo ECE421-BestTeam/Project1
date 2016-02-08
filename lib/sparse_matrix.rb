@@ -63,12 +63,14 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.diagonal(*values)
-	dRows = SparseHash.new(values.size)
-	values.each_with_index do |val, i|
-	  dRows[i] = SparseHash.new(values.size)
-	  dRows[i][i] = val
-	end
-	new(dRows)
+    n = values.length
+    rows = []
+    (0..(n - 1)).each do |i|
+      temp = Array.new(n, 0)
+      temp[i] = values[i]
+      rows.push(temp)
+    end
+    new(rows)
   end
   
   def SparseMatrix.scalar(n, value)
