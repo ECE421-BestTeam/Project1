@@ -160,13 +160,18 @@ class SparseMatrix < Matrix
   # Common iteration for element-element operation
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
+    #newrows = SparseHash.new(row_count){ |h,k| h[k] = SparseHash.new(column_count,0) }
     result = other.deep_copy
-    @row_count.times {|i|
-      @column_count.times { |j|
-        result[i,j]
-          result[i, j] = yield(self[i, j], result[i, j])
-        }
+    merged_r=rows.merge(other.rows)
+    merged_r.each_sparse { |r,__|
+      merged_c = rows[r].merge(other.rows[r])
+      merged_c.each_sparse {|c, col|
+#        row = newrows[r]
+#        row[c] = yield(self[r,c],other[r,c])
+#        newrows[r] = row
+        result[r,c] = yield(self[r,c],other[r,c])
       }
+    }
     result
   end
   
