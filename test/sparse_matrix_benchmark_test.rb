@@ -7,10 +7,11 @@ require '../lib/sparse_matrix'
 class SparseMatrixTest < Test::Unit::TestCase
   
   $min, $max = -100, 100
+  $ourRand = Random.new(1234)
 
   def sparseNum     
-    if (rand(0..50) == 0)
-      return rand($min..$max)
+    if ($ourRand.rand(0..35) == 0) #43 is great
+      return $ourRand.rand($min..$max)
     else
       return 	0
     end
