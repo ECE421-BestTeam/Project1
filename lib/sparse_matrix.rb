@@ -99,9 +99,9 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.zero(rows, cols = rows)
-    zRows = SparseHash.new(rows)
+    zRows = []
     (0..(rows - 1)).each do |i|
-      zRows[i] = SparseHash.new(cols)
+      zRows[i] = Array.new(cols, 0)
     end
     new(zRows)
   end
@@ -123,6 +123,7 @@ class SparseMatrix < Matrix
     @rows[i][j] if @rows[i]
   end
   alias [] get
+  alias element get
   
   def set(i,j,v)
     return nil unless i.between?(0, @row_count-1) && j.between?(0, @column_count-1)
