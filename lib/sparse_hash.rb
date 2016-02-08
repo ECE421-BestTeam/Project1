@@ -71,5 +71,13 @@ class SparseHash < Hash
     end
     return result
   end
+  
+  def to_ary
+    result = []
+    @size.times do |i| 
+      result.push(self[i])
+    end
+    return result
+  end
 
 end # end of SparseHash
