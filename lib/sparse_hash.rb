@@ -61,8 +61,15 @@ class SparseHash < Hash
     return result
   end
   
-  def join (str)
-    self.to_s + str
+  def join (sep)
+    result = ''
+    @size.times do |i| 
+      result += self[i]
+      if (i != @size - 1)
+        result += sep
+      end
+    end
+    return result
   end
 
 end # end of SparseHash

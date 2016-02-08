@@ -18,7 +18,7 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
-  def initialize(rows, column_count = rows[0].size, row_count = rows.size)
+  def initialize(rows, column_count = (rows[0] || []).size, row_count = rows.size)
     @rows = rows
     @column_count = column_count
     @row_count = row_count
@@ -268,4 +268,13 @@ class SparseMatrix < Matrix
     return result
   end
 
+  def to_s
+    if empty?
+      "#{self.class}.empty(#{row_count}, #{column_count})"
+    else
+      "#{self.class}[" + @rows.collect{|row|
+        "[" + row.collect{|e| e.to_s}.join(", ") + "]"
+      }.join(", ")+"]"
+    end
+  end
 end
