@@ -130,6 +130,13 @@ class SparseMatrix < Matrix
     [@row_count, @column_count]
   end
   
+  def zero?
+	@rows.each do |row|
+	  return false unless row.hashsize == 0
+	end
+	return true
+  end
+  
   def +(other)
   
     if other.respond_to?(:combine)
@@ -181,7 +188,13 @@ class SparseMatrix < Matrix
   end
   
   def transpose
-    puts 'Please implement jonathan! :)'
+    newMatrix = SparseMatrix.zero(@column_count, @row_count)
+    rows.each_with_index do |row, rowNum|
+      row.each_with_index do |val, colNum|
+		newMatrix.set(colNum, rowNum, val)
+      end
+	end
+	return newMatrix
   end
   
 #  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly

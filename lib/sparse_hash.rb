@@ -26,8 +26,9 @@ class SparseHash < Hash
   alias get []
   
   def []=(i,v)
-    return if !check_bound(i) || v==0
-    super(i,v)
+    return if !check_bound(i)
+    super(i,v) unless v==0
+	delete(i) if v==0
   end
   alias set []=
   
