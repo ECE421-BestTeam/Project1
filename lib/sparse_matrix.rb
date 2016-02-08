@@ -46,15 +46,7 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.columns(columns)
-    # populate the hash based on columns
-	newRows = SparseHash.new(columns[0].length)
-    columns.each_with_index do |col, colNum|
-      newRows[colNum] = SparseHash.new(columns.length)
-      col.each_with_index do |val, rowNum|
-        newRows[rowNum][colNum] = val
-      end
-    end
-    new(newRows)
+    new(columns).transpose
   end
   
   def SparseMatrix.build(row_count, column_count = row_count, &block)
