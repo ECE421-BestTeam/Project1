@@ -103,7 +103,7 @@ class SparseMatrix < Matrix
     (0..(rows - 1)).each do |i|
       zRows[i] = Array.new(cols, 0)
     end
-    new(zRows)
+    new(zRows, cols)
   end
   
   def SparseMatrix.row_vector(row)
@@ -191,10 +191,10 @@ class SparseMatrix < Matrix
     newMatrix = SparseMatrix.zero(@column_count, @row_count)
     rows.each_with_index do |row, rowNum|
       row.each_with_index do |val, colNum|
-		newMatrix.set(colNum, rowNum, val)
+        newMatrix.set(colNum, rowNum, val)
       end
-	end
-	return newMatrix
+    end
+    return newMatrix
   end
   
 #  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
