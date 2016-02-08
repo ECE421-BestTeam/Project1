@@ -255,7 +255,7 @@ class SparseMatrix < Matrix
     
     result = 0
     op = -1
-    @rows[x].each_with_index do |val, colNum|
+    @rows[x].each_sparse do |colNum, val|
       if (!(ys.include? colNum))
         op = op * -1
         if (val != 0)

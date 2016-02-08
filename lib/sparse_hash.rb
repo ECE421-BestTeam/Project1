@@ -26,13 +26,13 @@ class SparseHash < Hash
   
   def each
     @size.times do |i|
-      yield(i)
+      yield self[i]
     end
   end
   
   def each_sparse
     self.keys.each do |i|
-      yield (i)
+      yield i, self[i]
     end
   end
   
