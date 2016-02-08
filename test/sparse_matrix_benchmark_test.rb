@@ -54,6 +54,10 @@ class SparseMatrixTest < Test::Unit::TestCase
     doBenchmarkTest("determinant", 115, 3) {|m1, m2| m1.determinant()}
   end
   
+  def test_inverse
+    doBenchmarkTest("inverse", 33, 2) {|m1, m2| m1.inverse()}
+  end
+  
   def test_multiplication
     doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
   end
