@@ -166,9 +166,12 @@ class SparseMatrix < Matrix
 
   def *(other)
     if other.kind_of? Numeric
-      rows.map {|x| x*other}
+      rows = @rows.collect {|row|
+        row.collect {|e| e * other}
+      }
+      return new_matrix rows
     elsif other.respond_to?(:combine)
-      super(other)
+      new_matrix super(other).rows
     end
   end
   
