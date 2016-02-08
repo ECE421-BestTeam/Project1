@@ -18,26 +18,8 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
+  # Rows should be an array
   def initialize(rows, column_count = (rows[0] || []).size, row_count = rows.size)
-    @rows = rows
-    @column_count = column_count
-    @row_count = row_count
-  end
-  alias_method :new, :initialize
-  
-  def SparseMatrix.forceNew(rows, column_count = rows[0].size, row_count = rows.size)
-    new(rows, column_count, row_count)
-  end
-  
-  def SparseMatrix.[](*rows)
-    SparseMatrix.rows(rows)
-  end
-    
-  def SparseMatrix.rows(rows)
-    rows = convert_to_array(rows)
-    rows.map! do |row|
-      convert_to_array(row)
-    end
     # populate the hash based on rows
     newRows = SparseHash.new(rows.length)
     rows.each_with_index do |row, rowNum|
@@ -46,7 +28,22 @@ class SparseMatrix < Matrix
         newRows[rowNum][colNum] = val
       end
     end
-    new(newRows)
+    @rows = newRows
+    @column_count = column_count
+    @row_count = row_count
+  end
+  alias_method :new, :initialize
+  
+  def SparseMatrix.[](*rows)
+    SparseMatrix.rows(rows)
+  end
+    
+  def SparseMatrix.rows(rows)
+    rows = convert_to_array(rows)
+    rows.map! do |row|
+      row = convert_to_array(row)
+    end
+    new(rows)
   end
   
   def SparseMatrix.columns(columns)
@@ -55,14 +52,14 @@ class SparseMatrix < Matrix
   
   def SparseMatrix.build(row_count, column_count = row_count, &block)
     # populate the hash based on a code block
-    newRows = SparseHash.new(row_count)
+    newRows = []
     (0..(row_count-1)).each do |row|
-      newRows[row] = SparseHash.new(column_count)
+      newRows[row] = []
       (0..(column_count-1)).each do |col|
         newRows[row][col] = block.call(row,col)
       end
     end
-    new(newRows)
+    SparseMatrix.rows(newRows)
   end
   
   def SparseMatrix.diagonal(*values)
