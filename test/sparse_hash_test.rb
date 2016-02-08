@@ -31,12 +31,12 @@ class TestSparseHash < Test::Unit::TestCase
   def test_each
     rry1 = []
     @s1.each do |x|
-      rry1 << @s1[x]
+      rry1 << x
     end
     assert_equal([0,1,0,2], rry1)
     rry2 = []
     @s2.each do |x|
-      rry2 << @s2[x]
+      rry2 << x
     end
     assert_equal([0,1,2,0], rry2)
   end
