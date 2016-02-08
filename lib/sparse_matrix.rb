@@ -46,7 +46,7 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.columns(columns)
-    new(columns).transpose
+    SparseMatrix.rows(columns).transpose
   end
   
   def SparseMatrix.build(row_count, column_count = row_count, &block)
@@ -169,6 +169,10 @@ class SparseMatrix < Matrix
     elsif other.kind_of? Matrix
       super(other)
     end
+  end
+  
+  def transpose
+    puts 'Please implement jonathan! :)'
   end
   
 #  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
