@@ -72,12 +72,13 @@ class SparseMatrix < Matrix
   end
   
   def SparseMatrix.scalar(n, value)
-	sRows = SparseHash.new(n)
-	(0..(n - 1)).each do |i|
-	  sRows[i] = SparseHash.new(n)
-	  sRows[i][i] = value
-	end
-	new(sRows)
+    sRows = []
+    (0..(n - 1)).each do |i|
+      temp = Array.new(n, 0)
+      temp[i] = value
+      sRows.push(temp)
+    end
+    new(sRows)
   end
   
   def SparseMatrix.identity(size)
