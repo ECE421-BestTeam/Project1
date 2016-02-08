@@ -102,12 +102,12 @@ class SparseMatrix < Matrix
     SparseMatrix.identity(size)
   end
   
-  def SparseMatrix.zero(row_count, column_count = row_count)
-    zRows = SparseHash.new(row_count)
-	(0..(rowCount - 1)).each do |i|
-	  zRows[i] = SparseHash.new(column_count)
-	end
-	new(zRows)
+  def SparseMatrix.zero(rows, cols = rows)
+    zRows = SparseHash.new(rows)
+    (0..(rows - 1)).each do |i|
+      zRows[i] = SparseHash.new(cols)
+    end
+    new(zRows)
   end
   
   def SparseMatrix.row_vector(rows)
