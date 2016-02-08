@@ -111,13 +111,8 @@ class SparseMatrix < Matrix
 	new(row)
   end
   
-  def SparseMatrix.column_vector(columns)
-    col = SparseHash.new(columns.size);
-	rows.each_with_index do |val,i|
-      col[i] = SparseHash.new(1);
-	  col[i][0] = val
-	end
-	new(col)
+  def SparseMatrix.column_vector(column)
+    SparseMatrix.columns([column])
   end
   
   def get(i,j)
