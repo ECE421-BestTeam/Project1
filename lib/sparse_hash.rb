@@ -12,12 +12,12 @@ class SparseHash < Hash
     self.length
   end #end hashsize
 
-  def [](i, rangeEnd = false)
-    if (!rangeEnd)
+  def [](i, rangeSize = false)
+    if (!rangeSize)
       return check_bound(i) && !has_key?(i) ? 0 : super(i)
     else
        result = []
-      (i..(rangeEnd - 1)).each do |i| 
+      (i..(i + rangeSize - 1)).each do |i| 
         result.push(self[i])
       end
       return result
