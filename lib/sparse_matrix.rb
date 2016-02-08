@@ -106,13 +106,8 @@ class SparseMatrix < Matrix
     new(zRows)
   end
   
-  def SparseMatrix.row_vector(rows)
-    row = SparseHash.new(1);
-    row[0] = SparseHash.new(rows.size);
-	rows.each_with_index do |val,i|
-	  row[0][i] = val
-	end
-	new(row)
+  def SparseMatrix.row_vector(row)
+    new([row])
   end
   
   def SparseMatrix.column_vector(column)
