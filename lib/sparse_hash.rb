@@ -50,8 +50,14 @@ class SparseHash < Hash
     end
     result
   end
-  alias_method :collect, :map
   
+  def collect
+    result = []
+    @size.times do |i|
+      result.push(yield(self[i]))
+    end
+    result
+  end
   
   def check_bound(i)
     return i.between?(0, @size-1)
