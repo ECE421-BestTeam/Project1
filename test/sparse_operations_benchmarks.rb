@@ -35,18 +35,34 @@ class SparseOpsTest < Test::Unit::TestCase
     end
   end
   
-  def test_addition_bm
+  def test_add_bm
     puts
     Benchmark.bm do |x|
       x.report("sparse: ") { @sm1 + @sm2 }
       x.report("dense:  ") { @dm1 + @dm2 }
     end
   end
+  
+    def test_sub_bm
+    puts
+    Benchmark.bm do |x|
+      x.report("sparse: ") { @sm1 - @sm2 }
+      x.report("dense:  ") { @dm1 - @dm2 }
+    end
+  end
 
-  def test_addition
+  def test_add
     idx = rand(0...size)
     ss= @sm1 + @sm2
     dd= @dm1 + @dm2
+
+    assert_equal(dd[idx,idx], ss[idx,idx])
+  end
+  
+  def test_sub
+   idx = rand(0...size)
+    ss= @sm1 - @sm2
+    dd= @dm1 - @dm2
 
     assert_equal(dd[idx,idx], ss[idx,idx])
   end

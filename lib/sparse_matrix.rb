@@ -135,6 +135,7 @@ class SparseMatrix < Matrix
   end
   
   def +(other)
+  
     if other.respond_to?(:combine)
       return self.combine(other) {|e1,e2| e1+e2}
     else
@@ -154,18 +155,22 @@ class SparseMatrix < Matrix
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
     result = other.clone
-    rows.each_sparse {|i|
-      rows[i].each_sparse {|j|
-        result[i,j] = yield(result[i,j], self[i,j])
+    row_count.times {|i|
+      column_count.times { |j|
+        if self[i,j].nil? && result[i,j].nil?
+          result[i,j] = 0
+        else
+          result[i,j]= yield(self[i,j],result[i,j])
+        end
+        }
       }
-    }
     result
   end
 
   def *(other)
     if other.kind_of? Numeric
       rows.map {|x| x*other}
-    elsif other.kind_of? Matrix
+    elsif other.respond_to?(:combine)
       super(other)
     end
   end
