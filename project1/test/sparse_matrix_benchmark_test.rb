@@ -68,7 +68,7 @@ class SparseMatrixTest < Test::Unit::TestCase
   end
   
   def test_transpose
-    doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
+    doBenchmarkTest("transpose", 3500, 3, 75) {|m1, m2| m1.transpose()}
   end
   
   def test_zero
