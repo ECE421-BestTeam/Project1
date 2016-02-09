@@ -211,13 +211,16 @@ class SparseMatrix < Matrix
   end
   
   def transpose
-    newMatrix = SparseMatrix.zero(@column_count, @row_count)
-    rows.each_sparse do |rowNum, row|
-      row.each_sparse do |colNum, val|
-        newMatrix.set(colNum, rowNum, val)
-      end
+    newRows = []
+    0.upto(column_count - 1).each do |i|
+      newRows[i] = Array.new(row_count, 0)
     end
-    return newMatrix
+    rows.each_sparse do |i,row|
+	  row.each_sparse do |j,val|
+	    newRows[j][i]=val
+	  end
+    end
+    return SparseMatrix.rows(newRows)
   end
   
 #  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
