@@ -64,13 +64,14 @@ class SparseHash < Hash
     return i.between?(0, @size-1)
   end
   
-  def deep_copy (item = self)
-    result = SparseHash.new(item.size)
-    item.each_pair do |i, v|
+  def deep_copy
+    result = SparseHash.new(self.size)
+    self.each_pair do |i, v|
       if (v.class == SparseHash)
-        v = deep_copy(v)
+        result[i] = v.deep_copy
+      else
+        result[i] = v
       end
-      result[i] = v
     end
     return result
   end
