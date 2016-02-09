@@ -54,7 +54,11 @@ class SparseMatrixTest < Test::Unit::TestCase
   def test_determinant  
     doBenchmarkTest("determinant", 135, 3, 43) {|m1, m2| m1.determinant()}
   end
-  
+
+	def test_division
+    doBenchmarkTest("division", 45, 3, 8) {|m1, m2| m1 / m2}
+  end
+    
   def test_inverse
     doBenchmarkTest("inverse", 45, 2, 8) {|m1, m2| m1.inverse()}
   end
@@ -68,7 +72,7 @@ class SparseMatrixTest < Test::Unit::TestCase
   end
   
   def test_transpose
-    doBenchmarkTest("transpose", 3500, 3, 75) {|m1, m2| m1.transpose()}
+    doBenchmarkTest("transpose", 1500, 3, 75) {|m1, m2| m1.transpose()}
   end
   
   def test_zero
