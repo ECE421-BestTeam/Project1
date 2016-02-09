@@ -115,7 +115,7 @@ class SparseMatrix < Matrix
   end
   
   def get(i,j)
-    @rows[i][j] if @rows[i]
+    return (@rows[i].nil? || @rows[i][j].nil?) ? 0  : @rows[i][j]
   end
   alias [] get
   alias element get
@@ -138,12 +138,8 @@ class SparseMatrix < Matrix
   end
   
   def +(other)
-  
     if other.respond_to?(:combine)
-      a = self.combine(other) do |e1, e2| 
-        e1 + e2
-      end
-      return a
+      self.combine(other) {|e1, e2| e1 + e2 }
     else
       super(other)
     end
@@ -160,19 +156,20 @@ class SparseMatrix < Matrix
   # Common iteration for element-element operation
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
-    #newrows = SparseHash.new(row_count){ |h,k| h[k] = SparseHash.new(column_count,0) }
-    result = other.deep_copy
+    result = SparseHash.new(row_count)
+    # merge row keys
     merged_r=rows.merge(other.rows)
     merged_r.each_sparse { |r,__|
+      row = SparseHash.new(column_count)
+      # merge column keys
       merged_c = rows[r].merge(other.rows[r])
       merged_c.each_sparse {|c, col|
-#        row = newrows[r]
-#        row[c] = yield(self[r,c],other[r,c])
-#        newrows[r] = row
-        result[r,c] = yield(self[r,c],other[r,c])
+        row[c] = yield(self[r,c],other[r,c])
       }
+      result[r]= row
     }
-    result
+    new_matrix result
+#    result
   end
   
   def deep_copy

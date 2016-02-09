@@ -63,7 +63,7 @@ class SparseOpsTest < Test::Unit::TestCase
    idx = rand(0...size)
     ss= @sm1 - @sm2
     dd= @dm1 - @dm2
-
+    puts "#{idx},#{idx}, #{size}"
     assert_equal(dd[idx,idx], ss[idx,idx])
   end
 end
