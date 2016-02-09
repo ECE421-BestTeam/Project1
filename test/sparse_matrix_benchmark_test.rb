@@ -70,9 +70,7 @@ class SparseMatrixTest < Test::Unit::TestCase
     end
     dm = Matrix.rows(arr);
     sm = SparseMatrix.rows(arr);
-    doBenchmarkTest("inverse", [dm, dm, sm, sm], 2) do |m1, m2| 
-      m1.inverse()
-    end
+    doBenchmarkTest("inverse", [dm, dm, sm, sm], 2) { |m1, m2| m1.inverse() }
   end
 #  
 #  def test_multiplication
