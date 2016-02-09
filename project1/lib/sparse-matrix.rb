@@ -18,7 +18,9 @@ class SparseMatrix < Matrix
 #  #transpose
 #  #zero  
 
-  # Rows should be an array
+  #
+  # Matrix.new is private; use Matrix.rows, columns, [], etc... to create.
+  #
   def initialize(rows, column_count = (rows[0] || []).size, row_count = rows.size)
     case rows
       when Array
@@ -40,10 +42,22 @@ class SparseMatrix < Matrix
   end
   alias_method :new, :initialize
   
+  # Creates a matrix where each argument is a row.
+  #   Matrix[ [25, 93], [-1, 66] ]
+  #      =>  25 93
+  #          -1 66
+  #
   def SparseMatrix.[](*rows)
     SparseMatrix.rows(rows)
   end
     
+  # Creates a matrix where +rows+ is an array of arrays, each of which is a row
+  # of the matrix.  If the optional argument +copy+ is false, use the given
+  # arrays as the internal structure of the matrix without copying.
+  #   Matrix.rows([[25, 93], [-1, 66]])
+  #      =>  25 93
+  #          -1 66
+  #
   def SparseMatrix.rows(rows)
     rows = convert_to_array(rows)
     rows.map! do |row|
@@ -52,10 +66,25 @@ class SparseMatrix < Matrix
     new(rows)
   end
   
+  # Creates a matrix using +columns+ as an array of column vectors.
+  #   Matrix.columns([[25, 93], [-1, 66]])
+  #      =>  25 -1
+  #          93 66
+  #
   def SparseMatrix.columns(columns)
     SparseMatrix.rows(columns).transpose
   end
   
+  # Creates a matrix of size +row_count+ x +column_count+.
+  # It fills the values by calling the given block,
+  # passing the current row and column.
+  # Returns an enumerator if no block is given.
+  #
+  #   m = Matrix.build(2, 4) {|row, col| col - row }
+  #     => Matrix[[0, 1, 2, 3], [-1, 0, 1, 2]]
+  #   m = Matrix.build(3) { rand }
+  #     => a 3x3 matrix with random elements
+  #
   def SparseMatrix.build(row_count, column_count = row_count, &block)
     # populate the hash based on a code block
     newRows = []
@@ -68,6 +97,12 @@ class SparseMatrix < Matrix
     SparseMatrix.rows(newRows)
   end
   
+  # Creates a matrix where the diagonal elements are composed of +values+.
+  #   Matrix.diagonal(9, 5, -3)
+  #     =>  9  0  0
+  #         0  5  0
+  #         0  0 -3
+  #
   def SparseMatrix.diagonal(*values)
     n = values.length
     rows = []
@@ -79,6 +114,12 @@ class SparseMatrix < Matrix
     new(rows)
   end
   
+  # Creates an +n+ by +n+ diagonal matrix where each diagonal element is
+  # +value+.
+  #   Matrix.scalar(2, 5)
+  #     => 5 0
+  #        0 5
+  #
   def SparseMatrix.scalar(n, value)
     sRows = []
     (0..(n - 1)).each do |i|
@@ -89,21 +130,25 @@ class SparseMatrix < Matrix
     new(sRows)
   end
   
+  # Creates an +n+ by +n+ identity matrix.
+  #   Matrix.identity(2)
+  #     => 1 0
+  #        0 1
+  #
   def SparseMatrix.identity(size)
     # create a hash for an identity matrix
     SparseMatrix.scalar(size, 1)
   end
-  
-  def SparseMatrix.unit(size)
-    # create a hash for an identity matrix
-    SparseMatrix.identity(size)
+  class << SparseMatrix
+    alias unit identity
+    alias I identity
   end
   
-  def SparseMatrix.I(size)
-    # create a hash for an identity matrix
-    SparseMatrix.identity(size)
-  end
-  
+  # Creates a zero matrix.
+  #   Matrix.zero(2)
+  #     => 0 0
+  #        0 0
+  #
   def SparseMatrix.zero(rows, cols = rows)
     zRows = []
     (0..(rows - 1)).each do |i|
@@ -112,10 +157,22 @@ class SparseMatrix < Matrix
     new(zRows, cols)
   end
   
+  # Creates a single-row matrix where the values of that row are as given in
+  # +row+.
+  #   Matrix.row_vector([4,5,6])
+  #     => 4 5 6
+  #
   def SparseMatrix.row_vector(row)
     new([row])
   end
   
+  # Creates a single-column matrix where the values of that column are as given
+  # in +column+.
+  #   Matrix.column_vector([4,5,6])
+  #     => 4
+  #        5
+  #        6
+  #
   def SparseMatrix.column_vector(column)
     SparseMatrix.columns([column])
   end
