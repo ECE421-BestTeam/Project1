@@ -189,9 +189,23 @@ class SparseMatrix < Matrix
       other = self.class.column_vector(other)
       r = self * other
       return r.column(0)
+    elsif other.kind_of? Matrix
+      SparseMatrix.Raise ErrDimensionMismatch if column_count != other.row_count
+      result = SparseHash.new(@row_count)
+      result.each_with_index do |v, i|
+        result[i] = SparseHash.new(other.column_count)
+      end
+      @rows.each_sparse do |rowNum, row|
+        0.upto(other.column_count - 1) do |i|
+          temp = 0
+          row.each_sparse do |colNum, val|
+            temp += val * other[colNum, i]
+          end
+          result[rowNum][i] = temp
+        end
+      end
+      return new_matrix result
     else
-      self.rows = self.rows.to_ary
-      other.rows = other.rows.to_ary
       return super(other)
     end
   end
