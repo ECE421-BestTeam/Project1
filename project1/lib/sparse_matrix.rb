@@ -216,11 +216,11 @@ class SparseMatrix < Matrix
       newRows[i] = SparseHash.new(row_count)
     end
     rows.each_sparse do |i,row|
-	  row.each_sparse do |j,val|
-	    newRows[j][i]=val
-	  end
+      row.each_sparse do |j,val|
+        newRows[j][i]=val
+      end
     end
-    return new_matrix newRows
+    return new_matrix newRows, row_count
   end
   
 #  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
