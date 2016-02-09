@@ -137,7 +137,7 @@ class SparseMatrix < Matrix
 	return true
   end
   
-  def +(other)
+  def +(other, overwrite = true)
     if other.respond_to?(:combine)
       self.combine(other) {|e1, e2| e1 + e2 }
     else
@@ -145,7 +145,7 @@ class SparseMatrix < Matrix
     end
   end
 
-  def -(other)
+  def -(other, overwrite = true )
     if other.respond_to?(:combine)
       return self.combine(other) {|e1,e2| e1 - e2}
     else
@@ -156,6 +156,7 @@ class SparseMatrix < Matrix
   # Common iteration for element-element operation
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
+
     result = self.deep_copy
     # merge row keys
     merged_r=rows.merge(other.rows)
@@ -165,6 +166,7 @@ class SparseMatrix < Matrix
       }
     }
     result
+
   end
   
   def deep_copy
