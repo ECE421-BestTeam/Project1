@@ -52,11 +52,11 @@ class SparseMatrixTest < Test::Unit::TestCase
   end
   
   def test_determinant  
-    doBenchmarkTest("determinant", 115, 3, 43) {|m1, m2| m1.determinant()}
+    doBenchmarkTest("determinant", 135, 3, 43) {|m1, m2| m1.determinant()}
   end
   
   def test_inverse
-    doBenchmarkTest("inverse", 33, 2, 3) {|m1, m2| m1.inverse()}
+    doBenchmarkTest("inverse", 45, 2, 8) {|m1, m2| m1.inverse()}
   end
   
   def test_multiplication
@@ -73,7 +73,7 @@ class SparseMatrixTest < Test::Unit::TestCase
   
   def test_zero
     # Zero arrays
-    size = 4000
+    size = 1000
     arr = Array.new(size) { Array.new(size) {0} }
     dm = Matrix.rows(arr);
     sm = SparseMatrix.rows(arr);
