@@ -1,18 +1,22 @@
 class SparseHash < Hash
   attr_reader :size
-
+  
   def initialize (size, default = nil, &block)
-    @size = size
+    @size = size #max size of hash table
     @block = block || Proc.new { default }
-#    super()
     super() { |h,k| k.between?(0,@size-1) ? @block.call(h,k) : nil}
   end #end init
   
+  # Returns the hash table length
   def hashsize
+    
     self.length
-  end #end hashsize
-
+  end
+  
+  # Returns element at index i, 0 if within bounds but no entry exists,
+  # or nil otherwise.
   def [](i, rangeSize = false)
+    
     if (!rangeSize)
       return check_bound(i) && !has_key?(i) ? 0 : super(i)
     else
@@ -25,6 +29,7 @@ class SparseHash < Hash
   end
   alias get []
   
+  # Sets hash element as value v with index i unless v is zero or i is out of bounds.
   def []=(i,v)
     return if !check_bound(i)
     super(i,v) unless v==0
@@ -32,18 +37,21 @@ class SparseHash < Hash
   end
   alias set []=
   
+  # Iterates through the fixed maximum size, including 'zero' entries.
   def each
     @size.times do |i|
       yield self[i]
     end
   end
   
+  # Iterate through only 'non-zero' hash entries
   def each_sparse
     self.keys.each do |i|
       yield i, self[i]
     end
   end
   
+  # Map for maximum size of hash, returns hash
   def map
     result = SparseHash.new(size)
     @size.times do |i|
@@ -52,6 +60,7 @@ class SparseHash < Hash
     result
   end
   
+  # Map for only existing hash entries, returns hash
   def map_sparse
     result = SparseHash.new(size)
     self.each_sparse do |i|
@@ -59,7 +68,8 @@ class SparseHash < Hash
     end
     result
   end
-  
+ 
+  # Collect for entire hash, returns array
   def collect
     result = []
     @size.times do |i|
@@ -72,6 +82,7 @@ class SparseHash < Hash
     return i.between?(0, @size-1)
   end
   
+  # Creates a deep copy of all elements and returns a disassociated hash
   def deep_copy
     result = SparseHash.new(self.size)
     self.each_pair do |i, v|
