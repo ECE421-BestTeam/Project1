@@ -52,6 +52,14 @@ class SparseHash < Hash
     result
   end
   
+  def map_sparse
+    result = SparseHash.new(size)
+    self.each_sparse do |i|
+      result[i] = yield(i)
+    end
+    result
+  end
+  
   def collect
     result = []
     @size.times do |i|

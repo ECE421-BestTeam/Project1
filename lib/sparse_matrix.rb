@@ -20,15 +20,21 @@ class SparseMatrix < Matrix
 
   # Rows should be an array
   def initialize(rows, column_count = (rows[0] || []).size, row_count = rows.size)
-    # populate the hash based on rows
-    newRows = SparseHash.new(rows.length)
-    rows.each_with_index do |row, rowNum|
-      newRows[rowNum] = SparseHash.new(row.length)
-      row.each_with_index do |val, colNum|
-        newRows[rowNum][colNum] = val
+    case rows
+      when Array
+        # populate the hash based on rows
+        newRows = SparseHash.new(rows.length)
+        rows.each_with_index do |row, rowNum|
+          newRows[rowNum] = SparseHash.new(row.length)
+          row.each_with_index do |val, colNum|
+            newRows[rowNum][colNum] = val
+          end
+        end
+        @rows = newRows
+      when SparseHash
+        @rows = rows
       end
-    end
-    @rows = newRows
+    
     @column_count = column_count
     @row_count = row_count
   end
@@ -137,15 +143,16 @@ class SparseMatrix < Matrix
 	return true
   end
   
-  def +(other, overwrite = true)
+  def +(other)
     if other.respond_to?(:combine)
       self.combine(other) {|e1, e2| e1 + e2 }
+
     else
       super(other)
     end
   end
 
-  def -(other, overwrite = true )
+  def -(other)
     if other.respond_to?(:combine)
       return self.combine(other) {|e1,e2| e1 - e2}
     else
@@ -158,15 +165,12 @@ class SparseMatrix < Matrix
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
 
     result = self.deep_copy
-    # merge row keys
-    merged_r=rows.merge(other.rows)
     other.rows.each_sparse { |r, row|
       row.each_sparse {|c, col|
         result[r,c] = yield(self[r,c],other[r,c])
       }
     }
     result
-
   end
   
   def deep_copy
