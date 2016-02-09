@@ -51,7 +51,6 @@ class TestSparseHash < Test::Unit::TestCase
     h = Hash.new(4)
     @s1.each_sparse do |i|
       h[i] = @s1[i] + @s2[i]
-      puts h[i]
     end
     assert_equal({1=>2,3=>2} , h)
   end

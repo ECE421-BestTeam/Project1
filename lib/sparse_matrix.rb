@@ -164,7 +164,7 @@ class SparseMatrix < Matrix
   def combine(other)
     SparseMatrix.Raise ErrDimensionMismatch if other.dimensions != self.dimensions
 
-    result = self.deep_copy
+    result = self.clone
     other.rows.each_sparse { |r, row|
       row.each_sparse {|c, col|
         result[r,c] = yield(self[r,c],other[r,c])
