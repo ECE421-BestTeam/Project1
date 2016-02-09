@@ -60,7 +60,7 @@ class SparseMatrixTest < Test::Unit::TestCase
   end
   
   def test_multiplication
-    doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
+    doBenchmarkTest("multiplication", 60, 3) {|m1, m2| m1 * m2}
   end
   
   def test_subtraction

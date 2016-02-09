@@ -190,6 +190,8 @@ class SparseMatrix < Matrix
       r = self * other
       return r.column(0)
     else
+      self.rows = self.rows.to_ary
+      other.rows = other.rows.to_ary
       return super(other)
     end
   end
