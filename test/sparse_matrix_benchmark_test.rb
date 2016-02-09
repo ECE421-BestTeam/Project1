@@ -8,18 +8,19 @@ class SparseMatrixTest < Test::Unit::TestCase
   
   $min, $max = -100, 100
 
-  def sparseNum     
-    ourRand = Random.new(1234)
-    if (ourRand.rand(0..35) == 0) #43 is great
+  def sparseNum (ourRand, sparsity)
+    a = ourRand.rand(0..sparsity)
+    if (a == 0) #43 is great
       return ourRand.rand($min..$max)
     else
       return 	0
     end
   end
   
-	def createRandomSparseMatrices(size)
-    ar1 = Array.new(size) { Array.new(size) {sparseNum()} }
-    ar2 = Array.new(size) { Array.new(size) {sparseNum()} }
+	def createRandomSparseMatrices(size, sparsity)    
+    random = Random.new(1234)
+    ar1 = Array.new(size) { Array.new(size) {sparseNum(random, sparsity)} }
+    ar2 = Array.new(size) { Array.new(size) {sparseNum(random, sparsity)} }
     dm1 = Matrix.rows(ar1)
 		dm2 = Matrix.rows(ar2)
     sm1 = SparseMatrix.rows(ar1)
@@ -31,11 +32,11 @@ class SparseMatrixTest < Test::Unit::TestCase
     # do nothing
 	end
 
-  def doBenchmarkTest(name, size, runs, &function)
+  def doBenchmarkTest(name, size, runs, sparsity = 35, &function)
     if (size.class == Array)
       m = size
     else 
-      m = createRandomSparseMatrices(size)
+      m = createRandomSparseMatrices(size, sparsity)
     end
     dm1, dm2, sm1, sm2 = m[0], m[1], m[2], m[3]
     bmd, bms = 0, 0
@@ -51,11 +52,11 @@ class SparseMatrixTest < Test::Unit::TestCase
   end
   
   def test_determinant  
-    doBenchmarkTest("determinant", 115, 3) {|m1, m2| m1.determinant()}
+    doBenchmarkTest("determinant", 115, 3, 43) {|m1, m2| m1.determinant()}
   end
   
   def test_inverse
-    doBenchmarkTest("inverse", 33, 2) {|m1, m2| m1.inverse()}
+    doBenchmarkTest("inverse", 33, 2, 3) {|m1, m2| m1.inverse()}
   end
   
   def test_multiplication
