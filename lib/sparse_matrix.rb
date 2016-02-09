@@ -209,19 +209,75 @@ class SparseMatrix < Matrix
 #    
 #  end
   
-  def inverse
+  def inverse1
     det = determinant
     Matrix.Raise ErrNotRegular if det == 0
     
-    a = @rows.deep_copy  #Make a deep copy!
-    return SparseMatrix.I(@column_count).innerInverse(a)
+#    a = @rows.deep_copy  #Make a deep copy!
+    a = @rows
+    return SparseMatrix.I(@column_count).inverse_from1(a)
+#    return SparseMatrix.I(@column_count).innerInverse(a)
+#    return SparseMatrix.I(@column_count).send(:inverse_from, self)
+  end
+  
+  def inverse_from1(a) # :nodoc:
+    last = row_count - 1
+
+    # go down the diag
+    0.upto(last) do |k|
+      i = k
+      akk = a[k][k].abs
+      # find all entries in same col but lower row
+      a.each_with_index do |row1, j|
+        v = row1[k].abs
+        if v > akk
+          i = j
+          akk = v
+        end
+      end
+      Matrix.Raise ErrNotRegular if akk == 0
+      if i != k
+        a[i], a[k] = a[k], a[i]
+        @rows[i], @rows[k] = @rows[k], @rows[i] #will be result
+      end
+      akk = a[k][k]
+
+      # for all rows on the k col
+      a.each_with_index do |row2, ii|
+        next if ii == k
+        q = row2[k].quo(akk)
+        row2[k] = 0
+
+        diagRow = a[k]
+        (k + 1).upto(last) do |j|
+          # all cols after k+1 on row -= diagRow[curCol] * q
+          row2[j] -= diagRow[j] * q
+        end
+        resRow1 = @rows[ii]
+        resRow2 = @rows[k]
+        0.upto(last) do |j|
+          resRow1[j] -= resRow2[j] * q
+        end
+      end
+
+      diagRow = a[k]
+      (k+1).upto(last) do |j|
+        diagRow[j] = diagRow[j].quo(akk)
+      end
+      resDiagRow = @rows[k]
+      0.upto(last) do |j|
+        resDiagRow[j] = resDiagRow[j].quo(akk)
+      end
+    end
+    self
   end
   
   def innerInverse(a)
-    (0..(@column_count - 1)).each do |k|
+    last = @row_count -1
+    0.upto(last) do |k|
       i = k
       akk = a[k][k].abs
-      ((k + 1)..(@column_count - 1)).each do |j|
+      (k + 1).upto(last) do |j|
         v = a[j][k].abs
         if v > akk
           i = j
@@ -235,23 +291,23 @@ class SparseMatrix < Matrix
       end
       akk = a[k][k]
 
-      (0..(@column_count - 1)).each do |ii|
+      0.upto(last) do |ii|
         next if ii == k
         q = a[ii][k].quo(akk)
         a[ii][k] = 0
 
-        ((k + 1)..(@column_count - 1)).each do |j|
+        (k + 1).upto(last) do |j|
           a[ii][j] -= a[k][j] * q
         end
-        (0..(@column_count - 1)).each do |j|
+        0.upto(last) do |j|
           @rows[ii][j] -= @rows[k][j] * q
         end
       end
 
-      ((k + 1)..(@column_count - 1)).each do |j|
+      (k + 1).upto(last) do |j|
         a[k][j] = a[k][j].quo(akk)
       end
-      (0..(@column_count - 1)).each do |j|
+      0.upto(last) do |j|
         @rows[k][j] = @rows[k][j].quo(akk)
       end
     end
@@ -300,5 +356,13 @@ class SparseMatrix < Matrix
   
   def inspect
     self.to_s
+  end
+  
+  def to_a
+    result = @rows.to_ary
+    result.each_with_index do |val, i|
+      result[i] = val.to_ary
+    end
+    return result
   end
 end

@@ -46,37 +46,54 @@ class SparseMatrixTest < Test::Unit::TestCase
     assert_operator bms, :<=, bmd * 1.1 #apply a constant because the sparse may be faster programmatically but the computer may have just been slwer for it's runs
   end
   
-	def test_addition
-    doBenchmarkTest("addition", 1900, 3) {|m1, m2| m1 + m2}
-  end
+#	def test_addition
+#    doBenchmarkTest("addition", 1900, 3) {|m1, m2| m1 + m2}
+#  end
   
   def test_determinant  
     doBenchmarkTest("determinant", 115, 3) {|m1, m2| m1.determinant()}
   end
   
   def test_inverse
-    doBenchmarkTest("inverse", 33, 2) {|m1, m2| m1.inverse()}
-  end
-  
-  def test_multiplication
-    doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
-  end
-  
-  def test_subtraction
-    doBenchmarkTest("subtraction", 1900, 3) {|m1, m2| m1 - m2}
-  end
-  
-  def test_transpose
-    doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
-  end
-  
-  def test_zero
     # Zero arrays
-    size = 4000
-    arr = Array.new(size) { Array.new(size) {0} }
+    ourRand = Random.new(1234)
+    
+    size = 16
+    arr = Array.new(size) do
+      Array.new(size) do
+        if (ourRand.rand(0..3) == 0) #43 is great
+          ourRand.rand($min..$max)
+        else
+          0
+        end
+      end
+    end
     dm = Matrix.rows(arr);
     sm = SparseMatrix.rows(arr);
-    doBenchmarkTest("zero true", [dm, dm, sm, sm], 3) {|m1| m1.zero? }
+    doBenchmarkTest("inverse", [dm, dm, sm, sm], 2) do |m1, m2| 
+      m1.inverse()
+    end
   end
+#  
+#  def test_multiplication
+#    doBenchmarkTest("multiplication", 160, 3) {|m1, m2| m1 * m2}
+#  end
+#  
+#  def test_subtraction
+#    doBenchmarkTest("subtraction", 1900, 3) {|m1, m2| m1 - m2}
+#  end
+#  
+#  def test_transpose
+#    doBenchmarkTest("transpose", 3500, 3) {|m1, m2| m1.transpose()}
+#  end
+#  
+#  def test_zero
+#    # Zero arrays
+#    size = 4000
+#    arr = Array.new(size) { Array.new(size) {0} }
+#    dm = Matrix.rows(arr);
+#    sm = SparseMatrix.rows(arr);
+#    doBenchmarkTest("zero true", [dm, dm, sm, sm], 3) {|m1| m1.zero? }
+#  end
   
 end
