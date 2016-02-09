@@ -212,8 +212,8 @@ class SparseMatrix < Matrix
   
   def transpose
     newMatrix = SparseMatrix.zero(@column_count, @row_count)
-    rows.each_with_index do |row, rowNum|
-      row.each_with_index do |val, colNum|
+    rows.each_sparse do |rowNum, row|
+      row.each_sparse do |colNum, val|
         newMatrix.set(colNum, rowNum, val)
       end
     end
