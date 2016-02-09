@@ -2,8 +2,8 @@
 
 require 'test/unit'
 require 'Matrix'
-require '../lib/sparse_matrix'
-require '../lib/matrix_factory'
+require '../lib/sparse-matrix'
+require '../lib/matrix-factory'
 
 class MatrixFactoryTest < Test::Unit::TestCase
 

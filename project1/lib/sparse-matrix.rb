@@ -1,6 +1,6 @@
 require 'json'
 require 'Matrix'
-require_relative './sparse_hash'
+require_relative './sparse-hash'
 
 
 class SparseMatrix < Matrix 

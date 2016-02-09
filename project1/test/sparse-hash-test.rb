@@ -1,5 +1,5 @@
 require 'test/unit'
-require '../lib/sparse_hash'
+require '../lib/sparse-hash'
 
 class TestSparseHash < Test::Unit::TestCase
   def setup
