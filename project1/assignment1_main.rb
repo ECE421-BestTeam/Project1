@@ -17,6 +17,7 @@ sparseMatrix1 = MatrixFactory.rows(SparseMatrix, [[1,0,3],[2,2,0],[0,0,0]])
 sparseMatrix2 = MatrixFactory.build(3,3)  do |row, col| 
 row==col ? row+col  : 0
 end
+zeroMatrix MatrixFactory.zero(3)
 
 # Operations
 
@@ -29,3 +30,9 @@ mulResult = sparseMatrix1*sparseMatrix2
 divResult = sparseMatrix1/sparseMatrix2
 
 sparseDeterm = sparseMatrix1.det
+
+zeroTest1 = sparseMatrix1.zero?
+
+zeroTest2 = zeroMatrix.zero?
+
+trResult = sparseMatrix1.transpose
