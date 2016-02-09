@@ -2,7 +2,7 @@
 require 'test/unit'
 require 'benchmark'
 require 'Matrix'
-require_relative '../lib/sparse_hash'
+require_relative '../lib/sparse-hash'
 
 class SparseHashBM < Test::Unit::TestCase
   $min, $max = -100, 100

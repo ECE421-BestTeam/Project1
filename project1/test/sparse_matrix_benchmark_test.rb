@@ -2,7 +2,7 @@
 require 'test/unit'
 require 'benchmark'
 require 'Matrix'
-require '../lib/sparse_matrix'
+require '../lib/sparse-matrix'
 
 class SparseMatrixTest < Test::Unit::TestCase
   
