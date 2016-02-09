@@ -177,22 +177,27 @@ class SparseMatrix < Matrix
     SparseMatrix.columns([column])
   end
   
+  # gets an element from the matrix
   def get(i,j)
     return (@rows[i].nil? || @rows[i][j].nil?) ? 0  : @rows[i][j]
   end
   alias [] get
   alias element get
   
+  # sets an element in the matrix
   def set(i,j,v)
     return nil unless i.between?(0, @row_count-1) && j.between?(0, @column_count-1)
     @rows[i][j]=v
   end
   alias []= set
   
+  # returns the dimensions of the matrix
   def dimensions
     [@row_count, @column_count]
   end
   
+  # Returns +true+ is this is a matrix with only zero elements
+  #
   def zero?
 	@rows.each do |row|
 	  return false unless row.hashsize == 0
@@ -200,6 +205,11 @@ class SparseMatrix < Matrix
 	return true
   end
   
+  # Handles Matrix addition and forwards the rest to super
+  #   Matrix.scalar(2,5) + Matrix[[1,0], [-4,7]]
+  #     =>  6  0
+  #        -4 12
+  #
   def +(other)
     if other.respond_to?(:combine)
       self.combine(other) {|e1, e2| e1 + e2 }
@@ -209,6 +219,11 @@ class SparseMatrix < Matrix
     end
   end
 
+  # Handles Matrix subtraction and forwards the rest to super
+  #   Matrix[[1,5], [4,2]] - Matrix[[9,3], [-4,1]]
+  #     => -8  2
+  #         8  1
+  #
   def -(other)
     if other.respond_to?(:combine)
       return self.combine(other) {|e1,e2| e1 - e2}
@@ -230,12 +245,21 @@ class SparseMatrix < Matrix
     result
   end
   
+  # returns a deep copy of self
   def deep_copy
     result = self.clone
     result.rows = self.rows.deep_copy
     return result
   end
 
+  # Handles multiplication with a number, vector, or matrix.
+  # Multiplies the vector by +x+, where +x+ is a number or another vector.
+  # Matrix multiplication.
+  #   Matrix[[2,4], [6,8]] * Matrix.identity(2)
+  #     => 2 4
+  #        6 8
+  #
+  #
   def *(other)
     if other.kind_of? Numeric
       rows = @rows.collect {|row|
@@ -267,6 +291,15 @@ class SparseMatrix < Matrix
     end
   end
   
+  # Returns the transpose of the matrix.
+  #   Matrix[[1,2], [3,4], [5,6]]
+  #     => 1 2
+  #        3 4
+  #        5 6
+  #   Matrix[[1,2], [3,4], [5,6]].transpose
+  #     => 1 3 5
+  #        2 4 6
+  #
   def transpose
     newRows = SparseHash.new(column_count)
     0.upto(column_count - 1).each do |i|
@@ -280,12 +313,15 @@ class SparseMatrix < Matrix
     return new_matrix newRows, row_count
   end
   
-#  cloning seems to be working on its own but sometimes it weirds out and doesn't work properly
-#  def clone
-#    new_matrix @rows.map(&:dup)
-#  end
-
-  
+  # Returns the determinant of the matrix.
+  #
+  # Beware that using Float values can yield erroneous results
+  # because of their lack of precision.
+  # Consider using exact types like Rational or BigDecimal instead.
+  #
+  #   Matrix[[7,6], [3,9]].determinant
+  #     => 45
+  #
   def determinant
     SparseMatrix.Raise ErrDimensionMismatch if (@column_count != @row_count)
 
@@ -316,6 +352,7 @@ class SparseMatrix < Matrix
     return result
   end
 
+  # converts self to representitive string
   def to_s
     if empty?
       "#{self.class}.empty(#{row_count}, #{column_count})"
@@ -326,10 +363,12 @@ class SparseMatrix < Matrix
     end
   end
   
+  # returns the to_s of self
   def inspect
     self.to_s
   end
   
+  # converts the matrix into an array
   def to_a
     result = @rows.to_ary
     result.each_with_index do |val, i|
