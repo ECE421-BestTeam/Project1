@@ -1,3 +1,0 @@
-class Something
- 
-end
