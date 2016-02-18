@@ -1,9 +1,9 @@
 # Tests that the factory produces the correct type of matrix
 
 require 'test/unit'
-require_relative '../lib/something'
+require_relative '../lib/delay'
 
-class SomeTest < Test::Unit::TestCase
+class DelayTest < Test::Unit::TestCase
   
   def setup
     # do nothing
@@ -13,7 +13,8 @@ class SomeTest < Test::Unit::TestCase
     # do nothing
   end
   
-  def test_something
+  def test_delay
+    delay(10) {puts 'hi'}
   end
   
 end

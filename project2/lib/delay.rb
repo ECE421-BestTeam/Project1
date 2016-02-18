@@ -2,26 +2,43 @@
 #require_relative './delay'
 #delay(1000) {puts 'hi'}
 
-waitHash = Hash.new
+Thread.new do
+  waitHash = Hash.new
 
-trap("CLD") {
-  pid = Process.wait
-  puts "Child pid #{pid}: terminated"
-  func = waitHash[pid]
-  func.call
-  waitHash.delete(pid)
-  exit
-  puts 'not terminated'
-}
+  while (true) 
+    begin  
+      pid = Process.wait
+      puts pid
+      handleChild(pid)
+    rescue Errno::ECHILD => ex
+      puts ex
+      sleep # sleep until a thread finishes and wakes this one
+    end
 
-# delays an action by time (ns)
-def delay (time, &action)
-  pid = fork
-  if (pid != nil) #the parent process
+  end
+
+
+  # delays an action by time (ns)
+  def delay (time, &action)
     waitHash[pid] = action
-  else #the child process
-    puts "In child, pid = #$$"
-    # do the c delay
-    exit
-  end  
+    pid = Process.spawn
+    if (pid != nil) #the parent process
+    else #the child process
+      puts "In child, pid = #$$"
+      # do the c delay
+      exit
+    end  
+  end
+
+  private
+  def handleChild (pid)
+    puts "Child pid #{pid}: terminated"
+    func = waitHash[pid]
+    func.call
+    waitHash.delete(pid)
+  end
+  
 end
+
+
+delay(10) {puts 'hi'}
