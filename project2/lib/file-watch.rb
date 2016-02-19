@@ -1,4 +1,5 @@
-#require_relative './delay/ext/delay.rb'
+require_relative 'delay/delay.rb'
+require 'benchmark'
 
 class FileWatch
 
@@ -66,9 +67,9 @@ class FileWatch
   def watch_while(&condition)
     sleep(0) while condition.call
     #delay
-#    C_Delay.delay(@time)
-    sleep(@time)
-    @block.call
+    delayedAction(@time) {@block.call}
+#    sleep(@time)
+#    @block.call
   end
 
 

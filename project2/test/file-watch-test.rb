@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'fileutils'
+
 require_relative '../lib/file-watch'
 
 
@@ -15,7 +16,6 @@ class FileWatchTest < Test::Unit::TestCase
   end
   
   def teardown
-    FileUtils.rm_rf('*')
     Dir.chdir(@wd)
     FileUtils.rm_rf(@testdir)
     puts "Done!"
@@ -23,11 +23,12 @@ class FileWatchTest < Test::Unit::TestCase
   
   def test_create
     block_ran = false
+    t1,t2=0,0
     assert(!File.exist?('test_create'))
+    
     fw = FileWatch.new('create', @waittime, 'test_create') do
       block_ran = true
       puts "create success"
-      
     end
 
     assert fw.files.include?('test_create')
@@ -38,22 +39,25 @@ class FileWatchTest < Test::Unit::TestCase
     assert_equal fw.time, @waittime
     assert (fw.threads[0].alive?)
 
-    sleep(@waittime)
-    File.open('test_create', "w").close
+    sleep(1)
+    
+    File.open('test_create', "w").close; puts 'created file';
     assert(File.exist?('test_create'))
-    sleep(@waittime+1)
-
+    sleep(@waittime)
     assert block_ran, "Block didn't run in create"
-    assert (!fw.threads[0].alive?)
+
   end
   
   def test_alter
     block_ran = false
+    t1,t2=0,0
     f= File.new('test_alter', "w").close
+
     fw = FileWatch.new('alter', @waittime, 'test_alter') do
       block_ran = true
       puts "alter success"
     end
+    
     assert fw.files.include?('test_alter')
     
     fw.start
@@ -61,15 +65,38 @@ class FileWatchTest < Test::Unit::TestCase
     assert_equal fw.mode, 'alter'
     assert_equal fw.time, @waittime
     assert (fw.threads[0].alive?)
-    sleep(@waittime)
-    File.open('test_alter', "w") {|file| file.write("test text")}
+    
+    sleep(1)
+    File.open('test_alter', "w") {|file| file.write("test text")}; puts 'altered file';
     sleep(@waittime)
     assert block_ran, "Block didn't run in alter"
 
   end
-#
-#  def test_destroy
-#  end
+
+  def test_destroy
+    block_ran = false
+    t1,t2=0,0
+    f= File.new('test_destroy', "w").close
+
+    fw = FileWatch.new('destroy', @waittime, 'test_destroy') do
+      block_ran = true
+      puts "delete success"
+    end
+    
+    assert fw.files.include?('test_destroy')
+    
+    fw.start
+    
+    assert_equal fw.mode, 'destroy'
+    assert_equal fw.time, @waittime
+    assert (fw.threads[0].alive?)
+    
+    sleep(1)
+    FileUtils.rm('test_destroy'); puts 'destroyed file';
+    sleep(@waittime)
+    assert block_ran, "Block didn't run in delete"
+
+  end
 end
   
     
