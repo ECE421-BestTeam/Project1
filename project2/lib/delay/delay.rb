@@ -1,6 +1,11 @@
 require_relative './ext/delay'
 
+# delay an action by seconds+nanoSeconds
+def delayedAction (seconds, nanoSeconds = 0, &func)
+  C_Delay.delayedAction(seconds, nanoSeconds) {func.call()}  
+end
 
-def delay (seconds, &func)
-  C_Delay.delay(seconds) {func.call()}  
+# delay a message by seconds+nanoSeconds
+def delayedMessage (seconds, nanoSeconds = 0, message)
+  delayedAction(seconds, nanoSeconds) {puts message}
 end
