@@ -3,3 +3,8 @@ nbproject
 /LICENSE
 **/.DS_Store
 **.DS_Store
+/project2/lib/delay/ext/mkmf.log
+/project2/lib/delay/ext/extconf.h
+/project2/lib/delay/ext/delay.so
+/project2/lib/delay/ext/delay.o
+/project2/lib/delay/ext/Makefile
