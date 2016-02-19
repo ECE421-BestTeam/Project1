@@ -1,4 +1,7 @@
+require './shell_handlers.rb'
+
 module CustomShell
+  
   def run
     loop do
       cmdArgs = parseInput(gets)
@@ -22,10 +25,10 @@ module CustomShell
       if args.size == 1
         exit 0
       else
-        puts "'exit' does not take arguments."
+        puts "exit takes 0 arguments."
       end
     else
-      puts "Command not recognized."
+      ShellHandlers.masterHandler(args)
     end
   end
 end
