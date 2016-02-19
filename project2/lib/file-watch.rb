@@ -1,12 +1,12 @@
-require_relative './delay'
+#require_relative './delay/ext/delay.rb'
 
 class FileWatch
 
-  attr_reader :type, :time, :files, :threads
+  attr_reader :mode, :time, :files, :threads
 
   def initialize(type, time=0, *files, &block)
     # assuming file types are as follows:
-    @type = type # string
+    @mode = type # string
     @time = time #* 1000 # milliseconds
     @files = [] # strings
     files.each do |f|
@@ -17,36 +17,35 @@ class FileWatch
   end
   
   def start
-    @files.each_with_index do |f, i|
-      t = Thread.new{self.run(f)}
+    @files.each do |f|
+      t = Thread.new{watch(f)}
       @threads << t
     end
   end
   
-  def run(file)
-    case @type
+  def watch(file)
+    case @mode
       when 'create'
-        if !File.exist?(file)
-          puts "watching for creation of #{file}"
+        if (!File.exist?(file))
           watch_while { !File.exist?(file)}
         else
-          raise "#{@file} already exists."
+          puts "#{file} already exists."
         end
       when 'alter'
         if File.exist?(file)
           current_time = File.mtime(file)
           watch_while { current_time == File.mtime(file) }
         else
-          raise "File doesn't exist."
+          puts "File doesn't exist."
         end
       when 'destroy'
         if File.exist?(file)
           watch_while { File.exist?(file) }
         else
-          raise "#{@file} does not exist."
+          puts "#{file} does not exist."
         end
       else
-        raise "#{@type} mode for file watching not supported"
+        puts "#{@mode} mode for file watching not supported"
       end
   end
   
@@ -66,10 +65,8 @@ class FileWatch
 
   def watch_while(&condition)
     sleep(0) while condition.call
-    #return if @threads[thread_index].alive?
     #delay
-#    delay(@time) { @block.call }
-#    puts "running block #{block}"
+#    C_Delay.delay(@time)
     sleep(@time)
     @block.call
   end
