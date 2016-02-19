@@ -38,4 +38,12 @@ class DelayTest < Test::Unit::TestCase
     assert_operator seconds, :<=, Time.now - start
   end
   
+  def test_argsCheck
+    assert_raise(ArgumentError) { argsCheck('hi') }
+    assert_raise(ArgumentError) { argsCheck(-1) }
+    assert_raise(ArgumentError) { argsCheck(0, 'hi') }
+    assert_raise(ArgumentError) { argsCheck(0, -1) }
+    assert_raise(ArgumentError) { argsCheck(0, 999999999 + 1) }
+  end
+  
 end
