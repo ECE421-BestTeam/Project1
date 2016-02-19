@@ -1,0 +1,9 @@
+--From terminal--
+cd ext
+ruby extconf.rb
+make
+
+--In Ruby File--
+require_relative './ext/delay'
+
+C_Delay.delay(1)
