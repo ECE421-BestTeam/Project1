@@ -1,22 +1,22 @@
 require_relative './ext/delay'
+require_relative './delay_contract'
 
-def argsCheck (seconds, nanoSeconds)
-  raise ArgumentError, "seconds must be a positive integer" if seconds.class != Fixnum || seconds < 0
-  raise ArgumentError, "nanoSeconds must be an integer in [0, 999999999]" if nanoSeconds.class != Fixnum || nanoSeconds < 0 || nanoSeconds > 999999999
-end
+include ContractDelay
 
 # delay an action by seconds+nanoSeconds
 def delayedAction (seconds, nanoSeconds = 0, &func)
-  seconds = seconds.to_i
-  nanoSeconds = nanoSeconds.to_i
-  argsCheck(seconds, nanoSeconds)
+  pre_delayedAction(seconds, nanoSeconds)
+  
   C_Delay.delayedAction(seconds, nanoSeconds) {func.call()}  
+  
+  post_delayedAction(seconds, nanoSeconds)
 end
 
 # delay a message by seconds+nanoSeconds
 def delayedMessage (seconds, nanoSeconds = 0, message)
-  seconds = seconds.to_i
-  nanoSeconds = nanoSeconds.to_i
-  argsCheck(seconds, nanoSeconds)
+  pre_delayedMessage(seconds, nanoSeconds, message)
+  
   delayedAction(seconds, nanoSeconds) {puts message}
+  
+  post_delayedMessage(seconds, nanoSeconds, message)
 end
