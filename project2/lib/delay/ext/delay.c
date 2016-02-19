@@ -1,9 +1,13 @@
+#include <unistd.h>
 #include <ruby.h>
 
 static VALUE module_delay;
 
 static VALUE delay (VALUE module, VALUE seconds) {
-    printf("hey");
+    sleep(seconds);
+    if (rb_block_given_p()) {
+        rb_yield(Qnil);
+    }
     return Qnil;
 }
 
