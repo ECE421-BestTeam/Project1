@@ -1,3 +1,5 @@
+require_relative './delay/delay'
+
 module ShellHandlers
   
   def self.parseCmd (cmd)
@@ -75,8 +77,8 @@ module ShellHandlers
       mkdirHandler(args)
     when 'rm'
       rmHandler(args)
-    when 'delay'
-      delayHandler(args)
+    when 'delayedMessage'
+      delayedMessageHandler(args)
     when 'filewatch'
       filewatchHandler(args)
     else
@@ -114,16 +116,17 @@ module ShellHandlers
     puts "TODO: rm"
   end
   
-  def self.delayHandler(args)
+  def self.delayedMessageHandler(args)
     argsCheck(args, 3)
-    puts "TODO: delay"
     pid = Process.fork
     if pid == nil
       # do the delay
+      delayedMessage(args[1].to_i, 0, args[2])
     else
-      Process.waitpid(pid)
+      Process.detach(pid)
     end
   end
+  
   def self.filewatchHandler(args)
     argsCheck(args, 5)
     puts "TODO: filewatch"

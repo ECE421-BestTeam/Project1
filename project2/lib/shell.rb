@@ -16,6 +16,3 @@ module CustomShell
   end
 
 end
-
-include CustomShell
-run()
