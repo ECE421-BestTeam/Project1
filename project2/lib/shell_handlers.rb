@@ -1,4 +1,5 @@
 require_relative './delay/delay'
+require_relative './file-watch/file-watch'
 
 module ShellHandlers
   
@@ -129,6 +130,23 @@ module ShellHandlers
   
   def self.filewatchHandler(args)
     argsCheck(args, 5)
-    puts "TODO: filewatch"
+    mode = args.shift
+    files = []
+    time = 0;
+    while !args.empty?
+      a = args.shift
+      if a.respond_to?(:to_i)
+        time = a
+      elsif a.respond_to(:to_s) && a.match(".*")
+        block = a
+      elsif a.respond_to(:to_s) && a.match("[\S]+")
+        files << f
+      end
+    end
+
+    p = fork {
+      f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}") }
+    }
+    Process.detach(p)
   end
 end

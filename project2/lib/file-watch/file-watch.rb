@@ -1,15 +1,17 @@
-require_relative 'delay/delay.rb'
-require 'benchmark'
+require_relative '../delay/delay'
+require_relative 'file-watch-contract'
+
+include ContractFileWatch
 
 class FileWatch
 
   attr_reader :mode, :time, :files, :threads
 
   def initialize(type, time=0, *files, &block)
-    # assuming file types are as follows:
-    @mode = type # string
-    @time = time #* 1000 # milliseconds
-    @files = [] # strings
+    pre_FileWatch(type, time, *files)
+    @mode = type
+    @time = time.to_i
+    @files = []
     files.each do |f|
       @files << f
     end
@@ -21,7 +23,9 @@ class FileWatch
     @files.each do |f|
       t = Thread.new{watch(f)}
       @threads << t
+      
     end
+    
   end
   
   def watch(file)
@@ -66,6 +70,7 @@ class FileWatch
 
   def watch_while(&condition)
     sleep(0) while condition.call
+    puts "i'm not sleeping!"
     #delay
     delayedAction(@time) {@block.call}
 #    sleep(@time)
