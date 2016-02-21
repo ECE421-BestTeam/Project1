@@ -25,32 +25,26 @@ class FileWatch
       @threads << t
       
     end
+    @threads.each do |t|
+      t.join
+    end
     
   end
   
   def watch(file)
     case @mode
       when 'create'
-        if (!File.exist?(file))
-          watch_while { !File.exist?(file)}
-        else
-          puts "#{file} already exists."
-        end
+        assert(!File.exist?(file), "#{file} already exists")
+        watch_while { !File.exist?(file)}
       when 'alter'
-        if File.exist?(file)
-          current_time = File.mtime(file)
-          watch_while { current_time == File.mtime(file) }
-        else
-          puts "File doesn't exist."
-        end
+        assert(File.exist?(file), "#{file} doesn't exist")
+        current_time = File.mtime(file)
+        watch_while { current_time == File.mtime(file) }
       when 'destroy'
-        if File.exist?(file)
-          watch_while { File.exist?(file) }
-        else
-          puts "#{file} does not exist."
-        end
+        assert(File.exist?(file), "#{file} doesn't exist")
+        watch_while { File.exist?(file) }
       else
-        puts "#{@mode} mode for file watching not supported"
+        printf "#{@mode} mode for file watching not supported\n"
       end
   end
   
@@ -69,12 +63,12 @@ class FileWatch
   end
 
   def watch_while(&condition)
+
     sleep(0) while condition.call
-    puts "i'm not sleeping!"
     #delay
-    delayedAction(@time) {@block.call}
-#    sleep(@time)
-#    @block.call
+#    delayedAction(@time) {@block.call}
+    sleep(@time)
+    @block.call
   end
 
 

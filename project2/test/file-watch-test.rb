@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'fileutils'
 
-require_relative '../lib/file-watch'
+require_relative '../lib/file-watch/file-watch'
 
 
 class FileWatchTest < Test::Unit::TestCase
@@ -28,7 +28,7 @@ class FileWatchTest < Test::Unit::TestCase
     
     fw = FileWatch.new('create', @waittime, 'test_create') do
       block_ran = true
-      puts "create success"
+      printf "create success\n"
     end
 
     assert fw.files.include?('test_create')
@@ -55,7 +55,7 @@ class FileWatchTest < Test::Unit::TestCase
 
     fw = FileWatch.new('alter', @waittime, 'test_alter') do
       block_ran = true
-      puts "alter success"
+      printf "alter success\n"
     end
     
     assert fw.files.include?('test_alter')
@@ -80,7 +80,7 @@ class FileWatchTest < Test::Unit::TestCase
 
     fw = FileWatch.new('destroy', @waittime, 'test_destroy') do
       block_ran = true
-      puts "delete success"
+      printf "delete success\n"
     end
     
     assert fw.files.include?('test_destroy')

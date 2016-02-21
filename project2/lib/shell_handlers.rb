@@ -143,10 +143,10 @@ module ShellHandlers
         files << f
       end
     end
-
-    p = fork {
+#### I don't think we'll need to create processes for filewatch since it'll just spawn new threads but i'm not sure
+#    p = fork {
       f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}") }
-    }
-    Process.detach(p)
+#    }
+#    Process.detach(p)
   end
 end
