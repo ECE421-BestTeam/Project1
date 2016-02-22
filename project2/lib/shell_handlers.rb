@@ -144,9 +144,11 @@ module ShellHandlers
       end
     end
 #### I don't think we'll need to create processes for filewatch since it'll just spawn new threads but i'm not sure
-#    p = fork {
+    pid = Process.fork
+    if pid.nil?
       f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}") }
-#    }
-#    Process.detach(p)
+    else
+      Process.detach(pid)
+    end
   end
 end

@@ -97,6 +97,7 @@ class FileWatchTest < Test::Unit::TestCase
     assert block_ran, "Block didn't run in delete"
 
   end
+
 end
   
     
