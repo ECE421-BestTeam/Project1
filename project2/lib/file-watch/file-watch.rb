@@ -10,7 +10,7 @@ class FileWatch
   def initialize(type, time=0, *files, &block)
     pre_FileWatch(type, time, *files)
     @mode = type
-    @time = time.to_i
+    @time = time.to_f
     @files = []
     files.each do |f|
       @files << f
