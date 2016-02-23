@@ -1,4 +1,4 @@
-require './shell.rb'
+require_relative './shell'
 
 include CustomShell
 run
