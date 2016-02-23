@@ -23,9 +23,6 @@ abort("Missing arguments, see -h or --help for usage") if options.empty?
 
 options[:time] = 0 if options[:time].nil?
 
-puts options
-puts ARGV
-
 
 begin
   pid = Process.fork
@@ -39,7 +36,7 @@ begin
 rescue Interrupt
   abort('User terminated watching.')
 rescue StandardError => e
-  abort('Error in watch execution: #{e.to_s}')
+  abort('Error in execution: ' + e.to_s)
 end
 
 

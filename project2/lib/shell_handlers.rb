@@ -180,7 +180,8 @@ module ShellHandlers
   end
   
   def self.filewatchHandler(args)
-    return if argsCheck(args, 5) == false
+    if args.length == 0
+      printf "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\" "
     mode = args.shift
     files = []
     time = 0;
@@ -194,12 +195,18 @@ module ShellHandlers
         files << f
       end
     end
-#### I don't think we'll need to create processes for filewatch since it'll just spawn new threads but i'm not sure
-    pid = Process.fork
-    if pid.nil?
-      f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}") }
-    else
-      Process.detach(pid)
+
+    begin
+      pid = Process.fork
+      if pid.nil?
+        f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}") }
+      else
+        Process.detach(pid)
+      end
+    rescue Interrupt
+      abort('User terminated watching.')
+    rescue StandardError => e
+      abort('Error in execution: ' + e.to_s)
     end
   end
 end

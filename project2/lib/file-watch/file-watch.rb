@@ -34,17 +34,26 @@ class FileWatch
   def watch(file)
     case @mode
       when 'create'
-        assert(!File.exist?(file), "#{file} already exists")
-        watch_while { !File.exist?(file)}
+        if !File.exist?(file)
+          watch_while { !File.exist?(file)}
+        else
+          raise "#{file} already exists"
+        end
       when 'alter'
-        assert(File.exist?(file), "#{file} doesn't exist")
-        current_time = File.mtime(file)
-        watch_while { current_time == File.mtime(file) }
+        if File.exist?(file)
+          current_time = File.mtime(file)
+          watch_while { current_time == File.mtime(file) }
+        else
+          raise "#{file} doesn't exist"
+        end
       when 'destroy'
-        assert(File.exist?(file), "#{file} doesn't exist")
-        watch_while { File.exist?(file) }
+        if File.exist?(file)
+          watch_while { File.exist?(file) }
+        else
+          raise "#{file} doesn't exist"
+        end
       else
-        printf "#{@mode} mode for file watching not supported\n"
+        raise "#{@mode} mode for file watching not supported\n"
       end
   end
   
