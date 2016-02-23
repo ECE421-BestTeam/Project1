@@ -1,6 +1,7 @@
 require_relative './shell_handlers'
 
 module CustomShell
+  include ShellHandlers
   
   def run
     loop do
@@ -11,7 +12,7 @@ module CustomShell
         next
       else      
         ## This will handle all commands and calls to handlers
-        ShellHandlers.masterHandler(cmd)
+        masterHandler(cmd)
       end
     end
   end

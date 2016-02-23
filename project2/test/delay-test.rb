@@ -4,6 +4,7 @@ require 'test/unit'
 require_relative '../lib/delay/delay'
 
 class DelayTest < Test::Unit::TestCase
+  include Delay 
   
   def setup
     # do nothing

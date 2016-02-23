@@ -4,7 +4,8 @@ require_relative 'file-watch-contract'
 include ContractFileWatch
 
 class FileWatch
-
+  include Delay
+  
   attr_reader :mode, :time, :files, :threads
 
   def initialize(type, time=0, *files, &block)
@@ -75,7 +76,7 @@ class FileWatch
 
     sleep(0) while condition.call
     #delay
-    Delay.delayedAction(@time) {@block.call}
+    delayedAction(@time) {@block.call}
 #    sleep(@time)
 #    @block.call
   end

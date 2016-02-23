@@ -3,8 +3,9 @@ require_relative './file-watch/file-watch'
 require 'fileutils'
 
 module ShellHandlers
+  include Delay
   
-  def self.parseCmd (cmd)
+  def parseCmd (cmd)
     args = cmd.strip.split(' ')
     
     # need to deal with quoted arguments (args that include spaces)
@@ -57,7 +58,7 @@ module ShellHandlers
     return newArgs
   end
   
-  def self.masterHandler(cmd)
+  def masterHandler(cmd)
     begin
       args = parseCmd(cmd)
     rescue ArgumentError => e
@@ -94,12 +95,12 @@ module ShellHandlers
 
   end
 
-  def self.argsCheck(args, count, argUsage)
+  def argsCheck(args, count, argUsage)
     puts argUsage if args.length != count
     return args.length == count
   end
     
-  def self.cdHandler(args)
+  def cdHandler(args)
     return unless argsCheck(args, 2, "USAGE: cd <path>")
     begin
       Dir.chdir(args[1])
@@ -111,7 +112,7 @@ module ShellHandlers
       puts exception.backtrace
     end
   end
-  def self.lsHandler(args)
+  def lsHandler(args)
     return unless argsCheck(args, 1, "USAGE: ls")
     begin
       Dir.entries(".").sort.each do |item|
@@ -122,7 +123,7 @@ module ShellHandlers
       puts exception.backtrace
     end
   end
-  def self.pwdHandler(args)
+  def pwdHandler(args)
     return unless argsCheck(args, 1, "USAGE: pwd")
     begin
       puts "Working directory: " + Dir.pwd()
@@ -132,7 +133,7 @@ module ShellHandlers
     end
   end
   
-  def self.mkdirHandler(args)
+  def mkdirHandler(args)
     return unless argsCheck(args, 2, "USAGE: mkdir <path>")
     begin
       Dir.mkdir(args[1])
@@ -146,7 +147,7 @@ module ShellHandlers
       puts exception.backtrace
     end
   end
-  def self.rmHandler(args)
+  def rmHandler(args)
     #Removes both files and directories
     return unless argsCheck(args, 2, "USAGE: rm <path>")
     #Directory removal
@@ -171,7 +172,7 @@ module ShellHandlers
       puts exception.backtrace
     end
   end
-  def self.touchHandler(args)
+  def touchHandler(args)
     return unless argsCheck(args, 2, "USAGE: touch <filename>")
     begin
       fileExisted = File.exist?(args[1])
@@ -189,31 +190,31 @@ module ShellHandlers
     end
   end
   
-  def self.delayedMessageHandler(args)
+  def delayedMessageHandler(args)
     argUsage = "USAGE: delayedMessage <time> <message>"
     return unless argsCheck(args, 3, argUsage)
     pid = Process.fork
     if pid == nil
       # do the delay
-      Delay.delayedMessage(args[1], args[2])
+      delayedMessage(args[1], args[2])
     else
       Process.detach(pid)
     end
   end
   
-  def self.delayedActionHandler(args)
+  def delayedActionHandler(args)
     argUsage = 'USAGE: delayedAction <time> "<ruby code>"'
     return unless argsCheck(args, 3, argUsage)
     pid = Process.fork
     if pid == nil
       # do the delay
-      Delay.delayedAction(args[1]) { eval(args[2]) }
+      delayedAction(args[1]) { eval(args[2]) }
     else
       Process.detach(pid)
     end
   end
   
-  def self.filewatchHandler(args)
+  def filewatchHandler(args)
     if args.length < 4
       puts "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\""
       return
