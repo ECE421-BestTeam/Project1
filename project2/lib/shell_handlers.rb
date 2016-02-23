@@ -82,6 +82,8 @@ module ShellHandlers
       rmHandler(args)
     when 'delayedMessage'
       delayedMessageHandler(args)
+    when 'delayedAction'
+      delayedActionHandler(args)
     when 'filewatch'
       filewatchHandler(args)
     else
@@ -173,6 +175,18 @@ module ShellHandlers
     if pid == nil
       # do the delay
       delayedMessage(args[1], args[2])
+    else
+      Process.detach(pid)
+    end
+  end
+  
+  def self.delayedActionHandler(args)
+    argUsage = 'USAGE: delayedAction <time> "<ruby code>"'
+    return unless argsCheck(args, 3, argUsage)
+    pid = Process.fork
+    if pid == nil
+      # do the delay
+      delayedAction(args[1]) { eval(args[2]) }
     else
       Process.detach(pid)
     end
