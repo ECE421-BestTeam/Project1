@@ -222,7 +222,7 @@ module ShellHandlers
   end
   
   def filewatchHandler(args)
-    if args.length < 3
+    if args.length < 4
       puts "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\""
       return
     end
@@ -232,7 +232,7 @@ module ShellHandlers
     time = 0;
     block = ""
     args.each_with_index do |a, i|
-      if a.match(/\A\d+\z/)
+      if a.match(/\A[\d|.]+\z/)
         time = a
       elsif i.between?(1,args.length-2)
         files << a
@@ -241,6 +241,7 @@ module ShellHandlers
       end
     end
 
+    puts files
     begin
       pid = Process.fork
       if pid.nil?
@@ -252,8 +253,8 @@ module ShellHandlers
       end
     rescue Interrupt
       abort('User terminated watching.')
-#    rescue StandardError => e
-#      abort('Error in execution: ' + e.to_s)
+    rescue StandardError => e
+      abort('Error in execution: ' + e.to_s)
     end
     
   end

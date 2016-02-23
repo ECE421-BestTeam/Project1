@@ -9,7 +9,7 @@ class FileWatch
   attr_reader :mode, :time, :files, :threads
 
   def initialize(type, time=0, *files, &block)
-    pre_FileWatch(type, time, *files)
+    pre_FileWatch(type, time, *files, &block)
     @mode = type
     @time = time.to_f
     @files = []

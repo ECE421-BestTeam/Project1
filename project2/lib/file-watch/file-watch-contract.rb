@@ -4,7 +4,8 @@ module ContractFileWatch
   include Test::Unit::Assertions
 
   
-  def pre_FileWatch(mode, duration, *files)
+  def pre_FileWatch(mode, duration, *files, &block)
+    assert block_given?
     assert(mode.respond_to?(:to_s) && !mode.strip.empty?)
     assert(duration.respond_to? :to_f)
     assert !files.empty?, "File names must be given."

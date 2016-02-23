@@ -3,8 +3,8 @@ require_relative './lib/shell'
 include CustomShell
 run
 
-# run calls the shell, from which you can enter any of the following commands:
-# replacing arguments <arg> as neccessary
+## run calls the shell, from which you can enter any of the following commands:
+## replacing arguments <arg> as neccessary
 
 # ls
 # pwd
@@ -21,3 +21,4 @@ run
 
 # filewatch <mode> <optional time> <filename(s)> "<command>"
 # eg. filewatch create 3 testfile “puts ‘hello testfile’”
+

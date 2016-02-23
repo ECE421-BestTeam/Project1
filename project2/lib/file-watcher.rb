@@ -1,9 +1,9 @@
-# Driver for file watching testing on commandline
+# command line file watching testing
 # e.g.
 # ruby file-watcher.rb --watchCreate -t 5 -r "puts 'watched testfile'" testfile
 
 require 'optparse'
-require_relative 'lib/file-watch/file-watch'
+require_relative 'file-watch/file-watch'
 
 options = {}
 
