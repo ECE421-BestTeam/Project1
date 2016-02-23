@@ -18,7 +18,7 @@ module ContractDelay
   
   def pre_delayedMessage(seconds, message)
     checkSeconds(seconds)
-    assert message.class == String
+    assert message.class == String && message.length < 256, "Message must be a string shorter than 256 characters"
   end
 
   def post_delayedMessage(seconds, message)
