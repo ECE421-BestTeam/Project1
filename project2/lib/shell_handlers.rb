@@ -89,16 +89,13 @@ module ShellHandlers
 
   end
 
-  def self.argsCheck(args, count)
-    if args.size != count
-      puts "%s takes %d argument(s)." % [args[0], count - 1]
-      return false
-    end
-    return true
+  def self.argsCheck(args, count, argUsage)
+    puts argUsage if args.length != count
+    return args.length == count
   end
     
   def self.cdHandler(args)
-    return if argsCheck(args, 2) == false
+    return unless argsCheck(args, 2, "USAGE: cd <path>")
     begin
       Dir.chdir(args[1])
       puts "Changed directory to " + Dir.pwd()
@@ -110,7 +107,7 @@ module ShellHandlers
     end
   end
   def self.lsHandler(args)
-    return if argsCheck(args, 1) == false
+    return unless argsCheck(args, 1, "USAGE: ls")
     begin
       Dir.entries(".").sort.each do |item|
         puts item
@@ -121,7 +118,7 @@ module ShellHandlers
     end
   end
   def self.pwdHandler(args)
-    return if argsCheck(args, 1) == false
+    return unless argsCheck(args, 1, "USAGE: pwd")
     begin
       puts "Working directory: " + Dir.pwd()
     rescue => exception
@@ -131,7 +128,7 @@ module ShellHandlers
   end
   
   def self.mkdirHandler(args)
-    return if argsCheck(args, 2) == false
+    return unless argsCheck(args, 2, "USAGE: mkdir <path>")
     begin
       Dir.mkdir(args[1])
       puts "Created directory " + args[1] + " in " + Dir.pwd()
@@ -144,7 +141,7 @@ module ShellHandlers
   end
   def self.rmHandler(args)
     #Removes both files and directories
-    return if argsCheck(args, 2) == false
+    return unless argsCheck(args, 2, "USAGE: rm <path>")
     #Directory removal
     begin
       Dir.delete(args[1])
@@ -169,7 +166,8 @@ module ShellHandlers
   end
   
   def self.delayedMessageHandler(args)
-    return if argsCheck(args, 3) == false
+    argUsage = "USAGE: delayedMessage <time> <message>"
+    return unless argsCheck(args, 3, argUsage)
     pid = Process.fork
     if pid == nil
       # do the delay
@@ -180,8 +178,8 @@ module ShellHandlers
   end
   
   def self.filewatchHandler(args)
-    if args.length == 0
-      printf "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\" \n"
+    if args.length < 4
+      puts "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\""
       return
     end
     mode = args.shift
