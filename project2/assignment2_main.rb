@@ -3,8 +3,21 @@ require_relative './lib/shell'
 include CustomShell
 run
 
-# Then you can enter any of the following commands:
+# run calls the shell, from which you can enter any of the following commands:
+# replacing arguments <arg> as neccessary
 
 # ls
-
 # pwd
+# cd <path>
+# mkdir <path>
+# rm <path>
+# touch <filename>
+
+# delayedMessage <time> "<message>"
+# eg. delayedMessage 2 "hi there"
+
+# delayedAction <time> "<ruby code>"
+# eg. delayedAction 0 "puts 'hi'; puts 'bye'"
+
+# filewatch <mode> <optional time> <filename(s)> "<command>"
+# eg. filewatch create 3 testfile “puts ‘hello testfile’”
