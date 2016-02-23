@@ -181,7 +181,9 @@ module ShellHandlers
   
   def self.filewatchHandler(args)
     if args.length == 0
-      printf "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\" "
+      printf "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\" \n"
+      return
+    end
     mode = args.shift
     files = []
     time = 0;
@@ -208,5 +210,6 @@ module ShellHandlers
     rescue StandardError => e
       abort('Error in execution: ' + e.to_s)
     end
+    
   end
 end
