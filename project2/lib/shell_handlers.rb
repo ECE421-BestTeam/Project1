@@ -202,6 +202,7 @@ module ShellHandlers
     if pid == nil
       # do the delay
       delayedMessage(args[1], args[2])
+      exit
     else
       Process.detach(pid)
     end
@@ -214,12 +215,13 @@ module ShellHandlers
     if pid == nil
       # do the delay
       delayedAction(args[1]) { eval(args[2]) }
+      exit
     else
       Process.detach(pid)
     end
   end
   
-  def self.filewatchHandler(args)
+  def filewatchHandler(args)
     if args.length < 3
       puts "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\""
       return
@@ -244,6 +246,7 @@ module ShellHandlers
       if pid.nil?
         f = FileWatch.new(mode,time,*files) { eval( "lambda {" + block + "}").call }
         f.start
+        exit
       else
         Process.detach(pid)
       end
