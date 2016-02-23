@@ -31,16 +31,17 @@ module ShellHandlers
         else
           # append to current arg
           newArgs[newArgs.size - 1] += ' ' + args[index]
+          
+          # match only if the arg ends with an un-escaped matching quote to stringStart
+          if /[^\\]#{quoteType}$|^#{quoteType}$/.match(arg).to_s.length > 0
+            # we are at the end of the string
+            # remove quotes
+            newArgs[newArgs.size - 1] = newArgs[newArgs.size - 1].slice(1, newArgs[newArgs.size - 1].length - 2)
+            argIndexOfString = false
+            quoteType = ''
+          end
         end
         
-        # match only if the arg ends with an un-escaped matching quote to stringStart
-        if /[^\\]#{quoteType}$|^#{quoteType}$/.match(arg).to_s.length > 0
-          # we are at the end of the string
-          # remove quotes
-          newArgs[newArgs.size - 1] = newArgs[newArgs.size - 1].slice(1, newArgs[newArgs.size - 1].length - 2)
-          argIndexOfString = false
-          quoteType = ''
-        end
       else
         #just a normal arg
         newArgs.push(arg)
