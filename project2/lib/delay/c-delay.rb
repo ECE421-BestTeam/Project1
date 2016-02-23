@@ -1,5 +1,5 @@
 require_relative './ext/delay'
-require_relative './c_delay_contract'
+require_relative './c-delay-contract'
 
 include ContractDelay
 

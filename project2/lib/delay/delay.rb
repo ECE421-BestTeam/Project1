@@ -1,4 +1,4 @@
-require_relative './delay_contract'
+require_relative './delay-contract'
 
 module Delay
   include ContractDelay
