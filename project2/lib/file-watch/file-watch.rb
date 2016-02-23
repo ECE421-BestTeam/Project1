@@ -66,9 +66,9 @@ class FileWatch
 
     sleep(0) while condition.call
     #delay
-#    delayedAction(@time) {@block.call}
-    sleep(@time)
-    @block.call
+    delayedAction(@time) {@block.call}
+#    sleep(@time)
+#    @block.call
   end
 
 
