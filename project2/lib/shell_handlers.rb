@@ -80,6 +80,8 @@ module ShellHandlers
       mkdirHandler(args)
     when 'rm'
       rmHandler(args)
+    when 'touch'
+      touchHandler(args)
     when 'delayedMessage'
       delayedMessageHandler(args)
     when 'filewatch'
@@ -135,6 +137,8 @@ module ShellHandlers
       puts "Created directory " + args[1] + " in " + Dir.pwd()
     rescue Errno::EEXIST
       puts "Directory " + args[1] + " already exists in " + Dir.pwd()
+    rescue Errno::ENOENT
+      puts "Filepath specified does not exist."
     rescue => exception
       puts exception.message
       puts exception.backtrace
@@ -160,6 +164,23 @@ module ShellHandlers
       puts args[1] + " does not exist in " + Dir.pwd()
     rescue Errno::ENOTEMPTY
       puts "Directory " + args[1] + " is not empty; cannot delete"
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
+  end
+  def self.touchHandler(args)
+    return unless argsCheck(args, 2, "USAGE: touch <filename>")
+    begin
+      fileExisted = File.exist?(args[1])
+      FileUtils.touch(args[1])
+      if fileExisted
+        puts "Updated " + args[1] + " in " + Dir.pwd
+      else
+        puts "Created file " + args[1] + " in " + Dir.pwd
+      end
+    rescue Errno::ENOENT
+      puts "Filepath specified does not exist."
     rescue => exception
       puts exception.message
       puts exception.backtrace
