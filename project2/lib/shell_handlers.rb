@@ -241,7 +241,6 @@ module ShellHandlers
       end
     end
 
-    puts files
     begin
       pid = Process.fork
       if pid.nil?
