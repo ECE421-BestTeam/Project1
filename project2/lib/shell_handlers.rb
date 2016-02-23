@@ -32,8 +32,13 @@ module ShellHandlers
         else
           # append to current arg
           newArgs[newArgs.size - 1] += ' ' + args[index]
-          
-          # match only if the arg ends with an un-escaped matching quote to stringStart
+         
+        end
+        
+        # do not check for end if we are the first of the string and only 1 long
+        # because it will incorrectly detect this as the last quote as well
+        if !(argIndexOfString == index and arg.length == 1)
+        # match only if the arg ends with an un-escaped matching quote to stringStart
           if /[^\\]#{quoteType}$|^#{quoteType}$/.match(arg).to_s.length > 0
             # we are at the end of the string
             # remove quotes
