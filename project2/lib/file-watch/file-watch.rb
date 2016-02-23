@@ -43,7 +43,7 @@ class FileWatch
       when 'alter'
         if File.exist?(file)
           current_time = File.mtime(file)
-          watch_while { current_time == File.mtime(file) }
+          watch_while { File.exist?(file) && current_time == File.mtime(file)}
         else
           raise "#{file} doesn't exist"
         end
