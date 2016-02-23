@@ -13,6 +13,7 @@ class FileWatchTest < Test::Unit::TestCase
     Dir.chdir(@testdir)
     @waittime = 5 #seconds
     @block_ran = nil;
+    @error = 0.05
   end
   
   def teardown
@@ -22,39 +23,39 @@ class FileWatchTest < Test::Unit::TestCase
   end
   
   def test_create
-    block_ran = false
-    t1,t2=0,0
     assert(!File.exist?('test_create'))
     
+    pid = fork {
     fw = FileWatch.new('create', @waittime, 'test_create') do
-      block_ran = true
-      printf "create success\n"
+      printf "saw create\n"
     end
-
+    
     assert fw.files.include?('test_create')
-    
     fw.start
-    
     assert_equal fw.mode, 'create'
     assert_equal fw.time, @waittime
-    assert (fw.threads[0].alive?)
+    }
+    Process.detach(pid)
 
     sleep(1)
     
-    File.open('test_create', "w").close; puts 'created file';
+    File.open('test_create', "w").close; puts "\ncreated file\n"
     assert(File.exist?('test_create'))
-    sleep(@waittime)
-    assert block_ran, "Block didn't run in create"
+        puts "wait for #{@waittime} seconds";
+    @waittime.times do |t|
+    printf "#{t} "; sleep(1.00)
+    end
+
+
+
 
   end
   
   def test_alter
-    block_ran = false
-    t1,t2=0,0
     f= File.new('test_alter', "w").close
-
+    
+    pid = fork {
     fw = FileWatch.new('alter', @waittime, 'test_alter') do
-      block_ran = true
       printf "alter success\n"
     end
     
@@ -64,23 +65,26 @@ class FileWatchTest < Test::Unit::TestCase
     
     assert_equal fw.mode, 'alter'
     assert_equal fw.time, @waittime
-    assert (fw.threads[0].alive?)
+    }
     
     sleep(1)
-    File.open('test_alter', "w") {|file| file.write("test text")}; puts 'altered file';
-    sleep(@waittime)
-    assert block_ran, "Block didn't run in alter"
+    File.open('test_alter', "w") {|file| file.write("test text")}; puts "\naltered file\n";
+    puts "wait for #{@waittime} seconds";
+    @waittime.times do |t|
+    printf "#{t} "; sleep(1.00)
+    end
+
 
   end
 
   def test_destroy
-    block_ran = false
-    t1,t2=0,0
+
     f= File.new('test_destroy', "w").close
 
+    pid = fork {
     fw = FileWatch.new('destroy', @waittime, 'test_destroy') do
-      block_ran = true
-      printf "delete success\n"
+      printf "Saw delete\n"
+      t2 = Time.now
     end
     
     assert fw.files.include?('test_destroy')
@@ -89,12 +93,16 @@ class FileWatchTest < Test::Unit::TestCase
     
     assert_equal fw.mode, 'destroy'
     assert_equal fw.time, @waittime
-    assert (fw.threads[0].alive?)
+    }
     
     sleep(1)
-    FileUtils.rm('test_destroy'); puts 'destroyed file';
-    sleep(@waittime)
-    assert block_ran, "Block didn't run in delete"
+    FileUtils.rm('test_destroy'); printf "\ndestroyed file\n";
+    puts "wait for #{@waittime} seconds";
+    @waittime.times do |t|
+    printf "#{t} "; sleep(1.00)
+    end
+    
+
 
   end
 
