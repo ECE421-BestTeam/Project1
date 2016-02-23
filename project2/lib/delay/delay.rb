@@ -1,22 +1,22 @@
-require_relative './ext/delay'
 require_relative './delay_contract'
 
 include ContractDelay
 
 # delay an action by seconds+nanoSeconds
-def delayedAction (seconds, nanoSeconds = 0, &func)
-  pre_delayedAction(seconds, nanoSeconds)
+def delayedAction (seconds = 0.0, &func)
+  pre_delayedAction(seconds)
   
-  C_Delay.delayedAction(seconds, nanoSeconds) {func.call()}  
+  sleep seconds.to_f
+  func.call()
   
-  post_delayedAction(seconds, nanoSeconds)
+  post_delayedAction(seconds)
 end
 
 # delay a message by seconds+nanoSeconds
-def delayedMessage (seconds, nanoSeconds = 0, message)
-  pre_delayedMessage(seconds, nanoSeconds, message)
+def delayedMessage (seconds = 0.0, message)
+  pre_delayedMessage(seconds, message)
   
-  delayedAction(seconds, nanoSeconds) {puts message}
+  delayedAction(seconds) {puts message}
   
-  post_delayedMessage(seconds, nanoSeconds, message)
+  post_delayedMessage(seconds, message)
 end

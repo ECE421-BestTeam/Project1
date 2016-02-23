@@ -4,25 +4,25 @@ module ContractDelay
   include Test::Unit::Assertions
   # Module, so no class invariant
 
-  def checkSeconds (seconds, nanoSeconds) 
-    assert seconds.class == Fixnum && seconds >= 0, "seconds must be a positive integer"
-    assert nanoSeconds.class == Fixnum && nanoSeconds >= 0 && nanoSeconds <= 999999999, "nanoSeconds must be an integer in [0, 999999999]"
+  def checkSeconds (seconds) 
+    
+    assert seconds.respond_to?(:to_f) && seconds.to_f >= 0, "seconds must be a positive float"
   end
   
-  def pre_delayedAction(seconds, nanoSeconds)
-    checkSeconds(seconds, nanoSeconds)
+  def pre_delayedAction(seconds)
+    checkSeconds(seconds)
   end
 
-  def post_delayedAction(seconds, nanoSeconds)
+  def post_delayedAction(seconds)
     # Message appears after specified time
   end
   
-  def pre_delayedMessage(seconds, nanoSeconds, message)
-    checkSeconds(seconds, nanoSeconds)
+  def pre_delayedMessage(seconds, message)
+    checkSeconds(seconds)
     assert message.class == String
   end
 
-  def post_delayedMessage(seconds, nanoSeconds, message)
+  def post_delayedMessage(seconds, message)
     # Message appears after specified time
   end
 

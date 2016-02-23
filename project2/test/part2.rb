@@ -15,8 +15,8 @@ class DelayTest < Test::Unit::TestCase
   
   def test_delayedAction
     start = Time.now
-    seconds = 1
-    daVar = 1
+    seconds = 1.0
+    daVar = 1.0
     delayedAction(seconds) {daVar += 1}
     
     # The block should have been called
@@ -31,7 +31,7 @@ class DelayTest < Test::Unit::TestCase
     start = Time.now
     seconds = 1
 
-    delayedMessage(seconds, 0, '')
+    delayedMessage(seconds, '')
     
     timeTaken = Time.now - start
     # We should have taken at least seconds

@@ -122,7 +122,7 @@ module ShellHandlers
     pid = Process.fork
     if pid == nil
       # do the delay
-      delayedMessage(args[1].to_i, 0, args[2])
+      delayedMessage(args[1], args[2])
     else
       Process.detach(pid)
     end
