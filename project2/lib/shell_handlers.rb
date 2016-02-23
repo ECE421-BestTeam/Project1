@@ -252,9 +252,6 @@ module ShellHandlers
       end
     rescue Interrupt
       abort('User terminated watching.')
-    rescue StandardError => e
-      raise e
-      abort('Error in execution')
     end
     
   end
