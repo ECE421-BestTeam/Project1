@@ -1,5 +1,6 @@
 require_relative './delay/delay'
 require_relative './file-watch/file-watch'
+require 'fileutils'
 
 module ShellHandlers
   
@@ -66,7 +67,7 @@ module ShellHandlers
 
     case args[0]
     when 'exit'
-      puts 'exiting'
+      puts 'Exiting'
       exit 0
     when 'cd'
       cdHandler(args)
@@ -91,34 +92,84 @@ module ShellHandlers
   def self.argsCheck(args, count)
     if args.size != count
       puts "%s takes %d argument(s)." % [args[0], count - 1]
-      exit
+      return false
     end
+    return true
   end
     
   def self.cdHandler(args)
-    argsCheck(args, 2)
-    puts "TODO: cd"
+    return if argsCheck(args, 2) == false
+    begin
+      Dir.chdir(args[1])
+      puts "Changed directory to " + Dir.pwd()
+    rescue Errno::ENOENT
+      puts "Directory " + args[1] + " does not exist"
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
   end
   def self.lsHandler(args)
-    argsCheck(args, 1)
-    puts "TODO: ls"
+    return if argsCheck(args, 1) == false
+    begin
+      Dir.entries(".").sort.each do |item|
+        puts item
+      end
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
   end
   def self.pwdHandler(args)
-    argsCheck(args, 1)
-    puts "TODO: pwd"
+    return if argsCheck(args, 1) == false
+    begin
+      puts "Working directory: " + Dir.pwd()
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
   end
   
   def self.mkdirHandler(args)
-    argsCheck(args, 2)
-    puts "TODO: mkdir"
+    return if argsCheck(args, 2) == false
+    begin
+      Dir.mkdir(args[1])
+      puts "Created directory " + args[1] + " in " + Dir.pwd()
+    rescue Errno::EEXIST
+      puts "Directory " + args[1] + " already exists in " + Dir.pwd()
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
   end
   def self.rmHandler(args)
-    argsCheck(args, 2)
-    puts "TODO: rm"
+    #Removes both files and directories
+    return if argsCheck(args, 2) == false
+    #Directory removal
+    begin
+      Dir.delete(args[1])
+      puts "Deleted directory " + args[1] + " from " + Dir.pwd()
+    rescue Errno::ENOTDIR
+      #File removal
+      begin
+        FileUtils.rm(args[1])
+        puts "Deleted file " + args[1] + " from " + Dir.pwd()
+      rescue => exception
+        puts exception.message
+        puts exception.backtrace
+      end
+    rescue Errno::ENOENT
+      puts args[1] + " does not exist in " + Dir.pwd()
+    rescue Errno::ENOTEMPTY
+      puts "Directory " + args[1] + " is not empty; cannot delete"
+    rescue => exception
+      puts exception.message
+      puts exception.backtrace
+    end
   end
   
   def self.delayedMessageHandler(args)
-    argsCheck(args, 3)
+    return if argsCheck(args, 3) == false
     pid = Process.fork
     if pid == nil
       # do the delay
@@ -129,7 +180,7 @@ module ShellHandlers
   end
   
   def self.filewatchHandler(args)
-    argsCheck(args, 5)
+    return if argsCheck(args, 5) == false
     mode = args.shift
     files = []
     time = 0;
