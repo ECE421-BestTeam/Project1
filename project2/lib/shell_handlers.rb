@@ -183,17 +183,19 @@ module ShellHandlers
       puts "USAGE: filewatch <mode> <optional time> <filename(s)> \"<command>\""
       return
     end
+    args.shift
     mode = args.shift
     files = []
     time = 0;
     while !args.empty?
       a = args.shift
-      if a.respond_to?(:to_i)
+      puts a
+      if a.match(/\A\d+\z/)
         time = a
-      elsif a.respond_to(:to_s) && a.match(".*")
+      elsif a.match(/\A".*"\z/)
         block = a
-      elsif a.respond_to(:to_s) && a.match("[\S]+")
-        files << f
+      elsif a.match(/\w+/)
+        files << a
       end
     end
 
