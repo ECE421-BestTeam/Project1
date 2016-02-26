@@ -61,15 +61,10 @@ module MergeSort
 
   # returns j such that arr[j] <= elem <= arr[j +1]
   # arr is a SubArray
+  # what do you do if arr.length = 1? :s
   def binarySearch (arr, elem)
     #typical binsearch :)
     return 0
   end
   
 end
-
-
-include MergeSort
-a = [3,7,9,5,8,11]
-merge(a, SubArray.new(a, 0 ,2), SubArray.new(a, 3, 5))
-p a
