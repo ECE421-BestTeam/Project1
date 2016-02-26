@@ -10,6 +10,8 @@ module MergeSort
   end
 
   def mergeSort (arr, p, r)
+    #make sure you call merge with the subArrs being deepCopies.  
+    #There is an option for that on init SubArray.new(arr, start, end, true)
   end
   
   # Merges subArrA and 2 onto arr (C)
