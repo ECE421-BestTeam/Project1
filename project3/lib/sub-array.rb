@@ -52,7 +52,7 @@ class SubArray
 	def length
 		return @length
 	end
- 
+
   def to_s
     result = "["
     (0 .. @length - 1).each do |i|

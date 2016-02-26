@@ -5,13 +5,27 @@ module MergeSort
 
   def sortInPlace (arr, duration)
     # do something funky with timing
-    mergeSort(arr, 0, arr.length)
+    mergeSort(arr, 0, arr.length-1)
     # break out if timing got funky
   end
 
-  def mergeSort (arr, p, r)
+  def mergeSort (arr, lefti, righti)
     #make sure you call merge with the subArrs being deepCopies.  
     #There is an option for that on init SubArray.new(arr, start, end, true)
+    if lefti < righti
+      midpoint = (lefti+righti)/2
+      t1 = Thread.new {
+        mergeSort(arr, lefti, midpoint) #sort left
+      }
+      t2 = Thread.new {
+        mergeSort(arr, midpoint+1, righti) #sort right
+      }
+      t1.join
+      t2.join
+      t1.kill
+      t2.kill
+      merge(arr, SubArray.new(arr,lefti, midpoint, true), SubArray.new(arr, midpoint+1, righti, true))
+    end
   end
   
   # Merges subArrA and 2 onto arr (C)
@@ -53,6 +67,8 @@ module MergeSort
       }
       t1.join
       t2.join
+      t1.kill
+      t2.kill
     end
     
     post_merge(arr, subArrA, subArrB)
@@ -61,6 +77,7 @@ module MergeSort
   # returns j such that arr[j] <= elem <= arr[j +1]
   # arr is a SubArray or Array
   def binarySearch (arr, elem)
+    pre_binarySearch(arr, elem)
     arr.each_index do |j| 
       if arr[j] >= elem
         return [j - 1, 0].max
@@ -70,5 +87,6 @@ module MergeSort
     # else return the last index
     return [arr.length - 1, 0].max
   end
+
   
 end

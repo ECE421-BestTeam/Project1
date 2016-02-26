@@ -22,6 +22,13 @@ class MergeSortTest < Test::Unit::TestCase
   def teardown
     # do nothing
   end
+  
+  def test_mergeSort
+    a = [3,7,9,5,11,8]
+    sortedA = [3,5,7,8,9,11]
+    mergeSort(a,0,a.length-1)
+    checkArray(sortedA,a)
+  end
 
   def test_merge
     a = [3,7,9,5,8,11]
