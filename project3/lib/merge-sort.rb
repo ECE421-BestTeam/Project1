@@ -7,9 +7,7 @@ module MergeSort
     # do something funky with timing
     mergeSort(arr, 0, arr.length-1)
     # break out if timing got funky
-    Thread.list.each do |t|
-      t.kill
-    end
+
   end
 
   def mergeSort (arr, lefti, righti)
@@ -22,10 +20,13 @@ module MergeSort
         mergeSort(arr, lefti, midpoint) #sort left
       }
       mergeSort(arr, midpoint+1, righti) #sort right
-
-      t1.join; t1.kill;
       
-      merge(arr, SubArray.new(arr,lefti, midpoint,true), SubArray.new(arr, midpoint+1, righti,true))
+      merge(
+        SubArray.new(arr,lefti,righti),
+        SubArray.new(arr,lefti, midpoint,true),
+        SubArray.new(arr, midpoint+1, righti,true)
+      )
+
     end
   end
   
@@ -65,8 +66,6 @@ module MergeSort
         SubArray.new(subArrB, halfB + 1, [bLen - 1, 0].max) #part B
       ) 
       t1.join
-      t1.kill
-
     end
     
     post_merge(arr, subArrA, subArrB)
