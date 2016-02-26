@@ -58,17 +58,13 @@ module MergeSort
           SubArray.new(subArrB, 0, [halfB, 0].max) #part B
         ) 
       }
-      t2 = Thread.new { 
-        merge(
-          SubArray.new(arr, [halfB + j + 2, 0].max, [totalLen - 1, 0].max), #result part
-          SubArray.new(subArrA, [j + 1, 0].max , [aLen - 1, 0].max), #part A
-          SubArray.new(subArrB, halfB + 1, [bLen - 1, 0].max) #part B
-        ) 
-      }
+      merge(
+        SubArray.new(arr, [halfB + j + 2, 0].max, [totalLen - 1, 0].max), #result part
+        SubArray.new(subArrA, [j + 1, 0].max , [aLen - 1, 0].max), #part A
+        SubArray.new(subArrB, halfB + 1, [bLen - 1, 0].max) #part B
+      ) 
       t1.join
-      t2.join
       t1.kill
-      t2.kill
     end
     
     post_merge(arr, subArrA, subArrB)
