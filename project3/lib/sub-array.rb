@@ -55,10 +55,20 @@ class SubArray
  
   def to_s
     result = "["
-    (0 .. @length - 2).each do |i|
-      result += @arrRef[i].to_s + ", "
+    (0 .. @length - 1).each do |i|
+      result += @arrRef[i].to_s
+      if i != @length - 1
+        result += ", "
+      end
     end
-    result += @arrRef[@length -1].to_s + "]"
+    result += "]"
     return result
   end
+  
+  def each_index (&block)
+    (0..@length - 1).each do |i|
+      block.call(i)
+    end
+  end
+
 end

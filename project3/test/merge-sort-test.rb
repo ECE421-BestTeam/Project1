@@ -4,10 +4,11 @@ require 'test/unit'
 require '../lib/merge-sort'
 
 class MergeSortTest < Test::Unit::TestCase
+  include MergeSort
   
   def checkArray(expectedArr, arr)
     # check number of rows
-    assert_equal(expectedArray.length, arr.length)
+    assert_equal(expectedArr.length, arr.length)
     
     # Test that each element is correct
     expectedArr.each_with_index { |val, i| 
@@ -16,8 +17,6 @@ class MergeSortTest < Test::Unit::TestCase
   end
   
   def setup
-    @a = [3,7,9,5,8,11]
-    @sortedA = [3,5,7,8,9,11]
   end
 
   def teardown
@@ -25,12 +24,24 @@ class MergeSortTest < Test::Unit::TestCase
   end
 
   def test_merge
+    a = [3,7,9,5,8,11]
+    sortedA = [3,5,7,8,9,11]
     merge(
-      @a, 
+      a, 
       SubArray.new(a, 0, 2, true), 
       SubArray.new(a, 3, 5, true)
-    ) 
-    checkArray(@sortedA, @a)
+    )
+    checkArray(sortedA, a)
+    
+    b = [3,7,9,5,8]
+    sortedB = [3,5,7,8,9]
+    merge(
+      b, 
+      SubArray.new(b, 0, 2, true), 
+      SubArray.new(b, 3, 4, true)
+    )
+    checkArray(sortedB, b)
+    
   end
   
 end

@@ -21,9 +21,9 @@ module MergeSort
   def merge (arr, subArrA, subArrB)
     pre_merge(arr, subArrA, subArrB)
 
-    l = aLen = subArrA.length
-    m = bLen = subArrB.length
-    n = totalLen = aLen + bLen
+    aLen = subArrA.length
+    bLen = subArrB.length
+    totalLen = aLen + bLen
     if bLen > aLen # larger array should be first
       merge(arr, subArrB, subArrA)
     elsif totalLen == 1 # we have an unpaired array (eg. B is 0 long)
@@ -35,34 +35,44 @@ module MergeSort
       arr[1] = temp.max
     else 
       # at least the left arr is > 1 long, so...
-      j = binarySearch(subArrB, subArrA[aLen/2])  # such that B[j] <=  A[l/2] <= B[j +1]
+      halfB = [bLen - 1, 0].max / 2
+      j = binarySearch(subArrA, subArrB[bLen/2])  # such that A[j] <=  B[l/2] <= A[j +1]
       t1 = Thread.new { 
         merge(
-          SubArray.new(arr, 0, aLen/2 + j - 1), #result part
-          SubArray.new(subArrA, 0, aLen/2 - 1), #part A
-          SubArray.new(subArrB, 0, j - 1) #part B
+          SubArray.new(arr, 0, [halfB + j + 1, 0].max), #result part
+          SubArray.new(subArrA, 0, [j, 0].max), #part A
+          SubArray.new(subArrB, 0, [halfB, 0].max) #part B
         ) 
       }
       t2 = Thread.new { 
         merge(
-          SubArray.new(arr, aLen/2 + j, totalLen - 1), #result part
-          SubArray.new(subArrA, aLen/2, aLen - 1), #part A
-          SubArray.new(subArrB, j, bLen - 1) #part B
+          SubArray.new(arr, [halfB + j + 2, 0].max, [totalLen - 1, 0].max), #result part
+          SubArray.new(subArrA, [j + 1, 0].max , [aLen - 1, 0].max), #part A
+          SubArray.new(subArrB, halfB + 1, [bLen - 1, 0].max) #part B
         ) 
       }
       t1.join
       t2.join
     end
-
+    
+    if arr.class == SubArray
+      arr = arr.arrRef
+    end
+    return arr
     post_merge(arr, subArrA, subArrB)
   end
 
   # returns j such that arr[j] <= elem <= arr[j +1]
-  # arr is a SubArray
-  # what do you do if arr.length = 1? :s
+  # arr is a SubArray or Array
   def binarySearch (arr, elem)
-    #typical binsearch :)
-    return 0
+    arr.each_index do |j| 
+      if arr[j] >= elem
+        return [j - 1, 0].max
+      end
+    end
+    
+    # else return the last index
+    return [arr.length - 1, 0].max
   end
   
 end

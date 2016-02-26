@@ -1,9 +1,8 @@
 require 'test/unit/assertions'
-require_relative './sub-array'
 
 module SubArrayContract
   include Test::Unit::Assertions
-
+  
   def class_invariant(arrRef, start, final, length)
     assert arrRef.class == Array, "arr must be of type Array"
     assert start.class == Fixnum && start >= 0, "start should be greater than or equal to 0"
@@ -13,7 +12,7 @@ module SubArrayContract
   end
   
   def pre_initialize(arr, start, final, deepCopy)
-    assert arr.class == Array || arr.class == SubArray, "arr must be of type Array or SubArray"
+    assert arr.class == Array || arr.arrRef.class == Array, "arr must be of type Array or SubArray"
     assert start.class == Fixnum && start >= 0, "start should be greater than or equal to 0"
     assert final.class == Fixnum && final >= 0, "final should be greater than or equal to 0"
     assert deepCopy.class == TrueClass || deepCopy.class == FalseClass, "deepCopy should be a true or false"
@@ -34,6 +33,5 @@ module SubArrayContract
   def post_setter(i, val)
     
   end
-  
   
 end

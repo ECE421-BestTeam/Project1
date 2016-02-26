@@ -13,7 +13,7 @@ module MergeSortContract
   end
   
   def post_merge(arr, subArr1, subArr2)
-    assert arr.class == Array || arr.class == SubArray, "arr must be of type Array or SubArray"
+    assert arr.class == Array, "arr must be of type Array"
   end
 
 end
