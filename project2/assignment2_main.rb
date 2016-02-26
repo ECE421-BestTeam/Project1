@@ -20,5 +20,7 @@ run
 # eg. delayedAction 0 "puts 'hi'; puts 'bye'"
 
 # filewatch <mode> <optional time> <filename(s)> "<command>"
+# Note: command is required
 # eg. filewatch create 3 testfile “puts ‘hello testfile’”
+# mode can be create/alter/destroy
 

@@ -1,4 +1,4 @@
-require_relative './shell_handlers'
+require_relative './shell-handlers'
 
 module CustomShell
   include ShellHandlers
