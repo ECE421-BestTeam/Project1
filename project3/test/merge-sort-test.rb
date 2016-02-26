@@ -1,7 +1,7 @@
 # Tests that the factory produces the correct type of matrix
 
 require 'test/unit'
-require '../lib/merge-sort'
+require_relative '../lib/merge-sort'
 
 class MergeSortTest < Test::Unit::TestCase
   include MergeSort
@@ -23,10 +23,15 @@ class MergeSortTest < Test::Unit::TestCase
     # do nothing
   end
   
+#  def test_sortInPlace
+#    a = [3,7,9,5,11,8]
+#    sortInPlace(a, 0)
+#  end
+
   def test_mergeSort
     a = [3,7,9,5,11,8]
     sortedA = [3,5,7,8,9,11]
-    mergeSort(a,0,a.length-1)
+    mergeSort(a, 0 , a.length-1)
     checkArray(sortedA,a)
   end
 

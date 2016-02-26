@@ -7,24 +7,25 @@ module MergeSort
     # do something funky with timing
     mergeSort(arr, 0, arr.length-1)
     # break out if timing got funky
+    Thread.list.each do |t|
+      t.kill
+    end
   end
 
   def mergeSort (arr, lefti, righti)
     #make sure you call merge with the subArrs being deepCopies.  
     #There is an option for that on init SubArray.new(arr, start, end, true)
+    threads = []
     if lefti < righti
       midpoint = (lefti+righti)/2
       t1 = Thread.new {
         mergeSort(arr, lefti, midpoint) #sort left
       }
-      t2 = Thread.new {
-        mergeSort(arr, midpoint+1, righti) #sort right
-      }
-      t1.join
-      t2.join
-      t1.kill
-      t2.kill
-      merge(arr, SubArray.new(arr,lefti, midpoint, true), SubArray.new(arr, midpoint+1, righti, true))
+      mergeSort(arr, midpoint+1, righti) #sort right
+
+      t1.join; t1.kill;
+      
+      merge(arr, SubArray.new(arr,lefti, midpoint,true), SubArray.new(arr, midpoint+1, righti,true))
     end
   end
   
@@ -51,7 +52,7 @@ module MergeSort
       # at least the left arr is > 1 long, so...
       halfB = [bLen - 1, 0].max / 2
       j = binarySearch(subArrA, subArrB[bLen/2])  # such that A[j] <=  B[l/2] <= A[j +1]
-      t1 = Thread.new { 
+      t1 = Thread.new {
         merge(
           SubArray.new(arr, 0, [halfB + j + 1, 0].max), #result part
           SubArray.new(subArrA, 0, [j, 0].max), #part A
@@ -65,6 +66,7 @@ module MergeSort
       ) 
       t1.join
       t1.kill
+
     end
     
     post_merge(arr, subArrA, subArrB)
@@ -83,6 +85,5 @@ module MergeSort
     # else return the last index
     return [arr.length - 1, 0].max
   end
-
   
 end

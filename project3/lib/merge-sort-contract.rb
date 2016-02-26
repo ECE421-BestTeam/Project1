@@ -12,7 +12,7 @@ module MergeSortContract
   end
   
   def post_mergesort(arr, lefti, righti)
-  assert arr.is_a? Array, "arr must be of type Array"
+    assert arr.is_a? Array, "arr must be of type Array"
   end
   
   def pre_merge(arr, subArr1, subArr2)
