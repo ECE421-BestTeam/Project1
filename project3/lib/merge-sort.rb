@@ -55,10 +55,6 @@ module MergeSort
       t2.join
     end
     
-    if arr.class == SubArray
-      arr = arr.arrRef
-    end
-    return arr
     post_merge(arr, subArrA, subArrB)
   end
 
