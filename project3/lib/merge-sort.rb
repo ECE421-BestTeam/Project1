@@ -13,6 +13,9 @@ module MergeSort
   end
   
   # Merges subArrA and 2 onto arr (C)
+  # arr should carry through (pass by ref)
+  # the subArr should be a deep copy though... 
+  # Maybe only required to deep copy when coming in from mergeSort
   def merge (arr, subArrA, subArrB)
     pre_merge(arr, subArrA, subArrB)
 
@@ -22,19 +25,12 @@ module MergeSort
     if bLen > aLen # larger array should be first
       merge(arr, subArrB, subArrA)
     elsif totalLen == 1 # we have an unpaired array (eg. B is 0 long)
-      # No need for action? as it is in correct place already...
       arr[0] = subArrA[0]
     elsif aLen == 1  # and therefore bLen = 1
       # order the results in the array
-      tempA = subArrA[0]
-      tempB = subArrB[0]
-      if tempA <= tempB
-        arr[0] = tempA
-        arr[1] = tempB
-      else 
-        arr[0] = tempB
-        arr[1] = tempA
-      end
+      temp = [subArrA[0], subArrB[0]]
+      arr[0] = temp.min
+      arr[1] = temp.max
     else 
       # at least the left arr is > 1 long, so...
       j = binarySearch(subArrB, subArrA[aLen/2])  # such that B[j] <=  A[l/2] <= B[j +1]

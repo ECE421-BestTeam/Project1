@@ -8,27 +8,39 @@ class SubArray
   attr_reader :end
   attr_reader :length
   
-  def initialize (arr, start = 0, final = arr.length - 1)
-    pre_initialize(arr, start, final)
-    if arr.class == SubArray
-      @arrRef = arr.arrRef
-      @start = start + arr.start
-      @final = final + arr.start
-      @length = [final - start + 1, 0].max
+  def initialize (arr, start = 0, final = arr.length - 1, deepCopy = false)
+    pre_initialize(arr, start, final, deepCopy)
+
+    if deepCopy
+      copyArr = []
+      (start..final).each do |i|
+        copyArr.push(arr[i])
+      end
+      @arrRef = copyArr
+      @start = 0
+      @length = copyArr.length
+      @final = @length - 1
     else
-      @arrRef = arr
-      @start = start
-      @final = final
-      @length = [final - start + 1, 0].max
+      if arr.class == SubArray
+        @arrRef = arr.arrRef
+        @start = start + arr.start
+        @final = final + arr.start
+        @length = [final - start + 1, 0].max
+      else
+        @arrRef = arr
+        @start = start
+        @final = final
+        @length = [final - start + 1, 0].max
+      end
     end
+    
     class_invariant(@arrRef, @start, @final, @length)
-    post_initialize(arr, start, final)
+    post_initialize(arr, start, final, deepCopy)
   end
 
 	def [] (i)
     pre_accessor(i)
-		@arrRef[@start + i]
-    post_accessor(i)
+		return @arrRef[@start + i]
 	end
 
   def []= (i, newVal)
