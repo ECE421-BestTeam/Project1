@@ -1,9 +1,10 @@
 class SubArray
 
-  def initialize (arr, start, length)
+  def initialize (arr, start = 0, endd = arr.length - 1)
     @arrRef = arr
     @start = start
-    @length = length
+    @end = endd
+    @length = endd - start + 1
   end
 
 	def [] (i)
