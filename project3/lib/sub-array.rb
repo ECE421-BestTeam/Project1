@@ -11,7 +11,16 @@ class SubArray
   def initialize (arr, start = 0, final = arr.length - 1, deepCopy = false)
     pre_initialize(arr, start, final, deepCopy)
 
-    if deepCopy
+    if final < start
+      if arr.class == SubArray
+        @arrRef = arr.arrRef
+      else
+        @arrRef = arr
+      end
+      @start = 0
+      @length = 0
+      @final = final
+    elsif deepCopy
       copyArr = []
       (start..final).each do |i|
         copyArr.push(arr[i])
