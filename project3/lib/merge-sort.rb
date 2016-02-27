@@ -54,19 +54,20 @@ module MergeSort
       arr[1] = temp.max
     else 
       # at least the left arr is > 1 long, so...
-      halfA = aLen / 2
-      j = binarySearch(subArrB, subArrA[halfA])  # such that A[j] <=  B[l/2] <= A[j +1]
+      j = binarySearch(subArrB, subArrA[0])  # such that B[j] < A[0] <= B[j +1]
       t1 = Thread.new {
+        # Handles elem A[0] and all elems in b < A[0]
         merge(
-          SubArray.new(arr, 0, halfA + j - 1), #result part
-          SubArray.new(subArrA, 0, halfA - 1), #part A
-          SubArray.new(subArrB, 0, j - 1) #part B
+          SubArray.new(arr, 0, 1 + j), #result part
+          SubArray.new(subArrA, 0, 0), #part A
+          SubArray.new(subArrB, 0, j) #part B
         ) 
       }
+      # Handles all remaining in A and B (all >= A[0])
       merge(
-        SubArray.new(arr, halfA + j, totalLen - 1), #result part
-        SubArray.new(subArrA, halfA, aLen - 1), #part A
-        SubArray.new(subArrB, j, bLen - 1) #part B
+        SubArray.new(arr, 1 + j + 1, totalLen - 1), #result part
+        SubArray.new(subArrA, 1, aLen - 1), #part A
+        SubArray.new(subArrB, j + 1, bLen - 1) #part B
       ) 
       t1.join
     end
@@ -74,18 +75,16 @@ module MergeSort
     post_merge(arr, subArrA, subArrB)
   end
 
-  # returns j such that arr[j] <= elem <= arr[j +1]
-  # arr is a SubArray or Array
+  # returns j such that arr[j] < elem <= arr[j +1]
+  # returns the index of the largest element that is < elem
+  # arr is a SubArray or Array ordered from lowest to highest
   def binarySearch (arr, elem)
     pre_binarySearch(arr, elem)
-    arr.each_index do |j| 
-      if arr[j] >= elem
-        return [j - 1, 0].max
-      end
+    i = 0
+    while i < arr.length && arr[i] < elem
+      i += 1
     end
-    
-    # else return the last index
-    return [arr.length - 1, 0].max
+    return i - 1
   end
   
 end

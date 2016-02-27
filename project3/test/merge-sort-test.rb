@@ -11,9 +11,9 @@ class MergeSortTest < Test::Unit::TestCase
     assert_equal(expectedArr.length, arr.length)
     
     # Test that each element is correct
-    expectedArr.each_with_index { |val, i| 
-      assert_equal(val, arr[i])
-    }
+    expectedArr.each_with_index do |val, i| 
+      assert_equal val, arr[i], "expected: #{expectedArr}, \ngot:\t  #{arr}"
+    end
   end
   
   def setup
@@ -29,10 +29,31 @@ class MergeSortTest < Test::Unit::TestCase
 #  end
 
   def test_mergeSort
-    a = [7, 3,9,5,11,8]
+    a = [7,3,9,5,11,8]
     sortedA = [3,5,7,8,9,11]
     mergeSort(a, 0 , a.length-1)
     checkArray(sortedA,a)
+    
+    a = [3,2,1]
+    sortedA = [1,2,3]
+    mergeSort(a, 0 , a.length-1)
+    checkArray(sortedA,a)
+    
+    a = [3,2,3]
+    sortedA = [2,3,3]
+    mergeSort(a, 0 , a.length-1)
+    checkArray(sortedA,a)
+    
+    a = [3,3,1]
+    sortedA = [1,3,3]
+    mergeSort(a, 0 , a.length-1)
+    checkArray(sortedA,a)
+    
+    a = [3,2,1,4,3]
+    sortedA = [1,2,3,3,4]
+    mergeSort(a, 0 , a.length-1)
+    checkArray(sortedA,a)
+    
   end
 
   def test_merge
