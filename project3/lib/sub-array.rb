@@ -11,7 +11,7 @@ class SubArray
   def initialize (arr, start = 0, final = arr.length - 1, deepCopy = false)
     pre_initialize(arr, start, final, deepCopy)
 
-    if final < start || start < 0
+    if final < start
       if arr.class == SubArray
         @arrRef = arr.arrRef
       else
