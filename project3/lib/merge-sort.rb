@@ -54,19 +54,20 @@ module MergeSort
       arr[1] = temp.max
     else 
       # at least the left arr is > 1 long, so...
-      j = binarySearch(subArrB, subArrA[0])  # such that B[j] < A[0] <= B[j +1]
+      halfA = (aLen -1) / 2
+      j = binarySearch(subArrB, subArrA[halfA])  # such that B[j] < A[halfA] <= B[j +1]
       t1 = Thread.new {
         # Handles elem A[0] and all elems in b < A[0]
         merge(
-          SubArray.new(arr, 0, 1 + j), #result part
-          SubArray.new(subArrA, 0, 0), #part A
+          SubArray.new(arr, 0, halfA + j + 1), #result part
+          SubArray.new(subArrA, 0, halfA), #part A
           SubArray.new(subArrB, 0, j) #part B
         ) 
       }
       # Handles all remaining in A and B (all >= A[0])
       merge(
-        SubArray.new(arr, 1 + j + 1, totalLen - 1), #result part
-        SubArray.new(subArrA, 1, aLen - 1), #part A
+        SubArray.new(arr, halfA + j + 1 + 1, totalLen - 1), #result part
+        SubArray.new(subArrA, halfA + 1, aLen - 1), #part A
         SubArray.new(subArrB, j + 1, bLen - 1) #part B
       ) 
       t1.join
