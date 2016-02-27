@@ -32,7 +32,7 @@ class MergeSortTest < Test::Unit::TestCase
     a = [3,7,9,5,11,8]
     sortedA = [3,5,7,8,9,11]
     mergeSort(a, 0 , a.length-1)
-    puts a
+    print a
     checkArray(sortedA,a)
   end
 

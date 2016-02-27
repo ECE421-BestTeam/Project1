@@ -22,8 +22,13 @@ module SubArrayContract
   end
   
   def pre_accessor(i)
+    begin
     assert i.class == Fixnum, "i should be an integer"
     assert i >= 0 && i < length, "Out of Bounds."
+    rescue Exception => e
+      puts e
+      throw e
+    end
   end
   
   def pre_setter(i, val)

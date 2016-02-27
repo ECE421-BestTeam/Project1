@@ -21,6 +21,8 @@ module MergeSort
       }
       mergeSort(arr, midpoint+1, righti) #sort right
       
+      t1.join
+      
       merge(
         SubArray.new(arr,lefti,righti),
         SubArray.new(arr,lefti, midpoint,true),
@@ -51,19 +53,19 @@ module MergeSort
       arr[1] = temp.max
     else 
       # at least the left arr is > 1 long, so...
-      halfB = [bLen - 1, 0].max / 2
-      j = binarySearch(subArrA, subArrB[bLen/2])  # such that A[j] <=  B[l/2] <= A[j +1]
+      halfA = [aLen - 1, 0].max / 2
+      j = binarySearch(subArrB, subArrA[halfA])  # such that A[j] <=  B[l/2] <= A[j +1]
       t1 = Thread.new {
         merge(
-          SubArray.new(arr, 0, [halfB + j + 1, 0].max), #result part
-          SubArray.new(subArrA, 0, [j, 0].max), #part A
-          SubArray.new(subArrB, 0, [halfB, 0].max) #part B
+          SubArray.new(arr, 0, [halfA + j + 1, 0].max), #result part
+          SubArray.new(subArrA, 0, [halfA, 0].max), #part A
+          SubArray.new(subArrB, 0, [j, 0].max) #part B
         ) 
       }
       merge(
-        SubArray.new(arr, [halfB + j + 2, 0].max, [totalLen - 1, 0].max), #result part
-        SubArray.new(subArrA, [j + 1, 0].max , [aLen - 1, 0].max), #part A
-        SubArray.new(subArrB, halfB + 1, [bLen - 1, 0].max) #part B
+        SubArray.new(arr, [halfA + j + 2, 0].max, [totalLen - 1, 0].max), #result part
+        SubArray.new(subArrA, halfA + 1 , [aLen - 1, 0].max), #part A
+        SubArray.new(subArrB, [j + 1, 0].max, [bLen - 1, 0].max) #part B
       ) 
       t1.join
     end
