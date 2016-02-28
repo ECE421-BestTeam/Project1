@@ -5,6 +5,15 @@ module MergeSortContract
   include Test::Unit::Assertions
   # Module, so no class invariant
   
+  def pre_sortInPlace(arr, duration)
+    assert arr.is_a?(Array), "arr must be of type Array"
+    assert duration.kind_of?(Numeric), "duration must be numeric"
+  end
+  
+  def post_sortInPlace(arr, duration)
+    assert arr.is_a?(Array)
+  end
+  
   def pre_mergesort(arr, lefti, righti)
     assert arr.is_a?(Array), "arr must be of type Array"
     assert lefti.between?(0,arr.length-1), "left index must be within bounds"
@@ -12,7 +21,7 @@ module MergeSortContract
   end
   
   def post_mergesort(arr, lefti, righti)
-    assert arr.is_a? Array, "arr must be of type Array"
+    assert arr.is_a?(Array), "arr must be of type Array"
   end
   
   def pre_merge(arr, subArr1, subArr2)

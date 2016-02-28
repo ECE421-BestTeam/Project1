@@ -1,16 +1,27 @@
 require_relative './merge-sort-contract'
+require 'timeout'
 
 module MergeSort
   include MergeSortContract
 
-  def sortInPlace (arr, duration)
-    # do something funky with timing
-    mergeSort(arr, 0, arr.length-1)
-    # break out if timing got funky
+  def sortInPlace (arr, duration = 0)
+    pre_sortInPlace(arr,duration)
 
+    begin
+        Timeout::timeout(duration) {
+          mergeSort(arr, 0, arr.length-1)
+        }
+      post_sortInPlace(arr,duration)
+    rescue Timeout::Error
+      puts "Time out!!"
+      raise Timeout::Error
+    rescue Interrupt
+      abort("User interrupted sort")
+    end
   end
 
   def mergeSort (arr, lefti, righti)
+    pre_mergesort(arr, lefti, righti)
     #make sure you call merge with the subArrs being deepCopies.  
     #There is an option for that on init SubArray.new(arr, start, end, true)
     threads = []
@@ -23,6 +34,7 @@ module MergeSort
       mergeSort(arr, midpoint+1, righti) #sort right
       
       t1.join
+      t1.kill
       
       merge(
         SubArray.new(arr,lefti,righti),
@@ -31,6 +43,7 @@ module MergeSort
       )
 
     end
+    post_mergesort(arr, lefti, righti)
   end
   
   # Merges subArrA and 2 onto arr (C)
@@ -70,6 +83,7 @@ module MergeSort
         SubArray.new(subArrB, j + 1, bLen - 1) #part B
       ) 
       t1.join
+      t1.kill
     end
     
     post_merge(arr, subArrA, subArrB)
@@ -80,6 +94,12 @@ module MergeSort
   # arr is a SubArray or Array ordered from lowest to highest
   def binarySearch (arr, elem)
     pre_binarySearch(arr, elem)
+    search(arr, elem)
+#    return _binsearch(arr, elem, 0, arr.length-1)-1
+
+  end
+  
+  def search(arr, elem)
     i = 0
     while i < arr.length && arr[i] < elem
       i += 1
@@ -87,4 +107,18 @@ module MergeSort
     return i - 1
   end
   
+
+  def _binsearch(arr, elem, left, right)
+    mid = (left+right)/2
+#    puts "#{left} #{mid} #{right} -- #{elem}"
+    if right == left
+#      puts "Just one"
+      return right+1 if arr[right] < elem
+      return left
+    end
+    return mid if arr[mid] == elem
+    return _binsearch(arr, elem, left, mid) if elem < arr[mid]
+    return _binsearch(arr, elem, mid+1, right) if arr[mid] < elem
+  end
+
 end
