@@ -6,11 +6,12 @@ module MergeSort
 
   def sortInPlace (arr, duration = 0)
     pre_sortInPlace(arr,duration)
-
+    sorted = false
     begin
         Timeout::timeout(duration) {
           mergeSort(arr, 0, arr.length-1)
         }
+        sorted=true
       post_sortInPlace(arr,duration)
     rescue Timeout::Error
       puts "Time out!!"
@@ -18,6 +19,8 @@ module MergeSort
     rescue Interrupt
       abort("User interrupted sort")
     end
+    
+    return sorted
   end
 
   def mergeSort (arr, lefti, righti)
