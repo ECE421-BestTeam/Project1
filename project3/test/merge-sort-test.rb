@@ -109,12 +109,24 @@ class MergeSortTest < Test::Unit::TestCase
     
   end
 
+  
+  def search(arr, elem)
+    i = 0
+    while i < arr.length && arr[i] < elem
+      i += 1
+    end
+    return i - 1
+  end
+
   def test_binarySearch
     sortedA = [3,5,7,8,9,11]
+    
     assert_equal search(sortedA,3),binarySearch(sortedA,3)
     assert_equal search(sortedA,7),binarySearch(sortedA,7)
     assert_equal search(sortedA,2),binarySearch(sortedA,2)
     assert_equal search(sortedA,6),binarySearch(sortedA,6)
+    
+    sortedA = SubArray.new(a,2, 4)
     assert_equal search(sortedA,10),binarySearch(sortedA,10)
     assert_equal search(sortedA,11),binarySearch(sortedA,11)
     assert_equal search(sortedA,12),binarySearch(sortedA,12)

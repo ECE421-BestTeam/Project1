@@ -95,25 +95,14 @@ module MergeSort
   # arr is a SubArray or Array ordered from lowest to highest
   def binarySearch (arr, elem)
     pre_binarySearch(arr, elem)
-    search(arr, elem)
-#    return _binsearch(arr, elem, 0, arr.length-1)-1
+    return _binsearch(arr, elem, 0, arr.length-1)-1
 
   end
-  
-  def search(arr, elem)
-    i = 0
-    while i < arr.length && arr[i] < elem
-      i += 1
-    end
-    return i - 1
-  end
-  
 
   def _binsearch(arr, elem, left, right)
+    return 0 if arr.length == 0
     mid = (left+right)/2
-#    puts "#{left} #{mid} #{right} -- #{elem}"
     if right == left
-#      puts "Just one"
       return right+1 if arr[right] < elem
       return left
     end
