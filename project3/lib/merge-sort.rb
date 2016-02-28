@@ -18,7 +18,8 @@ module MergeSort
       }
       post_sortInPlace(arr,duration)
     rescue Timeout::Error
-      puts "Time out!!"
+      puts 'process not finished in time, killing it'
+      Process.kill('TERM', pid)
       raise Timeout::Error
     rescue Interrupt
       abort("User interrupted sort")
