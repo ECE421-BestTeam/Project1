@@ -6,26 +6,30 @@ module MergeSort
 
   def sortInPlace (arr, duration = 0)
     pre_sortInPlace(arr,duration)
-    sorted = false
-    begin
-
-      pid = fork {
+   
+     begin
+      pid = Process.fork
+      if pid.nil?
         mergeSort(arr, 0, arr.length-1)
-      }
-      Timeout::timeout(duration) {
-        Process.wait(pid)
-        sorted=true
-      }
+        exit
+      else
+        Timeout::timeout(duration) {
+          Process.wait(pid)
+        }
+      end
       post_sortInPlace(arr,duration)
     rescue Timeout::Error
-      puts 'process not finished in time, killing it'
       Process.kill('TERM', pid)
+      puts 'process not finished in time, killing it'
       raise Timeout::Error
     rescue Interrupt
       abort("User interrupted sort")
+    rescue SignalException
+    rescue SystemExit
+    ensure
+    
     end
     
-    return sorted
   end
 
   def mergeSort (arr, lefti, righti)
