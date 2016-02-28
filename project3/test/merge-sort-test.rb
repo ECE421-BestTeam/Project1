@@ -126,7 +126,7 @@ class MergeSortTest < Test::Unit::TestCase
     assert_equal search(sortedA,2),binarySearch(sortedA,2)
     assert_equal search(sortedA,6),binarySearch(sortedA,6)
     
-    sortedA = SubArray.new(a,2, 4)
+    sortedA = SubArray.new(sortedA,2, 4)
     assert_equal search(sortedA,10),binarySearch(sortedA,10)
     assert_equal search(sortedA,11),binarySearch(sortedA,11)
     assert_equal search(sortedA,12),binarySearch(sortedA,12)
