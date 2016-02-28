@@ -8,10 +8,14 @@ module MergeSort
     pre_sortInPlace(arr,duration)
     sorted = false
     begin
-        Timeout::timeout(duration) {
-          mergeSort(arr, 0, arr.length-1)
-        }
+
+      pid = fork {
+        mergeSort(arr, 0, arr.length-1)
+      }
+      Timeout::timeout(duration) {
+        Process.wait(pid)
         sorted=true
+      }
       post_sortInPlace(arr,duration)
     rescue Timeout::Error
       puts "Time out!!"
