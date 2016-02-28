@@ -8,10 +8,12 @@ module MergeSortContract
   def pre_sortInPlace(arr, duration)
     assert arr.is_a?(Array), "arr must be of type Array"
     assert duration.kind_of?(Numeric), "duration must be numeric"
+    @len = arr.length
   end
   
   def post_sortInPlace(arr, duration)
     assert arr.is_a?(Array)
+    assert_equal @len, arr.length
   end
   
   def pre_mergesort(arr, lefti, righti)

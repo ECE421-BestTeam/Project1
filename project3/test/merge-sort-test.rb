@@ -18,36 +18,58 @@ class MergeSortTest < Test::Unit::TestCase
   end
   
   def setup
-    @duration = 3
+    @a1 = Array.new(1000) { rand(100) }
+    @a1s = @a1.sort
+    @a2 = Array.new(5000) { rand(100) }
+    @a2s = @a1.sort
+    @a3 = Array.new(10000) { rand(100) }
+    @a3s = @a1.sort
   end
 
   def teardown
     # do nothing
   end
   
-  def test_sortInPlace
-    a = Array.new(1000) { rand(100) }
-    sortedA = a.sort
-    puts "\nstart sort 1000"
-    assert_nothing_raised do
-      sortInPlace(a, @duration)
-    end
-
+  def test_sortInPlace_timeout
+    duration = 1
     
-    a = Array.new(5000) { rand(100) }
-    sortedA = a.sort
+    puts "\nstart sort 1000"
+    assert_raise Timeout::Error do
+      sortInPlace(@a1, duration)
+    end
+    
     puts "\nstart sort 5000"
     assert_raise Timeout::Error do
-      sortInPlace(a, @duration)
+      sortInPlace(@a2, duration)
     end
-    
-    a = Array.new(10000) { rand(100) }
-    sortedA = a.sort
+
     puts "\nstart sort 10000"
     assert_raise Timeout::Error do
-      sortInPlace(a, @duration)
+      sortInPlace(@a3, duration)
     end
-    
+  end
+  
+  def test_sortInPlace
+    duration = 0
+
+    puts "\nstart sort 1000"
+    assert_nothing_raised do
+      sortInPlace(@a1, duration)
+    end
+    checkArray(@a1s,@a1)
+
+    puts "\nstart sort 5000"
+    assert_nothing_raised do
+      sortInPlace(@a2, duration)
+    end
+    checkArray(@a2s,@a2)
+
+    puts "\nstart sort 10000"
+    assert_nothing_raised Timeout::Error do
+      sortInPlace(@a3, duration)
+    end
+    checkArray(@a3s,@a3)
+
   end
 
   def test_mergeSort
@@ -109,7 +131,7 @@ class MergeSortTest < Test::Unit::TestCase
     
   end
 
-  
+
   def search(arr, elem)
     i = 0
     while i < arr.length && arr[i] < elem
