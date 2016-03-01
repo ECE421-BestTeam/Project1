@@ -53,22 +53,37 @@ class MergeSortTest < Test::Unit::TestCase
   
   def test_sortInPlace
     duration = 0
-
+    
+    a = [7,3,9,5,11,8]
+    sortedA = [11,9,8,7,5,3]
+    assert_nothing_raised do
+      sortInPlace(a, duration) do |a, b| 
+        if b < a
+          -1
+        elsif b == a
+          0
+        else
+          1
+        end
+      end
+    end
+    checkArray(a, sortedA)
+    
     puts "\nstart sort 1000"
     assert_nothing_raised do
-      sort(@a1, duration, &@comparator)
+      sortInPlace(@a1, duration, &@comparator)
     end
     checkArray(@a1s,@a1)
 
     puts "\nstart sort 5000"
     assert_nothing_raised do
-      sort(@a2, duration, &@comparator)
+      sortInPlace(@a2, duration, &@comparator)
     end
     checkArray(@a2s,@a2)
 
     puts "\nstart sort 10000"
     assert_nothing_raised do
-      sort(@a3, duration, &@comparator)
+      sortInPlace(@a3, duration, &@comparator)
     end
     checkArray(@a3s,@a3)
 

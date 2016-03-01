@@ -4,7 +4,7 @@ require 'timeout'
 module MergeSort
   include MergeSortContract
   
-  def sort(arr, duration = 0, &comparator)
+  def sortInPlace(arr, duration = 0, &comparator)
     pre_sortInPlace(arr,duration,&comparator)
     shouldStop = [false]
     comparator ||= ->(a,b) { a <=> b }
@@ -89,14 +89,18 @@ module MergeSort
     bLen = subArrB.length
     totalLen = aLen + bLen
     if bLen > aLen # larger array should be first
-      merge(arr, subArrB, subArrA, shouldStop,&comparator)
+      merge(arr, subArrB, subArrA, shouldStop, &comparator)
     elsif totalLen == 1 # we have an unpaired array (eg. B is 0 long)
       arr[0] = subArrA[0]
     elsif aLen == 1  # and therefore bLen = 1
       # order the results in the array
-      temp = [subArrA[0], subArrB[0]]
-      arr[0] = temp.min
-      arr[1] = temp.max
+      if comparator.call(subArrA[0], subArrB[0]) < 0
+        arr[0] = subArrA[0]
+        arr[1] = subArrB[0]
+      else
+        arr[0] = subArrB[0]
+        arr[1] = subArrA[0]
+      end
     else 
       # at least the left arr is > 1 long, so...
       halfA = (aLen -1) / 2
