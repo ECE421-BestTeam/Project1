@@ -6,9 +6,10 @@ module MergeSort
 
   def sortInPlace (arr, duration = 0)
     pre_sortInPlace(arr,duration)
+      shouldStop = [false]
     
       th = Thread.new do
-        mergeSort(arr, 0, arr.length-1)
+        mergeSort(arr, 0, arr.length-1, shouldStop)
       end
       
       begin
@@ -18,27 +19,32 @@ module MergeSort
         }
       rescue Timeout::Error
 #        Process.kill(9, pid)
-        th.kill
+#        th.kill
         puts 'process not finished in time, killing it'
 #        Process.wait(pid)
+        shouldStop[0] = [true]
         th.join
+        puts 'sort killed'
         raise Timeout::Error
       end
     post_sortInPlace(arr,duration)
   end
 
-  def mergeSort (arr, lefti, righti)
+  def mergeSort (arr, lefti, righti, shouldStop)
     pre_mergesort(arr, lefti, righti)
     #make sure you call merge with the subArrs being deepCopies.  
     #There is an option for that on init SubArray.new(arr, start, end, true)
-    threads = []
+    if shouldStop[0]
+      return
+    end
+    
     if lefti < righti
       midpoint = (lefti+righti)/2
 
       t1 = Thread.new {
-        mergeSort(arr, lefti, midpoint) #sort left
+        mergeSort(arr, lefti, midpoint, shouldStop) #sort left
       }
-      mergeSort(arr, midpoint+1, righti) #sort right
+      mergeSort(arr, midpoint+1, righti, shouldStop) #sort right
       
       t1.join
       t1.kill
@@ -46,7 +52,8 @@ module MergeSort
       merge(
         SubArray.new(arr,lefti,righti),
         SubArray.new(arr,lefti, midpoint,true),
-        SubArray.new(arr, midpoint+1, righti,true)
+        SubArray.new(arr, midpoint+1, righti,true),
+        shouldStop
       )
 
     end
@@ -57,14 +64,18 @@ module MergeSort
   # arr should carry through (pass by ref)
   # the subArr should be a deep copy though... 
   # Maybe only required to deep copy when coming in from mergeSort
-  def merge (arr, subArrA, subArrB)
+  def merge (arr, subArrA, subArrB, shouldStop)
     pre_merge(arr, subArrA, subArrB)
 
+    if shouldStop[0]
+      return
+    end
+    
     aLen = subArrA.length
     bLen = subArrB.length
     totalLen = aLen + bLen
     if bLen > aLen # larger array should be first
-      merge(arr, subArrB, subArrA)
+      merge(arr, subArrB, subArrA, shouldStop)
     elsif totalLen == 1 # we have an unpaired array (eg. B is 0 long)
       arr[0] = subArrA[0]
     elsif aLen == 1  # and therefore bLen = 1
@@ -81,14 +92,16 @@ module MergeSort
         merge(
           SubArray.new(arr, 0, halfA + j + 1), #result part
           SubArray.new(subArrA, 0, halfA), #part A
-          SubArray.new(subArrB, 0, j) #part B
+          SubArray.new(subArrB, 0, j), #part B
+          shouldStop
         ) 
       }
       # Handles all remaining in A and B (all >= A[0])
       merge(
         SubArray.new(arr, halfA + j + 1 + 1, totalLen - 1), #result part
         SubArray.new(subArrA, halfA + 1, aLen - 1), #part A
-        SubArray.new(subArrB, j + 1, bLen - 1) #part B
+        SubArray.new(subArrB, j + 1, bLen - 1), #part B
+        shouldStop
       ) 
       t1.join
       t1.kill

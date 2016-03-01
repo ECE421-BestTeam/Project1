@@ -21,9 +21,9 @@ class MergeSortTest < Test::Unit::TestCase
     @a1 = Array.new(1000) { rand(100) }
     @a1s = @a1.sort
     @a2 = Array.new(5000) { rand(100) }
-    @a2s = @a1.sort
+    @a2s = @a2.sort
     @a3 = Array.new(10000) { rand(100) }
-    @a3s = @a1.sort
+    @a3s = @a3.sort
   end
 
   def teardown
@@ -75,38 +75,38 @@ class MergeSortTest < Test::Unit::TestCase
   def test_mergeSort
     a = [7,3,9,5,11,8]
     sortedA = [3,5,7,8,9,11]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [3,2,1]
     sortedA = [1,2,3]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [3,2,3]
     sortedA = [2,3,3]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [3,3,1]
     sortedA = [1,3,3]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [3,2,1,4,3]
     sortedA = [1,2,3,3,4]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [-1,-2,-3,-4,-5]
     sortedA = [-5,-4,-3,-2,-1]
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
     
     a = [20,20,20,20,20,20,20]
     sortedA = a.sort
     
-    mergeSort(a, 0 , a.length-1)
+    mergeSort(a, 0 , a.length-1, [false])
     checkArray(sortedA,a)
   end
 
@@ -116,7 +116,8 @@ class MergeSortTest < Test::Unit::TestCase
     merge(
       a, 
       SubArray.new(a, 0, 2, true), 
-      SubArray.new(a, 3, 5, true)
+      SubArray.new(a, 3, 5, true),
+      [false]
     )
     checkArray(sortedA, a)
     
@@ -125,7 +126,8 @@ class MergeSortTest < Test::Unit::TestCase
     merge(
       b, 
       SubArray.new(b, 0, 2, true), 
-      SubArray.new(b, 3, 4, true)
+      SubArray.new(b, 3, 4, true),
+      [false]
     )
     checkArray(sortedB, b)
     
