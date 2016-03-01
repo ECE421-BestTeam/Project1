@@ -28,12 +28,10 @@ module MergeSort
       end
       post_sortInPlace(arr,duration)
       
-    rescue Timeout::Error
-#      th.kill
-      puts 'Time out!'
+    ensure
+      # always make sure to stop all threads (incase of uncaught exception)
       shouldStop[0] = [true]
       th.join
-      raise Timeout::Error
     end
     return arr
     
@@ -43,8 +41,6 @@ module MergeSort
   def mergeSort (arr, lefti, righti, shouldStop, &comparator)
     pre_mergesort(arr, lefti, righti, &comparator)
 
-    #make sure you call merge with the subArrs being deepCopies.  
-    #There is an option for that on init SubArray.new(arr, start, end, true)
     if shouldStop[0]
       return
     end
@@ -58,10 +54,10 @@ module MergeSort
       }
       mergeSort(arr, midpoint+1, righti, shouldStop, &comparator) #sort right
 
-      
       t1.join
       t1.kill
       
+      #make sure you call merge with the subArrs having deepCopy = true.  
       merge(
         SubArray.new(arr,lefti,righti,false),
         SubArray.new(arr,lefti, midpoint,true),
@@ -74,10 +70,8 @@ module MergeSort
     post_mergesort(arr, lefti, righti)
   end
   
-  # Merges subArrA and 2 onto arr (C)
   # arr should carry through (pass by ref)
-  # the subArr should be a deep copy though... 
-  # Maybe only required to deep copy when coming in from mergeSort
+  # the subArrs should be a deep copy coming in from mergeSort
   def merge (arr, subArrA, subArrB, shouldStop, &comparator)
     pre_merge(arr, subArrA, subArrB, &comparator)
 

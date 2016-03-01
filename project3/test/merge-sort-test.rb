@@ -37,17 +37,17 @@ class MergeSortTest < Test::Unit::TestCase
     
     puts "\nstart sort 1000"
     assert_raise Timeout::Error do
-      sort(@a1, duration)
+      sortInPlace(@a1, duration)
     end
     
     puts "\nstart sort 5000"
     assert_raise Timeout::Error do
-      sort(@a2, duration)
+      sortInPlace(@a2, duration)
     end
 
     puts "\nstart sort 10000"
     assert_raise Timeout::Error do
-      sort(@a3, duration)
+      sortInPlace(@a3, duration)
     end
   end
   
