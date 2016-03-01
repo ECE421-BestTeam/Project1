@@ -139,33 +139,33 @@ class MergeSortTest < Test::Unit::TestCase
 
 
 
-#  def search(arr, elem)
-#    i = 0
-#    while i < arr.length && arr[i] < elem
-#      i += 1
-#    end
-#    return i - 1
-#  end
-#
-#  def test_binarySearch
-#    sortedA = [3,5,7,8,9,11]
-#    assert_equal search(sortedA,3),binarySearch(sortedA,3, &@comparator)
-#    sortedA = [3,5,7,8,9,11]
-#    assert_equal search(sortedA,7),binarySearch(sortedA,7, &@comparator)
-#    sortedA = [3,5,7,8,9,11]
-#    assert_equal search(sortedA,2),binarySearch(sortedA,2, &@comparator)
-#    sortedA = [3,5,7,8,9,11]
-#    assert_equal search(sortedA,6),binarySearch(sortedA,6, &@comparator)
-#    
-#    sortedA = [3,5,7,8,9,11]
-#    subA = SubArray.new(sortedA,2, 4)
-#    assert_equal search(sortedA,10),binarySearch(subA,10, &@comparator)
-#    assert_equal search(sortedA,11),binarySearch(subA,11, &@comparator)
-#    assert_equal search(sortedA,12),binarySearch(subA,12, &@comparator)
-#    
-#
-#    
-#  end
+  def search(arr, elem)
+    i = 0
+    while i < arr.length && arr[i] < elem
+      i += 1
+    end
+    return i - 1
+  end
+
+  def test_binarySearch
+    sortedA = [3,5,7,8,9,11]
+    assert_equal search(sortedA,3),binarySearch(sortedA,3, &@comparator)
+    sortedA = [3,5,7,8,9,11]
+    assert_equal search(sortedA,7),binarySearch(sortedA,7, &@comparator)
+    sortedA = [3,5,7,8,9,11]
+    assert_equal search(sortedA,2),binarySearch(sortedA,2, &@comparator)
+    sortedA = [3,5,7,8,9,11]
+    assert_equal search(sortedA,6),binarySearch(sortedA,6, &@comparator)
+    
+    sortedA = [3,5,7,8,9,11]
+    subA = SubArray.new(sortedA,2, 4)
+    assert_equal search(subA,10),binarySearch(subA,10, &@comparator)
+    assert_equal search(subA,11),binarySearch(subA,11, &@comparator)
+    assert_equal search(subA,12),binarySearch(subA,12, &@comparator)
+    
+
+    
+  end
 
   
 end
