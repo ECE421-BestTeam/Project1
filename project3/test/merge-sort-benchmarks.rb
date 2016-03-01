@@ -11,6 +11,7 @@ class MergeSortTest < Test::Unit::TestCase
     @a10000 = Array.new(10000) { rand(10000) }
     @a100000 = Array.new(100000) { rand(100000) }
     @timeout = 0
+    @comparator ||= ->(a,b) { a <=> b }
 
   end
   
@@ -24,7 +25,7 @@ class MergeSortTest < Test::Unit::TestCase
           @a100.sort
         }
         x.report("100   pmerge:") {
-          sortInPlace(@a100, @timeout)
+          sort(@a100, @timeout, &@comparator)
         }
       end
       
@@ -33,7 +34,7 @@ class MergeSortTest < Test::Unit::TestCase
           @a1000.sort
         }
         x.report("1000   pmerge:") {
-          sortInPlace(@a1000, @timeout)
+          sort(@a1000, @timeout, &@comparator)
         }
       end
       
@@ -42,7 +43,7 @@ class MergeSortTest < Test::Unit::TestCase
           @a10000.sort
         }
         x.report("10000  pmerge:") {
-          sortInPlace(@a10000, @timeout)
+          sort(@a10000, @timeout, &@comparator)
         }
       end
 
