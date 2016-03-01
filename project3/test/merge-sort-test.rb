@@ -39,18 +39,17 @@ class MergeSortTest < Test::Unit::TestCase
     assert_raise Timeout::Error do
       sortInPlace(@a1, duration)
     end
-    
+=begin
     puts "\nstart sort 5000"
     assert_raise Timeout::Error do
       sortInPlace(@a2, duration)
     end
-
     puts "\nstart sort 10000"
     assert_raise Timeout::Error do
       sortInPlace(@a3, duration)
     end
+=end
   end
-  
   def test_sortInPlace
     duration = 0
     
@@ -74,7 +73,7 @@ class MergeSortTest < Test::Unit::TestCase
       sortInPlace(@a1, duration, &@comparator)
     end
     checkArray(@a1s,@a1)
-
+=begin
     puts "\nstart sort 5000"
     assert_nothing_raised do
       sortInPlace(@a2, duration, &@comparator)
@@ -86,7 +85,7 @@ class MergeSortTest < Test::Unit::TestCase
       sortInPlace(@a3, duration, &@comparator)
     end
     checkArray(@a3s,@a3)
-
+=end
   end
 
   def test_mergeSort

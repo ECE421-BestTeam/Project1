@@ -38,6 +38,7 @@ class MergeSortTest < Test::Unit::TestCase
         }
       end
       
+=begin
       Benchmark.bm  do |x|
         x.report("10000 builtin:") {
           @a10000.sort
@@ -46,6 +47,7 @@ class MergeSortTest < Test::Unit::TestCase
           sortInPlace(@a10000, @timeout, &@comparator)
         }
       end
+=end
 
   end
   
