@@ -4,8 +4,9 @@ require 'gtk2'
 class ConnectFourBoard
   
   # creates the board and sets the listeners
+  # model - ../model/game object used to determine view
   # handlers - should be a hash which defines the actions
-  def initialize (handlers)
+  def initialize (model, handlers)
 
     Gtk.init
 
@@ -23,6 +24,11 @@ class ConnectFourBoard
     @window.show_all
     Gtk.main
 
+  end
+  
+  # builds the game board according to the current model
+  def refreshBoard (model)
+    
   end
   
   # col - 0 indexed from the left
