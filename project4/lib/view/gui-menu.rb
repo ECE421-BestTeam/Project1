@@ -1,8 +1,8 @@
 require 'gtk2'
-require_relative './connect-four-board'
+require_relative './gui-board'
 
 # should not contain any logic as it is the view
-class ConnectFourView
+class GuiMenu
   
   # creates the board and sets the listeners
   def initialize (players = 1, victoryType = 0, commType = 0)
@@ -121,7 +121,7 @@ class ConnectFourView
   
   # attempts to start game
   def startGame
-    ConnectFourBoard.new(@players, @victoryType, @commType) do |model|
+    GuiBoard.new(@players, @victoryType, @commType) do |model|
       # exit game callback
     end
   end
@@ -157,5 +157,3 @@ class ConnectFourView
   end
   
 end
-
-#ConnectFourView.new

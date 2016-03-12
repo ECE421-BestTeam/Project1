@@ -1,0 +1,1 @@
+# A model for the settings for the connect four game

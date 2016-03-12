@@ -1,3 +1,3 @@
-require_relative './view/connect-four-menu'
+require_relative './view/gui-menu'
 
-game = ConnectFourView.new
+game = GuiMenu.new

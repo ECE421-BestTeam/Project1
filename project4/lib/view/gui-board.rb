@@ -2,7 +2,7 @@ require 'gtk2'
 require_relative '../controller/handler'
 
 # should not contain any logic as it is the view
-class ConnectFourBoard
+class GuiBoard
   
   # creates the board and sets the listeners
   def initialize (players, victoryType, commType, &close)
