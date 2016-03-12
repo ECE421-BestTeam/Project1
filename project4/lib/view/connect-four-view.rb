@@ -1,21 +1,18 @@
 require 'gtk2'
-require_relative '../controller/game-handler'
+require_relative '../controller/handler-factory'
 
 # should not contain any logic as it is the view
 class ConnectFourView
   
   # creates the board and sets the listeners
-  # handlers - should be a hash which defines the actions
-  def initialize (handler = GameHandler.new)
+  def initialize ()
 
-    @handler = handler
-    
     Gtk.init
 
     # set up the window
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do
-      @handler.close
+      @handler.close if @handler
       Gtk.main_quit
     end
     @window.title = "Connect4.2"
@@ -25,7 +22,7 @@ class ConnectFourView
     @menuHash = {}
     @players = 1
     @victoryType = 0
-    @commType = 0
+    @handlerType = 0
     
 #    @window.show
     
@@ -35,6 +32,7 @@ class ConnectFourView
 
   end
   
+  # shows the menu and allows the user set options
   def showMenu
 #    @screen.pack_
     menu = Gtk::VBox.new
@@ -82,6 +80,22 @@ class ConnectFourView
     )
     menu.pack_start victory
     
+    start = createBox('H', 
+      [
+        {
+          :type => Gtk::Label,
+          :content => "Start Game!",
+          :listeners => [
+            { 
+              :event => :clicked, 
+              :action => Proc.new {startGame} 
+            }
+          ]
+        }
+      ]
+    )
+    menu.pack_start start
+    
     #refresh the menu's values
     
     if @players == 2
@@ -110,18 +124,48 @@ class ConnectFourView
 
   end
   
-  def createElement(element)
-    if element[:widget]
-      return element[:widget]
-    end
+  # attempts to start game
+  def startGame
+    # chooses the correct controller
+    @handler = HandlerFactory.new @commType
     
-    el = element[:type].new(element[:content])
-    if element[:listeners]
-      element[:listeners].each do |listener|
-        el.signal_connect(listener[:event]) {listener[:action].call}
+    # sends options (@players, @victoryType, etc)
+    begin
+      model = @handler.startGame(@players, @victoryType) do |model|
+        refreshBoard(model)
       end
+    rescue
+      # we failed to join a game for some reason
+    else
+      # we have successfully joined a game
+      showBoard(model)
     end
-    return el
+  end
+  
+  # Builds and shows the base game board
+  def showBoard(model)
+    #build the board
+    
+    #update the board
+    refreshBoard model
+    
+    #register the handle listeners (which will take care of turn progression
+  end
+  
+  # refreshes board to reflect the current model
+  def refreshBoard(model)
+    # check for victory (if so do something like switch to end screen)
+    
+    #check which player's turn it is (disable/enable buttons)
+    
+    # update tokens
+  end
+  
+  # col - 0 indexed from the left
+  # row - 0 indexed from the bottom up
+  # token - the token to place
+  def placeToken (col, row, token)
+    
   end
   
   def createBox(type, elements)
@@ -140,23 +184,18 @@ class ConnectFourView
     return box
   end
   
-  # builds the game board according to the current model
-  def refreshBoard (model)
+  def createElement(element)
+    if element[:widget]
+      return element[:widget]
+    end
     
-  end
-  
-  # col - 0 indexed from the left
-  # row - 0 indexed from the bottom up
-  # token - the token to place
-  def placeToken (col, row, token)
-    
-  end
-  
-  # removes all tokens from the board
-  def clearBoard 
-    
+    el = element[:type].new(element[:content])
+    if element[:listeners]
+      element[:listeners].each do |listener|
+        el.signal_connect(listener[:event]) {listener[:action].call}
+      end
+    end
+    return el
   end
   
 end
-
-ConnectFourView.new();
