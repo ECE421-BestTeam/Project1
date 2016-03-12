@@ -1,5 +1,3 @@
-require_relative './view/connect-four-view'
+require_relative './view/connect-four-menu'
 
 game = ConnectFourView.new
-
-# can alternatively 

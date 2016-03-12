@@ -1,3 +1,4 @@
+require_relative './comm-factory'
 
 # controller for connect four
 class GameHandler
@@ -10,9 +11,9 @@ class GameHandler
 
   # called after a user has completed all settings
   # returns the game model if successful 
-  def startGame (players, victoryType)
+  def startGame (players, victoryType, &success)
     @model = @comm.startGame players, victoryType 
-    return @model
+    success.call(@model)
   end
   
   # called when closing the game

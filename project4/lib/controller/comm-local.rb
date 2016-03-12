@@ -2,13 +2,13 @@ require_relative '../model/game'
 require_relative './comm'
 
 # controller for connect four
-class LocalComm < Comm
+class CommLocal < Comm
   
   def initialize (commSettings = nil)
   end
 
-  def startGame
-    super
+  def startGame(players, victoryType)
+    super(players, victoryType)
   end
     
   def placeToken (col)

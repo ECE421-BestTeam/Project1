@@ -1,40 +1,35 @@
 require 'gtk2'
-require_relative '../controller/handler-factory'
+require_relative './connect-four-board'
 
 # should not contain any logic as it is the view
 class ConnectFourView
   
   # creates the board and sets the listeners
-  def initialize ()
+  def initialize (players = 1, victoryType = 0, commType = 0)
 
+    # the menu options
+    @players = players
+    @victoryType = victoryType
+    @commType = commType
+    
     Gtk.init
 
     # set up the window
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do
-      @handler.close if @handler
       Gtk.main_quit
     end
-    @window.title = "Connect4.2"
+    @window.title = "Connect4.2 Menu"
 #    window.border_width = 10
-
-    # initialize menu options
-    @menuHash = {}
-    @players = 1
-    @victoryType = 0
-    @handlerType = 0
-    
-#    @window.show
     
     showMenu
     
     Gtk.main
-
   end
   
   # shows the menu and allows the user set options
   def showMenu
-#    @screen.pack_
+#    @window.remove @windowContent
     menu = Gtk::VBox.new
     
     # build options and listeners
@@ -43,7 +38,6 @@ class ConnectFourView
     players1.signal_connect(:clicked) {@players = 1}
     players2 = Gtk::RadioButton.new players1, "2"
     players2.signal_connect(:clicked) {@players = 2}
-
     players = createBox('H', 
       [
         {
@@ -83,7 +77,7 @@ class ConnectFourView
     start = createBox('H', 
       [
         {
-          :type => Gtk::Label,
+          :type => Gtk::Button,
           :content => "Start Game!",
           :listeners => [
             { 
@@ -108,7 +102,7 @@ class ConnectFourView
       @players = 1
     end
     
-    if @players == 1
+    if @victoryType == 1
       victoryNormal.set_active false
       victoryOtto.set_active true
     else
@@ -118,7 +112,8 @@ class ConnectFourView
       @victoryType = 0
     end
     
-    @window.add menu
+    @menu = menu
+    @window.add @menu
     
     @window.show_all
 
@@ -126,46 +121,9 @@ class ConnectFourView
   
   # attempts to start game
   def startGame
-    # chooses the correct controller
-    @handler = HandlerFactory.new @commType
-    
-    # sends options (@players, @victoryType, etc)
-    begin
-      model = @handler.startGame(@players, @victoryType) do |model|
-        refreshBoard(model)
-      end
-    rescue
-      # we failed to join a game for some reason
-    else
-      # we have successfully joined a game
-      showBoard(model)
+    ConnectFourBoard.new(@players, @victoryType, @commType) do |model|
+      # exit game callback
     end
-  end
-  
-  # Builds and shows the base game board
-  def showBoard(model)
-    #build the board
-    
-    #update the board
-    refreshBoard model
-    
-    #register the handle listeners (which will take care of turn progression
-  end
-  
-  # refreshes board to reflect the current model
-  def refreshBoard(model)
-    # check for victory (if so do something like switch to end screen)
-    
-    #check which player's turn it is (disable/enable buttons)
-    
-    # update tokens
-  end
-  
-  # col - 0 indexed from the left
-  # row - 0 indexed from the bottom up
-  # token - the token to place
-  def placeToken (col, row, token)
-    
   end
   
   def createBox(type, elements)
@@ -199,3 +157,5 @@ class ConnectFourView
   end
   
 end
+
+#ConnectFourView.new
