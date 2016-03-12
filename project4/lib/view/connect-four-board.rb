@@ -41,6 +41,7 @@ class ConnectFourBoard
   def showBoard(model)
     #build the board
     board = Gtk::Table.new(model.rows, model.cols)
+    board = Gtk::Label.new('TODO make board')
     
     @board = board
     @window.add @board
