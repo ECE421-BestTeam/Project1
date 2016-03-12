@@ -4,7 +4,7 @@ class GameHandler
   
   #initializes handler vars
   def initialize(commType, &updateView)
-    @comm
+    @comm = CommFactory.new commType
     @updateView = updateView
   end
 

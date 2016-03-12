@@ -4,7 +4,7 @@ require_relative './comm'
 # controller for connect four
 class LocalComm < Comm
   
-  def initialize
+  def initialize (commSettings = nil)
   end
 
   def startGame

@@ -1,5 +1,5 @@
 # controller for connect four
-class CommHandler
+class Comm
   
   def initialize
     raise NotImplementedError, "Implement this method in a child class"
