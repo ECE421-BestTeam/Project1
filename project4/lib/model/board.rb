@@ -1,4 +1,4 @@
-require_relative './victory-factory'
+require_relative './victory'
 
 # the model for our game
 class BoardModel
@@ -19,7 +19,7 @@ class BoardModel
     
     @players = players
     @winner = 0
-    @victory = VictoryFacotry.new victoryType
+    @victory = VictoryModel.new victoryType
     @rows = rows
     @cols = cols
     
