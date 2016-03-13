@@ -1,15 +1,23 @@
-require_relative './victory'
-
-
 # the model for normal Victory
-class VictoryNormal < Victory
+class VictoryNormal
+  
+  attr_reader :name, playerTokens
   
   def initialize
     @name = "Normal"
-    @player1VictorySequence = ['0', '0', '0', '0']
-    @player2VictorySequence = ['1', '1', '1', '1']
-    @player1Token = '0'
-    @player2Token = '1'
+    @playerTokens = ['0', '1']
+    @player1VictorySequence = [
+      @playerTokens[0],
+      @playerTokens[0],
+      @playerTokens[0],
+      @playerTokens[0]
+      ]
+    @player2VictorySequence = [
+      @playerTokens[1],
+      @playerTokens[1],
+      @playerTokens[1],
+      @playerTokens[1]
+      ]
   end
   
   # checks if a victory condition is met

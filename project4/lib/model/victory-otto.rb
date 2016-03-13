@@ -1,14 +1,23 @@
-require_relative './victory'
-
 # the model for OTTO Victory
-class VictoryOtto < Victory
+class VictoryOtto
+  
+  attr_reader :name, playerTokens
   
   def initialize
     @name = "OTTO"
-    @player1VictorySequence = ['O', 'T', 'T', 'O']
-    @player2VictorySequence = ['T', 'O', 'O', 'T']
-    @player1Token = 'O'
-    @player2Token = 'T'
+    @playerTokens = ['O', 'T']
+    @player1VictorySequence = [
+      @playerTokens[0],
+      @playerTokens[1],
+      @playerTokens[1],
+      @playerTokens[0]
+      ]
+    @player2VictorySequence = [
+      @playerTokens[1],
+      @playerTokens[0],
+      @playerTokens[0],
+      @playerTokens[1]
+      ]
   end
   
   # checks if a victory condition is met
