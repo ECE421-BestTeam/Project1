@@ -1,35 +1,57 @@
+require_relative './contract-victory'
 require_relative './victory-normal'
 require_relative './victory-otto'
 
 # produces the desired victory object
 class VictoryModel
+  include VictoryContract
   
-  # victoryType - number: 1 = normal, 2 = OTTO
+  # victoryType - number: 0 = normal, 1 = OTTO
   def initialize (victoryType)
+    pre_initialize(victoryType)
     
     case victoryType
-      when 1
+      when 0
         @implementation = VictoryNormal.new
-      when 2
+      when 1
         @implementation = VictoryOtto.new
     end
     
+    post_initialize
+    class_invariant
   end
   
   def name
-    @implementation.name
+    pre_name
+    
+    result = @implementation.name
+    
+    post_name(result)
+    class_invariant
+    return result
   end
   
   def playerToken(player)
-    @implementation.playerTokens[player]
+    pre_playerToken(player)
+    
+    result = @implementation.playerTokens[player]
+    
+    post_playerToken(result)
+    class_invariant
+    return result
   end
   
   # checks if a victory condition is met
   # board - 2D array filled with nil/player1Token/player2Token
   # returns: 0 - no victory, 1 - p1 won, 2 - p2 won, 3 p1 + p2 won
   def checkVictory (board)
-    @implementation.checkVictory(board)
+    pre_checkVictory(board)
+    
+    result = @implementation.checkVictory(board)
+        
+    post_checkVictory(result)
+    class_invariant
+    return result
   end
   
 end
-

@@ -15,8 +15,8 @@ class BoardController
     
   end
 
-  def board
-    @implementation.board
+  def game
+    @implementation.game
   end
   
   def localPlayers

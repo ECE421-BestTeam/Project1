@@ -1,9 +1,9 @@
-require_relative '../model/board'
+require_relative '../model/game'
 
 # local implementation of board controller
 class BoardLocalController
   
-  attr_reader :board, :localPlayers
+  attr_reader :game, :localPlayers
   
   def initialize (settings = nil)
   end
@@ -16,7 +16,7 @@ class BoardLocalController
     else
       @localPlayers = [0]
     end
-    @board = BoardModel.new players, victoryType
+    @game = GameModel.new players, victoryType
   end
     
   def close
@@ -25,16 +25,16 @@ class BoardLocalController
   
   #called when a player wishes to place a token
   def placeToken (col)
-    @board.placeToken (col)
+    @game.placeToken (col)
   end
   
   # returns the next model where it is a local player's turn
   # if local 2P, return instantly
   # if vs. com, return after (maybe with delay) the computer's move is complete
   def getNextActiveState
-    if @board.players == 1
+    if @game.players == 1
       # let the model take the computer's turn
-      @board.takeComputerTurn
+      @game.takeComputerTurn
     end
   end
   

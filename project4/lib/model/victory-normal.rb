@@ -1,7 +1,7 @@
 # the model for normal Victory
 class VictoryNormal
   
-  attr_reader :name, playerTokens
+  attr_reader :name, :playerTokens
   
   def initialize
     @name = "Normal"

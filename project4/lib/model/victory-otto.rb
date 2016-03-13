@@ -1,7 +1,7 @@
 # the model for OTTO Victory
 class VictoryOtto
   
-  attr_reader :name, playerTokens
+  attr_reader :name, :playerTokens
   
   def initialize
     @name = "OTTO"

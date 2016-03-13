@@ -1,7 +1,7 @@
 require_relative './victory'
 
 # the model for our game
-class BoardModel
+class GameModel
   
   attr_reader :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
     :victoryType,
