@@ -1,7 +1,7 @@
 require_relative './victory-factory'
 
 # the model for our game
-class ConnectFourGame
+class BoardModel
   
   attr_reader :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
     :victoryType,
@@ -47,20 +47,18 @@ class ConnectFourGame
     return self
   end
   
+  def takeComputerTurn
+    placeToken(rand(0..(@cols-1))) # do something better (col might be full)
+  end
+  
   # handles inbetween of human turns
   # returns updated model
   def waitForNextUpdate (currentTurn = @turn)
-    if @players == 1
-      # the second player is a computer so make a move
-      placeToken(rand(0..(@cols-1))) # do something better (col might be full)
-    end
-    
-    # wait until model has been updated by other player
+    # wait until model has been updated by something else
     while @turn <= currentTurn
       sleep 0 # allow other threads to do stuff
     end
     
-    # else human partner so wait for them
     return self
   end
   

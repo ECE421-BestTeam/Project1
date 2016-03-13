@@ -1,5 +1,5 @@
 require 'gtk2'
-require_relative '../controller/handler'
+require_relative '../controller/board'
 
 # should not contain any logic as it is the view
 class GuiBoard
@@ -9,14 +9,14 @@ class GuiBoard
 
     @players = players
     @victoryType = victoryType
-    @handler = GameHandler.new(commType) { |model| refreshBoard(model) }
+    @controller = BoardController.new(commType)
     Gtk.init
 
     # set up the window
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do
       close.call(@model) if close
-      @handler.close if @handler
+      @controller.close if @controller
       Gtk.main_quit
     end
     @window.title = "Connect4.2 Game"
@@ -31,10 +31,8 @@ class GuiBoard
   # attempts to start game
   def startGame
     # sends options (@players, @victoryType, etc)
-    @handler.startGame(@players, @victoryType) do |model| 
-      #success
-      showBoard(model)
-    end
+    @controller.startGame(@players, @victoryType)
+    showBoard(@controller.board)
   end
   
   # Builds and shows the base game board
@@ -51,6 +49,10 @@ class GuiBoard
     refreshBoard model
     
     #register the handle listeners (which will take care of turn progression
+#    @handler.placeToken(col, row, token,
+#      Proc.new { |model| refreshBoard(model) }, #success
+#      Proc.new { |err| } #failure
+#    )
   end
   
   # refreshes board to reflect the current model
@@ -72,4 +74,4 @@ class GuiBoard
   
 end
 
-#ConnectFourBoard.new 1, 0, 0
+GuiBoard.new 1, 0, 0

@@ -157,3 +157,5 @@ class GuiMenu
   end
   
 end
+
+GuiMenu.new
