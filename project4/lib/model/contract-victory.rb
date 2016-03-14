@@ -5,9 +5,9 @@ module VictoryContract
   
   def class_invariant
     assert @implementation, "implementation must exist"
-    assert @implementation.method(:name).arity == 0, "implementation does not have 'name' method"
-    assert @implementation.method(:playerTokens).arity == 0, "implementation does not have 'playerToken' method"
-    assert @implementation.method(:checkVictory).arity == 1, "implementation does not have 'checkVictory' method"
+    assert @implementation.method(:name).arity == 0, "implementation does not have 'name' method with 0 args"
+    assert @implementation.method(:playerTokens).arity == 0, "implementation does not have 'playerToken' method with 0 args"
+    assert @implementation.method(:checkVictory).arity == 1, "implementation does not have 'checkVictory' method with 1 args"
   end
   
   def pre_initialize(victoryType)

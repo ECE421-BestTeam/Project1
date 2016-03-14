@@ -9,7 +9,7 @@ class BoardLocalController
   end
 
   # called after a user has completed all settings
-  # returns an array of local players if successful
+  # returns GameModel successful
   def startGame(players, victoryType)
     if players == 2
       @localPlayers = [0, 1]
