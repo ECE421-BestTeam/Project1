@@ -1,14 +1,16 @@
 require 'gtk2'
 require_relative './board'
+require_relative '../controller/menu'
 
 # should not contain any logic as it is the view
 class MenuGtk
   
   # creates the board and sets the listeners
-  def initialize (boardType = 0, players = 1, victoryType = 0, commType = 0)
+  def initialize(boardType = 0, menuControllerType = 0)
     @boardType = boardType
     
     # the menu options
+    @handler = MenuController.new 0
     @players = players
     @victoryType = victoryType
     @commType = commType
