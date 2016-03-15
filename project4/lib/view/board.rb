@@ -6,14 +6,14 @@ require_relative './board-gtk'
 class BoardView
   include BoardViewContract
   
-  def initialize(type, controller, game, &exitCallback)
-    pre_initialize(type, controller, game, exitCallback)
+  def initialize(type, controller, &exitCallback)
+    pre_initialize(type, controller, exitCallback)
 
       case type
         when 0
-          @implementation = BoardCmd.new controller, game, exitCallback
+          @implementation = BoardCmd.new controller, exitCallback
         when 1
-          @implementation = BoardGtk.new controller, game, exitCallback
+          @implementation = BoardGtk.new controller, exitCallback
       end
 
       post_initialize

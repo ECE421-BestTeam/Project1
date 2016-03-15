@@ -6,7 +6,7 @@ class BoardController
   include BoardControllerContract
   
   #initializes the selected board controller
-  def initialize (type, settings = {})
+  def initialize (type, settings)
     pre_initialize(type, settings)
     
     case type
@@ -18,12 +18,12 @@ class BoardController
     class_invariant
   end
 
-  def game
-    pre_game
+  def settings
+    pre_settings
     
-    result = @implementation.game
+    result = @implementation.settings
     
-    post_game(result)
+    post_settings(result)
     class_invariant
     return result
   end
@@ -40,10 +40,10 @@ class BoardController
   
   # called after a user has completed all settings
   # returns GameModel successful
-  def startGame(players, victoryType)
-    pre_startGame(players, victoryType)
+  def startGame
+    pre_startGame
     
-    result = @implementation.startGame(players, victoryType)
+    result = @implementation.startGame
     
     post_startGame(result)
     class_invariant
@@ -84,5 +84,3 @@ class BoardController
   end
   
 end
-
-#BoardController.new 0

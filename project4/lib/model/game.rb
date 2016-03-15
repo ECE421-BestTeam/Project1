@@ -3,30 +3,22 @@ require_relative './victory'
 # the model for our game
 class GameModel
   
-  attr_reader :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
-    :victoryType,
-    :rows,
-    :cols,
+  attr_reader :settings,
+    :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
     :turn, # even = (player 1 turn), or odd = (player 2 turn)
     :board
   
   # creates the board and sets the listeners
-  # players - number of players
-  # victoryType - number: 1 = normal, 2 = OTTO
-  # rows - number of rows in board
-  # cols - number of cols in board
-  def initialize (players, victoryType, rows = 6, cols = 7)
+  # settings a SettingsModel object
+  def initialize (settings)
     
-    @players = players
+    @settings = settings
     @winner = 0
-    @victory = VictoryModel.new victoryType
-    @rows = rows
-    @cols = cols
-    
+    @victory = VictoryModel.new @settings.victoryType
     @turn = 0
     
     # board slots are either nil (empty), 0 (player 1), or 1 (player 2)
-    @board = Array.new(@rows) { Array.new(@cols) {nil} }
+    @board = Array.new(@settings.rows) { Array.new(@settings.cols) {nil} }
     
   end
   
@@ -48,7 +40,7 @@ class GameModel
   end
   
   def takeComputerTurn
-    placeToken(rand(0..(@cols-1))) # do something better (col might be full)
+    placeToken(rand(0..(@settings.cols-1))) # do something better (col might be full)
   end
   
   # handles inbetween of human turns

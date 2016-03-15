@@ -6,15 +6,12 @@ require_relative '../controller/menu'
 class MenuGtk
   
   # creates the board and sets the listeners
-  def initialize(boardType, menuControllerType)
-    @boardType = boardType
+  def initialize(boardViewType, menuControllerType)
+    @boardViewType = boardViewType
     
     # the menu options
     @handler = MenuController.new menuControllerType
-    @players = players
-    @victoryType = victoryType
-    @commType = commType
-    
+
     Gtk.init
 
     # set up the window
@@ -32,11 +29,11 @@ class MenuGtk
   
   # attempts to start game
   def startGame
-    controller = GameController.new(@commType)
-    # sends options (@players, @victoryType, etc)
-    game = controller.startGame(@players, @victoryType)
+    # sends options and create a custom boardController
+    bController = @handler.getBoardController
     
-    BoardView.new(@boardType, controller, game,
+    # start a board view
+    BoardView.new(@boardViewType, bController,
       Proc.new do |model|
         # exit game callback
       end

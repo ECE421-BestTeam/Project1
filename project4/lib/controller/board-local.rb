@@ -3,20 +3,20 @@ require_relative '../model/game'
 # local implementation of board controller
 class BoardLocalController
   
-  attr_reader :game, :localPlayers
+  attr_reader :settings, :localPlayers
   
-  def initialize (settings = nil)
-  end
-
-  # called after a user has completed all settings
-  # returns GameModel successful
-  def startGame(players, victoryType)
-    if players == 2
+  def initialize (settings)
+    @settings = settings
+    if @settings.players == 2
       @localPlayers = [0, 1]
     else
       @localPlayers = [0]
     end
-    @game = GameModel.new players, victoryType
+  end
+
+  # returns a new GameModel
+  def startGame
+    @game = GameModel.new @settings
   end
     
   def close

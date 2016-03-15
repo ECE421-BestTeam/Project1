@@ -1,88 +1,74 @@
-require_relative './contract-board'
-require_relative './board-local'
+require_relative './contract-menu'
+require_relative '../menu-default'
+require_relative './board'
 
 # menu/settings controller interface
 class MenuController
-  include BoardControllerContract
+  include MenuControllerContract
   
   #initializes the selected board controller
-  def initialize (type, settings = {})
-    pre_initialize(type, settings)
+  def initialize(type)
+    pre_initialize(type)
     
     case type
       when 0
-        @implementation = BoardLocalController.new settings
+        @implementation = MenuDefaultController.new
     end
     
     post_initialize
     class_invariant
   end
-
-  def game
-    pre_game
-    
-    result = @implementation.game
-    
-    post_game(result)
-    class_invariant
-    return result
-  end
-  
-  def localPlayers
-    pre_localPlayers
-    
-    result = @implementation.localPlayers
-  
-    post_localPlayers(result)
-    class_invariant
-    return result
-  end
   
   # called after a user has completed all settings
   # returns GameModel successful
-  def startGame(players, victoryType)
-    pre_startGame(players, victoryType)
+  def getBoardController
+    pre_getBoardController
     
-    result = @implementation.startGame(players, victoryType)
-    
-    post_startGame(result)
+    result = BoardController.new(@implementation.boardControllerType, settings)
+
+    post_getBoardController(result)
     class_invariant
     return result
   end
   
-  # called when closing the game
-  def close 
-    pre_close
+  def settings
+    pre_settings
     
-    result = @implementation.close
+    result = @implementation.settings
     
-    post_close
-    class_invariant
-    return result
-  end
-    
-  # sends a request to place a token
-  def placeToken(col)
-    pre_placeToken(col)
-    
-    result = @implementation.placeToken(col)
-    
-    post_placeToken(result)
+    post_settings(result)
     class_invariant
     return result
   end
   
-  # returns the next model where it is a local player's turn
-  def getNextActiveState
-    pre_getNextActiveState
+  $settings = 
+    :players, # players - number of players
+    :victoryType, # victoryType - number: 0 = normal, 1 = OTTO
+    :boardControllerType, # the board controller type: 0 = local
+    :rows, # rows - number of rows in board
+    :cols # cols - number of cols in board
+  ]  
+
+  # Creates a getter and setter for each setting
+  $settings.each do |setting|
     
-    result = @implementation.getNextActiveState
+    #create getter
+    define_method("#{setting}") do |*args, &block|
+      result = @implementation.method("#{setting}").call
+      class_invariant
+      return result
+    end
     
-    post_getNextActiveState(result)
-    class_invariant
-    return result
+    #create setter
+    define_method("#{setting}=") do |*args, &block|
+      val = args[0]
+      self.method("pre_#{setting}=").call(val)
+      
+      @implementation.method("#{setting}=").call(val)
+      
+      class_invariant
+    end
+    
   end
   
 end
-
-#BoardController.new 0

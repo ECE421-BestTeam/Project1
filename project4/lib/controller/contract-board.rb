@@ -1,5 +1,6 @@
 require 'test/unit/assertions'
 require_relative '../model/game'
+require_relative '../model/settings'
 
 module BoardControllerContract
   include Test::Unit::Assertions
@@ -21,17 +22,17 @@ module BoardControllerContract
   
   def pre_initialize(type, settings)
     assert type.class == Fixnum && type.between?(0,0), "type must be a Fixnum in range 0-0"
-    assert settings.class == Hash, "settings must be a Hash"
+    assert settings.class == SettingsModel, "settings must be a SettingsModel"
   end
   
   def post_initialize
   end
 
-  def pre_game
+  def pre_settings
   end
   
-  def post_game(result)
-    assert result.class == GameModel, "result must be of class GameModel"
+  def post_settings(result)
+    assert result.class == SettingsModel, " must be of class SettingsModel"
   end
   
   def pre_localPlayers
@@ -41,9 +42,7 @@ module BoardControllerContract
     assert result.class == Array, "result must be an Array"
   end
   
-  def pre_startGame(players, victoryType)
-    assert players.class == Fixnum && players.between?(1,2), "players must be a Fixnum in range 1-2"
-    assert victoryType.class == Fixnum && victoryType.between?(0,1), "victoryType must be a Fixnum in range 0-1"
+  def pre_startGame
   end
   
   def post_startGame(result)
