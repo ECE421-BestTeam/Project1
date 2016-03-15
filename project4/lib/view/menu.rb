@@ -1,4 +1,4 @@
-require_relative './contract-board'
+require_relative './contract-menu'
 require_relative './menu-cmd'
 require_relative './menu-gtk'
 

@@ -22,13 +22,13 @@ class MenuDefaultController
   $settings.each do |setting|
     
     #create getter
-    define_method("#{setting}") do |*args, &block|
+    define_method("#{setting}") do
       @settings.method("#{setting}").call
     end
     
     #create setter
-    define_method("#{setting}=") do |*args, &block|
-      @settings.method("#{setting}=").call(args[0])
+    define_method("#{setting}=") do |val|
+      @settings.method("#{setting}=").call(val)
     end
     
   end

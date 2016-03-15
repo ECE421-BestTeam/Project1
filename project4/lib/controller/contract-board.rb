@@ -8,9 +8,9 @@ module BoardControllerContract
   def class_invariant
     assert @implementation, "implementation must exist"
     methods = [
-      { :name => :game, :args => 0 },
+      { :name => :settings, :args => 0 },
       { :name => :localPlayers, :args => 0 },
-      { :name => :startGame, :args => 2 },
+      { :name => :startGame, :args => 0 },
       { :name => :close, :args => 0 },
       { :name => :placeToken, :args => 1 },
       { :name => :getNextActiveState, :args => 0 }

@@ -1,7 +1,7 @@
 require 'test/unit/assertions'
 require_relative '../controller/menu'
 
-module BoardViewContract
+module MenuViewContract
   include Test::Unit::Assertions
   
   def class_invariant

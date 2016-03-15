@@ -1,5 +1,5 @@
 require_relative './contract-menu'
-require_relative '../menu-default'
+require_relative './menu-default'
 require_relative './board'
 
 # menu/settings controller interface
@@ -41,7 +41,7 @@ class MenuController
     return result
   end
   
-  $settings = 
+  $settings = [
     :players, # players - number of players
     :victoryType, # victoryType - number: 0 = normal, 1 = OTTO
     :boardControllerType, # the board controller type: 0 = local

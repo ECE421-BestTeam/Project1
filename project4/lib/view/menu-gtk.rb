@@ -33,11 +33,9 @@ class MenuGtk
     bController = @handler.getBoardController
     
     # start a board view
-    BoardView.new(@boardViewType, bController,
-      Proc.new do |model|
-        # exit game callback
-      end
-    )
+    BoardView.new(@boardViewType, bController) do |model|
+      # exit game callback
+    end
   end
   
   # shows the menu and allows the user set options
@@ -163,5 +161,3 @@ class MenuGtk
   end
   
 end
-
-GuiMenu.new 1

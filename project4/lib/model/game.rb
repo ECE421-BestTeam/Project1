@@ -3,7 +3,7 @@ require_relative './victory'
 
 # the model for our game
 class GameModel
-  incldue GameContract
+  include GameContract
   
   attr_reader :settings,
     :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
