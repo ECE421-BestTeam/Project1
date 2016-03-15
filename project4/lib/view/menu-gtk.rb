@@ -6,11 +6,11 @@ require_relative '../controller/menu'
 class MenuGtk
   
   # creates the board and sets the listeners
-  def initialize(boardType = 0, menuControllerType = 0)
+  def initialize(boardType, menuControllerType)
     @boardType = boardType
     
     # the menu options
-    @handler = MenuController.new 0
+    @handler = MenuController.new menuControllerType
     @players = players
     @victoryType = victoryType
     @commType = commType

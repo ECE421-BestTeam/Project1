@@ -1,5 +1,4 @@
 require_relative './contract-board'
-require_relative '../controller/menu'
 require_relative './menu-cmd'
 require_relative './menu-gtk'
 
@@ -12,9 +11,9 @@ class MenuView
 
       case type
         when 0
-          @implementation = MenuCmd.new menuControllerType
+          @implementation = MenuCmd.new boardType, menuControllerType
         when 1
-          @implementation = MenuGtk.new menuControllerType
+          @implementation = MenuGtk.new boardType, menuControllerType
       end
 
       post_initialize
