@@ -56,7 +56,7 @@ module BoardControllerContract
   end
   
   def pre_placeToken(col)
-    assert col.class == Fixnum && col.between?(0, game.cols - 1), "col must be a Fixnum in range 0-#{game.cols - 1}"
+    assert col.class == Fixnum && col.between?(0, @implementation.settings.cols - 1), "col must be a Fixnum in range 0-#{@implementation.settings.cols - 1}"
   end
   
   def post_placeToken(result)

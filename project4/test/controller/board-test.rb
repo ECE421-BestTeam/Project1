@@ -1,5 +1,6 @@
 require 'test/unit'
 require_relative '../../lib/controller/board'
+require_relative '../../lib/model/settings'
 
 class BoardControllerTest < Test::Unit::TestCase
   
@@ -13,10 +14,10 @@ class BoardControllerTest < Test::Unit::TestCase
   
   def implementationTests(type)
     assert_nothing_raised do
-      cont = BoardController.new type
-      cont.startGame(1, 0)
-      cont.game
+      cont = BoardController.new type, SettingsModel.new
+      cont.settings
       cont.localPlayers
+      cont.startGame
       cont.placeToken(0)
       cont.getNextActiveState
       cont.close
@@ -26,7 +27,7 @@ class BoardControllerTest < Test::Unit::TestCase
   def test_initialize
     
     assert_raise(MiniTest::Assertion) do
-      BoardController.new -1
+      BoardController.new -1, SettingsModel.new
     end
     
   end
@@ -37,3 +38,11 @@ class BoardControllerTest < Test::Unit::TestCase
 
   
 end
+
+      cont = BoardController.new 0, SettingsModel.new
+      cont.settings
+      cont.localPlayers
+      cont.startGame
+      cont.placeToken(0)
+      cont.getNextActiveState
+      cont.close

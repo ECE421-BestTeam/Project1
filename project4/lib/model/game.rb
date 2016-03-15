@@ -41,7 +41,7 @@ class GameModel
     # increment the turn
     @turn += 1
     
-    isWinner
+#    checkVictory
     
     result = self
     

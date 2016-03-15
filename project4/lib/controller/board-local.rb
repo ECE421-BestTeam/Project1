@@ -32,9 +32,9 @@ class BoardLocalController
   # if local 2P, return instantly
   # if vs. com, return after (maybe with delay) the computer's move is complete
   def getNextActiveState
-    if @game.players == 1
+    if @settings.players == 1
       # let the model take the computer's turn
-      @game.takeComputerTurn
+      @game.computerTurn
     end
   end
   
