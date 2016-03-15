@@ -11,6 +11,9 @@ class VictoryModelTest < Test::Unit::TestCase
     # do nothing
   end
   
+  # just checks that no errors are thrown
+  # the contracts that are run ensure that 
+  # the correct types are going in and out
   def implementationTests(type)
     assert_nothing_raised do
       cont = VictoryModel.new type
@@ -34,5 +37,11 @@ class VictoryModelTest < Test::Unit::TestCase
     implementationTests(1) #tests victory-otto
   end
 
+  def test_checkVictory_normal
+    v = VictoryModel.new 0
+    
+    # do something interesting
+    v.checkVictory([[0]])
+  end
   
 end
