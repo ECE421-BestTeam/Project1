@@ -1,34 +1,57 @@
 require 'test/unit/assertions'
+require_relative './settings'
+require_relative './victory'
 
-module SettingsContract
+module GameContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @players.class == Fixnum && @players.between?(1,2), "players must be a Fixnum in 1-2"
-    assert @victoryType.class == Fixnum && @victoryType.between?(0,1), "victoryType must be a Fixnum in 0-1"
-    assert @boardControllerType.class == Fixnum && @boardControllerType.between?(0,1), "boardControllerType must be a Fixnum in 0-1"
-    assert @rows.class == Fixnum && @rows > 0, "rows must be a Fixnum greater than 0"
-    assert @cols.class == Fixnum && @cols > 0, "cols must be a Fixnum greater than 0"
+    assert @settings.class == SettingsModel, "settings must be a SettingsModel"
+    assert @winner.class == Fixnum && @winner.between?(0,3), "winner must be a Fixnum in 0-3"
+    assert @victory.class == VictoryModel, "victory must be a VictoryModel"
+    assert @turn.class == Fixnum && @turn >= 0, "turn must be a Fixnum greater than or equal to 0"
+    msg = "board must be an array (size greater than 0) of arrays (of equal sizes, greater than 0)."
+    assert @board.class == Array && @board.size > 0, msg
+    board.each do |row| 
+      assert row.class == Array && row.size > 0, msg
+    end
+  end
+    
+  def pre_initialize(settings)
+    assert settings.class == SettingsModel, "settings must be a SettingsModel"
   end
   
-  def pre_players=(val)
-    assert val.class == Fixnum && val.between?(1,2), "players must be a Fixnum in 1-2"
-  end
-
-  def pre_victoryType=(val)
-    assert val.class == Fixnum && val.between?(0,1), "victoryType must be a Fixnum in 0-1"
+  def post_initialize
   end
   
-  def pre_boardControllerType=(val)
-    assert val.class == Fixnum && val.between?(0,1), "boardControllerType must be a Fixnum in 0-1"
+  def pre_placeToken(col)
+    assert col.class == Fixnum && col.between?(0, @settings.cols - 1), "col must be a Fixnum in range 0-#{game.cols - 1}"
   end
   
-  def pre_rows=(val)
-    assert val.class == Fixnum && val > 0, "rows must be a Fixnum greater than 0"
+  def post_placeToken(result)
+    assert result.class == GameModel, "result must be of class GameModel"
   end
   
-  def pre_cols=(val)
-    assert val.class == Fixnum && val > 0, "cols must be a Fixnum greater than 0"
+  def pre_computerTurn
+  end
+  
+  def post_computerTurn(result)
+    assert result.class == GameModel, "result must be of class GameModel"
+  end
+  
+  def pre_waitForNextUpdate(currentTurn)
+    assert currentTurn.class == Fixnum && currentTurn >= 0, "currentTurn must be a Fixnum greater than or equal to 0"
+  end
+  
+  def post_waitForNextUpdate(result)
+    assert result.class == GameModel, "result must be of class GameModel"
+  end
+  
+  def pre_checkVictory
+  end
+  
+  def post_checkVictory(result)
+    assert result.class == Fixnum && result.between?(0,3), "winner must be a Fixnum in 0-3"
   end
   
 end
