@@ -5,7 +5,7 @@ class VictoryNormal
   
   def initialize
     @name = "Normal"
-    @playerTokens = ['R', 'B']
+    @playerTokens = ['O', 'X']
     @player1VictorySequence = [
       @playerTokens[0],
       @playerTokens[0],
@@ -24,6 +24,9 @@ class VictoryNormal
   # board - 2D array filled with nil/player1Token/player2Token
   # returns: 0 - no victory, 1 - p1 won, 2 - p2 won, 3 p1 + p2 won
   def checkVictory (board)
+    # p1 victory
+    
+    # p2 victory
     
   end
   
