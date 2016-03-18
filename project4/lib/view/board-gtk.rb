@@ -14,19 +14,10 @@ class BoardGtk
     @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
 
-    setUpBoard exitCallback
-    refreshBoard @controller.startGame
-    
-    Gtk.main
-
-  end
-  
-  # Builds and shows the base game board
-  def setUpBoard(exitCallback)
     # set up the window
     Gtk.init
     @window = Gtk::Window.new
-    @window.signal_connect("destroy") do
+    GtkHelper.applyEventHandler(@window, "destroy") do
       @controller.close(@game) if @controller.close
       Gtk.main_quit
       exitCallback.call(@game) if exitCallback
@@ -34,6 +25,16 @@ class BoardGtk
     @window.title = "Connect4.2 Game"
 #    window.border_width = 10
     
+    # set up the board
+    setUpBoard exitCallback
+    refreshBoard @controller.startGame
+    
+    Gtk.main
+
+  end
+  
+  # Builds the base game board
+  def setUpBoard(exitCallback)
     
     createPlaceButton = Proc.new do |col|
       {
@@ -76,6 +77,7 @@ class BoardGtk
   # refreshes board to reflect the current model
   def refreshBoard(game)
     @game = game
+    puts 'refreshed'
     # check for victory (if so do something like switch to end screen)
     
     #check which player's turn it is (disable/enable buttons)

@@ -17,7 +17,7 @@ class MenuGtk
 
     # set up the window
     @window = Gtk::Window.new
-    @window.signal_connect("destroy") do
+    GtkHelper.applyEventHandler(@window, "destroy") do
       Gtk.main_quit
     end
     @window.title = "Connect4.2 Menu"
@@ -47,9 +47,9 @@ class MenuGtk
     # build options and listeners
        
     players1 = Gtk::RadioButton.new "1"
-    players1.signal_connect(:clicked) {@players = 1}
+    GtkHelper.applyEventHandler(players1, :clicked) {@players = 1}
     players2 = Gtk::RadioButton.new players1, "2"
-    players2.signal_connect(:clicked) {@players = 2}
+    GtkHelper.applyEventHandler(players2, :clicked) {@players = 2}
     players = GtkHelper.createBox('H', 
       [
         {
@@ -67,9 +67,9 @@ class MenuGtk
     menu.pack_start players
     
     victoryNormal = Gtk::RadioButton.new "Normal"
-    victoryNormal.signal_connect(:clicked) {@victoryType = 0}
+    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@victoryType = 0}
     victoryOtto = Gtk::RadioButton.new victoryNormal, "OTTO/TOOT"
-    victoryOtto.signal_connect(:clicked) {@victoryType = 1}
+    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@victoryType = 1}
     victory = GtkHelper.createBox('H', 
       [
         {

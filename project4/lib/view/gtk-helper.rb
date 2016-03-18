@@ -1,3 +1,5 @@
+require 'gtk2'
+
 module GtkHelper
   
   # type = 'V' or 'H' for a vertical or horizontal box
@@ -44,14 +46,35 @@ module GtkHelper
     el = element[:type].new(element[:content])
     if element[:listeners]
       element[:listeners].each do |listener|
-        el.signal_connect(listener[:event]) {listener[:action].call}
+        self.applyEventHandler(el, listener[:event]) {listener[:action].call}
       end
     end
     return el
   end
   
-  def applyEventHandler (widget, event, &handler)
+  
+  def self.applyEventHandler(widget, event, &handler)
+    widget.signal_connect(event) do |*args, &block|
+      begin
+        handler.call(*args, &block)
+      rescue Exception => e
+        self.errorHandler(e)
+      end
+    end
+  end
+  
+  def self.errorHandler(err)
+    Gtk.init
+    @window = Gtk::Window.new
+    @window.signal_connect("destroy") do
+      Gtk.main_quit
+    end
+    @window.title = "Error"
+        
+    @window.add Gtk::Label.new(err.to_s)
+    @window.show_all
     
+    Gtk.main
   end
   
 end
