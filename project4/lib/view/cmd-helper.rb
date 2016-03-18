@@ -18,6 +18,7 @@ module CmdHelper
           ocb.call(res)
         rescue Exception => e
           self.errorHandler(e)
+          raise e
           self.getUserInput(question, answers, callback, true)
         end
       end
@@ -30,7 +31,7 @@ module CmdHelper
     elsif self.is_integer?(ans) && answers.include?(Integer(ans))
       callback.call(Integer(ans))
     else
-      puts "Invalid response.  Should be one of: #{answers}"
+      puts "Invalid.  Should be one of: #{answers}"
       getUserInput(question, answers, callback, true)
     end
   end

@@ -18,14 +18,13 @@ class MenuCmd
   
   # attempts to start game
   def startGame
-    @mode = :wait
     # sends options and create a custom boardController
     bController = @controller.getBoardController
     
     # start a board view
     BoardView.new(@boardViewType, bController) do |model|
       # exit game callback
-      puts 'Welcome back'
+      puts "\n"
       @mode = :options
     end
   end
@@ -33,8 +32,6 @@ class MenuCmd
   def loop
     while true
       case @mode
-        when :wait
-          sleep 0 # don't do anything until our mode is changed
         when :options
           getOptions
         when :startGame
@@ -46,6 +43,7 @@ class MenuCmd
   # queries the user for their desired options
   def getOptions
     puts "Type 'exit' at any time to exit"
+    puts "--OPTIONS--"
     CmdHelper.getUserInput(
       "How many players? (1 or 2)", 
       [1, 2], 

@@ -20,13 +20,15 @@ class BoardCmd
   
   def loop
     
-    while true
-      turn
+    while turn
     end
     
+    @controller.close
+    @exitCallback.call @game
   end
   
   # Handles a localPlayer Turn
+  # returns false if the game is over
   def turn
     puts boardToString
     
@@ -40,9 +42,7 @@ class BoardCmd
       
       puts "ENTER to continue:"
       gets
-      @controller.close
-      @exitCallback.call @game
-      exit
+      return false
     end
     
     playerTurn = @game.turn % 2
@@ -60,6 +60,7 @@ class BoardCmd
       @controller.getNextActiveState
     end
    
+    return true
   end
   
   def boardToString
