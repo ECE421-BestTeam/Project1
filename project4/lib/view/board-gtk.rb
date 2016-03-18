@@ -34,19 +34,43 @@ class BoardGtk
     @window.title = "Connect4.2 Game"
 #    window.border_width = 10
     
+    
+    createPlaceButton = Proc.new do |col|
+      {
+        :type => Gtk::Button,
+        :content => "Place",
+        :listeners => [
+          { 
+            :event => :clicked, 
+            :action => Proc.new { refreshBoard(@controller.placeToken(col)) } 
+          }
+        ]
+      }
+    end
+    
+    buttons = []
+    (0..(@cols-1)).each do |col|
+      buttons.push(createPlaceButton.call(col))
+    end
+    buttons = GtkHelper.createBox('H', buttons)
+    
+    
     #build the board
-    board = Gtk::Table.new(@rows, @cols)
-    board = Gtk::Label.new('TODO make board')
+    board = GtkHelper.createBox('V', 
+      [
+        {
+          :widget => buttons
+        },
+        {
+          :widget => Gtk::Table.new(@rows, @cols)
+        }
+      ]
+    )
     
     @board = board
     @window.add @board
     @window.show_all
-    
-    #register the handle listeners (which will take care of turn progression
-#    @handler.placeToken(col, row, token,
-#      Proc.new { |game| refreshBoard(game) }, #success
-#      Proc.new { |err| } #failure
-#    )
+
   end
   
   # refreshes board to reflect the current model
@@ -64,10 +88,6 @@ class BoardGtk
   # row - 0 indexed from the bottom up
   # token - the token to place: nil = empty token, 
   def placeToken (col, row, token = nil)
-    
-  end
-  
-  def applyEventHandler (widget, event, &handler)
     
   end
   

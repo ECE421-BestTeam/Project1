@@ -50,4 +50,8 @@ module GtkHelper
     return el
   end
   
+  def applyEventHandler (widget, event, &handler)
+    
+  end
+  
 end
