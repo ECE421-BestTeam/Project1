@@ -65,8 +65,12 @@ class GameModel
   
   def computerTurn
     pre_computerTurn
-    
-    placeToken(rand(0..(@settings.cols-1))) # do something better (col might be full)
+    begin
+      placeToken(rand(0..(@settings.cols-1))) # do something better (col might be full)
+    rescue ArgumentError
+      retry #silently retry
+    end
+    checkVictory
     result = self
     
     post_computerTurn(result)
