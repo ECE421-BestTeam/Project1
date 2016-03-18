@@ -30,24 +30,37 @@ class VictoryCond
     return 2 if checkArrays(board.transpose, @p2win) \
       || checkArrays(board, @p2win) \
       || checkArrays(diags, @p2win)
-    board.each {|col|
-      return 0 if col.find{|pos| pos.nil?}
+      
+    board.each_index { |c|
+      board[c].each_index {|r|
+        return 0 if board[r][c].nil?
+        }
     }
     
     return 3
   end
   
   def checkArrays (arrs, win)
-    arrs.size.times{ |r|
-      arrs[r].each_with_index{ |v, i|
+    arrs.each{ |row|
+      if row.size < win.size then
+        next
+      end
+      row.each_with_index{ |_, r|
         result = true
-        (0..win.size).each { |s|
-          result = result && arrs[r][i+s] == win[s]
+        (0..win.size).each { |i|
+          result = result && row[r+i] == win[i]
         }
         return result if result == true
       }
     }
     return false
+
+#    (0...arrs.size).each{|r|
+#      if arrs[r].size >= win.size
+#        return true if arrs[r].each_cons(win.size).any?{|c| c==win }
+#      end
+#    }
+#    return false
   end
   
   def makeDiags (arrs)

@@ -14,10 +14,10 @@ class VictoryModel
     case victoryType
       when 0
         #@implementation = VictoryNormal.new
-        @implementation = VictoryCond.new("Normal", ['O', 'X'], ['O','O','O','O'],['X','X','X','X'])
+        @implementation = VictoryCond.new("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
       when 1
         #@implementation = VictoryOtto.new
-        @implementation = VictoryCond.new("OTTO", ['O', 'T'], ['O','T','T','O'],['T','O','O','T'])
+        @implementation = VictoryCond.new("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
     end
 
     post_initialize

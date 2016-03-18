@@ -39,28 +39,32 @@ class VictoryModelTest < Test::Unit::TestCase
 
   def test_checkVictory_normal
     v = VictoryModel.new 0
-    board = [ [nil,nil,nil,nil],
-              [nil,nil,nil,nil],
-              [nil,nil,nil,nil],
-              [nil,nil,nil,nil]]
-    assert_equal 3, v.checkVictory(board)
+    board = [ [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
+    assert_equal 0, v.checkVictory(board)
     
-    board = [ [nil,nil,nil,nil],
-              ['O','O','O','O'],
-              [nil,nil,nil,nil],
-              [nil,nil,nil,nil]]
+    board = [ [nil,nil,nil,nil,nil,nil],
+              [ 0 , 0 , 0 , 0 ,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
     assert_equal 1, v.checkVictory(board)
     
-    board = [ [nil,nil,'X',nil],
-              ['O','O','X','O'],
-              [nil,nil,'X',nil],
-              [nil,nil,'X',nil]]
+    board = [ [nil,nil, 1 ,nil,nil,nil],
+              [ 0 , 0 , 1 , 0 ,nil,nil],
+              [nil,nil, 1 ,nil,nil,nil],
+              [nil,nil, 1 ,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
     assert_equal 2, v.checkVictory(board)
     
-    board = [ [nil,nil,'X','O'],
-              ['O','X','O','O'],
-              [nil,'O','X',nil],
-              ['O',nil,'X',nil]]
+    board = [ [nil,nil, 0 ,nil,nil,nil],
+              [ 0 , 0 , 1 , 0 ,nil,nil],
+              [nil,nil, 1 ,nil, 0 ,nil],
+              [nil,nil, 1 ,nil,nil, 0 ],
+              [nil,nil,nil,nil,nil,nil]]
     assert_equal 1, v.checkVictory(board)
   end
   
