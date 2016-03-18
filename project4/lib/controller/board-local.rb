@@ -36,6 +36,7 @@ class BoardLocalController
       # let the model take the computer's turn
       @game.computerTurn
     end
+    return @game
   end
   
 end

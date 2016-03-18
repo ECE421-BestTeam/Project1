@@ -43,7 +43,10 @@ class BoardGtk
         :listeners => [
           { 
             :event => :clicked, 
-            :action => Proc.new { refreshBoard(@controller.placeToken(col)) } 
+            :action => Proc.new { 
+              refreshBoard(@controller.placeToken(col)) 
+              refreshBoard(@controller.getNextActiveState) 
+            } 
           }
         ]
       }
