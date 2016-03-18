@@ -1,4 +1,5 @@
 require 'gtk2'
+require_relative './gtk-helper'
 require_relative '../controller/board'
 
 # should not contain any logic as it is the view
@@ -63,6 +64,10 @@ class BoardGtk
   # row - 0 indexed from the bottom up
   # token - the token to place: nil = empty token, 
   def placeToken (col, row, token = nil)
+    
+  end
+  
+  def applyEventHandler (widget, event, &handler)
     
   end
   

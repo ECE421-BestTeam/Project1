@@ -1,4 +1,5 @@
 require 'gtk2'
+require_relative './gtk-helper'
 require_relative './board'
 require_relative '../controller/menu'
 
@@ -49,7 +50,7 @@ class MenuGtk
     players1.signal_connect(:clicked) {@players = 1}
     players2 = Gtk::RadioButton.new players1, "2"
     players2.signal_connect(:clicked) {@players = 2}
-    players = createBox('H', 
+    players = GtkHelper.createBox('H', 
       [
         {
           :type => Gtk::Label,
@@ -69,7 +70,7 @@ class MenuGtk
     victoryNormal.signal_connect(:clicked) {@victoryType = 0}
     victoryOtto = Gtk::RadioButton.new victoryNormal, "OTTO/TOOT"
     victoryOtto.signal_connect(:clicked) {@victoryType = 1}
-    victory = createBox('H', 
+    victory = GtkHelper.createBox('H', 
       [
         {
           :type => Gtk::Label,
@@ -85,7 +86,7 @@ class MenuGtk
     )
     menu.pack_start victory
     
-    start = createBox('H', 
+    start = GtkHelper.createBox('H', 
       [
         {
           :type => Gtk::Button,
@@ -128,36 +129,6 @@ class MenuGtk
     
     @window.show_all
 
-  end
-  
-  def createBox(type, elements)
-    box = nil
-    
-    if type == 'V'
-      box = Gtk::VBox.new
-    else
-      box = Gtk::HBox.new
-    end
-    
-    elements.each do |element|
-      box.pack_start createElement(element)
-    end
-    
-    return box
-  end
-  
-  def createElement(element)
-    if element[:widget]
-      return element[:widget]
-    end
-    
-    el = element[:type].new(element[:content])
-    if element[:listeners]
-      element[:listeners].each do |listener|
-        el.signal_connect(listener[:event]) {listener[:action].call}
-      end
-    end
-    return el
   end
   
 end
