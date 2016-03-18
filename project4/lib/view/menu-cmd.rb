@@ -1,3 +1,4 @@
+require_relative './cmd-helper'
 require_relative './board'
 require_relative '../controller/menu'
 
@@ -35,16 +36,16 @@ class MenuCmd
   # queries the user for their desired options
   def getOptions
     puts "Type 'exit' at any time to exit"
-    getOption(
+    CmdHelper.getUserInput(
       "How many players? (1 or 2)", 
       [1, 2], 
       Proc.new { |res| @controller.players = res})
-    getOption(
+    CmdHelper.getUserInput(
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
       [0, 1], 
       Proc.new { |res| @controller.victoryType = res})
 
-    getOption(
+    CmdHelper.getUserInput(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 
       [0, 1], 
       Proc.new do |res| 
@@ -58,46 +59,6 @@ class MenuCmd
       end
     )
   end
-  
-  # question - string that is printed
-  # answers - an array of valid answers
-  # callback - called with a valid answer
-  # recursive - boolean used to indicate if this is a recursive call
-  def getOption(question, answers, callback, recursive = false)
-    puts question
-    ans = gets.strip
-    
-    # only wrap the callback on the first call
-    if !recursive
-      ocb = callback
-      callback = Proc.new do |res|
-        begin
-          ocb.call(res)
-        rescue Exception => e
-          errorHandler(e)
-          getOption(question, answers, callback, true)
-        end
-      end
-    end
-    
-    if ans == "exit"
-      exit
-    elsif answers.include?(ans)
-      callback.call(ans)
-    elsif is_integer?(ans) && answers.include?(Integer(ans))
-      callback.call(Integer(ans))
-    else
-      puts "Invalid response.  Should be one of: #{answers}"
-      getOption(question, answers, callback, true)
-    end
-  end
-  
-  def errorHandler(err)
-    puts err.to_s
-  end
-  
-  def is_integer?(n)
-    true if Integer(n) rescue false
-  end
+ 
   
 end
