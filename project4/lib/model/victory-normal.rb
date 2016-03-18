@@ -5,7 +5,7 @@ class VictoryNormal
   
   def initialize
     @name = "Normal"
-    @playerTokens = ['0', '1']
+    @playerTokens = ['R', 'B']
     @player1VictorySequence = [
       @playerTokens[0],
       @playerTokens[0],

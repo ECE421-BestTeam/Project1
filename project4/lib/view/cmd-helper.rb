@@ -35,7 +35,7 @@ module CmdHelper
     end
   end
   
-  def selferrorHandler(err)
+  def self.errorHandler(err)
     puts err.to_s
   end
   

@@ -7,6 +7,7 @@ class GameModel
   
   attr_reader :settings,
     :winner, # 0 = nowin, 1 = (player 1), 2 = (player 2), 3 = draw
+    :victory, # victory object
     :turn, # even = (player 1 turn), or odd = (player 2 turn)
     :board
   
@@ -32,16 +33,28 @@ class GameModel
   def placeToken (col)
     pre_placeToken(col)
     
-    if @turn % 2 == 0
-      #first player turn
-    else
-      #second player turn
+    raise ArgumentError, "Game is over!" if @winner != 0
+    
+    freeRow = false
+    
+    # look through the col, starting from the bottom
+    (0..(@settings.rows - 1)).each do |rowNum|
+      row = @settings.rows - 1 - rowNum
+      currentToken = @board[row][col]
+      if currentToken == nil
+        freeRow = row
+        break
+      end
     end
     
+    raise ArgumentError, "Column is full!" if !freeRow
+    
+    # set playerToken in the lowest available column slot
+    @board[freeRow][col] = @turn % 2
     # increment the turn
     @turn += 1
-    
-#    checkVictory
+    # checkVictory
+    checkVictory
     
     result = self
     
@@ -67,7 +80,7 @@ class GameModel
     pre_waitForNextUpdate(currentTurn)
     
     # wait until model has been updated by something else
-    while @turn <= currentTurn
+    while @turn <= currentTurn && @winner == 0
       sleep 0 # allow other threads to do stuff
     end
     result = self

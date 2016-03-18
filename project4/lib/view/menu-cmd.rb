@@ -12,11 +12,13 @@ class MenuCmd
     # the menu options
     @controller = MenuController.new menuControllerType
     
+    @mode = :options #can be :wait, :options, :startGame
     loop
   end
   
   # attempts to start game
   def startGame
+    @mode = :wait
     # sends options and create a custom boardController
     bController = @controller.getBoardController
     
@@ -24,12 +26,20 @@ class MenuCmd
     BoardView.new(@boardViewType, bController) do |model|
       # exit game callback
       puts 'Welcome back'
+      @mode = :options
     end
   end
   
   def loop
     while true
-      getOptions #truly finishes after startGame or on restart
+      case @mode
+        when :wait
+          sleep 0 # don't do anything until our mode is changed
+        when :options
+          getOptions
+        when :startGame
+          startGame
+      end
     end
   end
   
@@ -51,9 +61,9 @@ class MenuCmd
       Proc.new do |res| 
         case res
           when 0
-            startGame
+            @mode = :startGame
           when 1
-            # don't do anything we automatically go to options again
+            @mode = :options
         end
 
       end
