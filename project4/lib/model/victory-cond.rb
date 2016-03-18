@@ -30,9 +30,11 @@ class VictoryCond
     return 2 if checkArrays(board.transpose, @p2win) \
       || checkArrays(board, @p2win) \
       || checkArrays(diags, @p2win)
+    board.each {|col|
+      return 0 if col.find{|pos| pos.nil?}
+    }
+    
     return 3
-    
-    
   end
   
   def checkArrays (arrs, win)
