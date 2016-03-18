@@ -94,7 +94,6 @@ class GameModel
   # returns false - no winner, true - winner exists
   def checkVictory
     pre_checkVictory
-    puts "#{@board}"
     if @winner == 0  
       @winner = @victory.checkVictory @board
     end
