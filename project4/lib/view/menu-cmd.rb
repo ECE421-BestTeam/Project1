@@ -12,7 +12,8 @@ class MenuCmd
     # the menu options
     @controller = MenuController.new menuControllerType
     
-    @mode = :options #can be :wait, :options, :startGame
+    @helper = CmdHelper.new(Proc.new {exit})
+    @mode = :options #can be :options, :startGame
     loop
   end
   
@@ -44,16 +45,16 @@ class MenuCmd
   def getOptions
     puts "Type 'exit' at any time to exit"
     puts "--OPTIONS--"
-    CmdHelper.getUserInput(
+    @helper.getUserInput(
       "How many players? (1 or 2)", 
       [1, 2], 
       Proc.new { |res| @controller.players = res})
-    CmdHelper.getUserInput(
+    @helper.getUserInput(
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
       [0, 1], 
       Proc.new { |res| @controller.victoryType = res})
 
-    CmdHelper.getUserInput(
+    @helper.getUserInput(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 
       [0, 1], 
       Proc.new do |res| 

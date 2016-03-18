@@ -9,23 +9,46 @@ class BoardCmd
 
     @exitCallback = exitCallback
     @controller = controller
+    
     # pull settings we will use frequently, they are constant
     @rows = @controller.settings.rows
     @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
 
     @game = @controller.startGame
+    @helper = CmdHelper.new(Proc.new {gameover})
+    @gameover = false
     loop
   end
   
   def loop
     
-    while turn
+    while !@gameover
+      turn
     end
+
+  end
+  
+  def gameover
+    @gameover = true
+
+    if @game.winner != 0
+      if @game.winner == 3
+        puts "GAME OVER: Draw!"
+      else
+        puts "GAME OVER: Player #{@game.winner} wins!"
+      end
+    else
+      puts "User Quit Game"
+    end
+
+    puts "ENTER to continue:"
+    gets
     
     @controller.close
     @exitCallback.call @game
   end
+  
   
   # Handles a localPlayer Turn
   # returns false if the game is over
@@ -33,22 +56,14 @@ class BoardCmd
     puts boardToString
     
     if @game.winner != 0
-      # We have a winner!!
-      if @game.winner == 3
-        puts "GAME OVER: Draw!"
-      else
-        puts "GAME OVER: Player #{@game.winner} wins!"
-      end
-      
-      puts "ENTER to continue:"
-      gets
-      return false
+      gameover
+      return
     end
     
     playerTurn = @game.turn % 2
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn + 1}'s turn:"
-      CmdHelper.getUserInput(
+      @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@cols})", 
         (1..@cols), 
         Proc.new do |col|
@@ -60,7 +75,6 @@ class BoardCmd
       @controller.getNextActiveState
     end
    
-    return true
   end
   
   def boardToString

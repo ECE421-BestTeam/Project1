@@ -1,12 +1,15 @@
 
-module CmdHelper
+class CmdHelper
   
+   def initialize(exitCallback)
+     @exitCallback = exitCallback
+   end
    
   # question - string that is printed
   # answers - an array of valid answers
   # callback - called with a valid answer
   # recursive - boolean used to indicate if this is a recursive call
-  def self.getUserInput(question, answers, callback, recursive = false)
+  def getUserInput(question, answers, callback, recursive = false)
     puts question
     ans = gets.strip
     
@@ -17,18 +20,17 @@ module CmdHelper
         begin
           ocb.call(res)
         rescue Exception => e
-          self.errorHandler(e)
-          raise e
-          self.getUserInput(question, answers, callback, true)
+          errorHandler(e)
+          getUserInput(question, answers, callback, true)
         end
       end
     end
     
     if ans == "exit"
-      exit
+      @exitCallback.call
     elsif answers.include?(ans)
       callback.call(ans)
-    elsif self.is_integer?(ans) && answers.include?(Integer(ans))
+    elsif is_integer?(ans) && answers.include?(Integer(ans))
       callback.call(Integer(ans))
     else
       puts "Invalid.  Should be one of: #{answers}"
@@ -36,11 +38,11 @@ module CmdHelper
     end
   end
   
-  def self.errorHandler(err)
+  def errorHandler(err)
     puts err.to_s
   end
   
-  def self.is_integer?(n)
+  def is_integer?(n)
     true if Integer(n) rescue false
   end
   
