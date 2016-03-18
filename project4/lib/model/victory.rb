@@ -18,6 +18,7 @@ class VictoryModel
       when 1
         #@implementation = VictoryOtto.new
         @implementation = VictoryCond.new("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
+
     end
 
     post_initialize

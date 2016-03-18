@@ -24,7 +24,11 @@ class BoardCmd
   def loop
     
     while !@gameover
-      turn
+      begin
+        turn
+      rescue ArgumentError => e
+        puts(e)
+      end
     end
 
   end

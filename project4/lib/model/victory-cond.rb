@@ -33,7 +33,7 @@ class VictoryCond
       
     board.each_index { |c|
       board[c].each_index {|r|
-        return 0 if board[r][c].nil?
+        return 0 if board[c][r].nil?
         }
     }
     

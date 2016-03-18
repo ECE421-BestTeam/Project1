@@ -66,6 +66,51 @@ class VictoryModelTest < Test::Unit::TestCase
               [nil,nil, 1 ,nil,nil, 0 ],
               [nil,nil,nil,nil,nil,nil]]
     assert_equal 1, v.checkVictory(board)
+    
+    board = [ [ 1 , 1 , 0 , 1 , 0 , 0 ],
+              [ 0 , 0 , 1 , 0 , 1 , 1 ],
+              [ 1 , 0 , 0 , 1 , 0 , 1 ],
+              [ 0 , 1 , 1 , 0 , 0 , 1 ],
+              [ 1 , 0 , 0 , 1 , 1 , 0 ]]
+    assert_equal 3, v.checkVictory(board)
+  end
+  
+  def test_checkVictory_otto
+    v = VictoryModel.new 1
+    board = [ [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
+    assert_equal 0, v.checkVictory(board)
+    
+    board = [ [nil,nil,nil,nil,nil,nil],
+              [ 0 , 1 , 1 , 0 ,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
+    assert_equal 1, v.checkVictory(board)
+    
+    board = [ [nil,nil, 1 ,nil,nil,nil],
+              [ 0 , 0 , 0 , 0 ,nil,nil],
+              [nil,nil, 0 ,nil,nil,nil],
+              [nil,nil, 1 ,nil,nil,nil],
+              [nil,nil,nil,nil,nil,nil]]
+    assert_equal 2, v.checkVictory(board)
+    
+    board = [ [nil,nil, 1 ,nil,nil,nil],
+              [ 0 , 1 , 0 , 0 ,nil,nil],
+              [nil,nil, 1 ,nil, 0 ,nil],
+              [nil,nil, 1 ,nil,nil, 1 ],
+              [nil,nil,nil,nil,nil,nil]]
+    assert_equal 2, v.checkVictory(board)
+    
+    board = [ [ 1 , 1 , 1 , 1 , 1 , 1 ],
+              [ 1 , 1 , 1 , 1 , 1 , 1 ],
+              [ 1 , 1 , 1 , 1 , 1 , 1 ],
+              [ 1 , 1 , 1 , 1 , 1 , 1 ],
+              [ 1 , 1 , 1 , 1 , 1 , 1 ]]
+    assert_equal 3, v.checkVictory(board)
   end
   
 end
