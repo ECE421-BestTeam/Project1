@@ -11,7 +11,7 @@ class MenuCmd
     # the menu options
     @controller = MenuController.new menuControllerType
     
-    getOptions
+    loop
   end
   
   # attempts to start game
@@ -23,13 +23,18 @@ class MenuCmd
     BoardView.new(@boardViewType, bController) do |model|
       # exit game callback
       puts 'Welcome back'
-      getOptions
+    end
+  end
+  
+  def loop
+    while true
+      getOptions #truly finishes after startGame or on restart
     end
   end
   
   # queries the user for their desired options
   def getOptions
-    
+    puts "Type 'exit' at any time to exit"
     getOption(
       "How many players? (1 or 2)", 
       [1, 2], 
@@ -38,7 +43,7 @@ class MenuCmd
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
       [0, 1], 
       Proc.new { |res| @controller.victoryType = res})
-    
+
     getOption(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 
       [0, 1], 
@@ -47,12 +52,11 @@ class MenuCmd
           when 0
             startGame
           when 1
-            getOptions
+            # don't do anything we automatically go to options again
         end
-        
+
       end
     )
-
   end
   
   # question - string that is printed
@@ -61,7 +65,7 @@ class MenuCmd
   # recursive - boolean used to indicate if this is a recursive call
   def getOption(question, answers, callback, recursive = false)
     puts question
-    ans = gets
+    ans = gets.strip
     
     # only wrap the callback on the first call
     if !recursive
@@ -76,7 +80,9 @@ class MenuCmd
       end
     end
     
-    if answers.include?(ans)
+    if ans == "exit"
+      exit
+    elsif answers.include?(ans)
       callback.call(ans)
     elsif is_integer?(ans) && answers.include?(Integer(ans))
       callback.call(Integer(ans))
