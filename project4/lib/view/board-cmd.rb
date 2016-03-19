@@ -83,7 +83,7 @@ class BoardCmd
   
   def boardToString
     result = ""
-    (1..@cols).each {result += "=="}
+    (1..@cols).each {|n| result += "=#{n}"}
     result += "=\n"
     @game.board.each do |row|
       result += "|"
