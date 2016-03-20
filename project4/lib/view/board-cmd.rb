@@ -16,54 +16,49 @@ class BoardCmd
     @localPlayers = @controller.localPlayers
 
     @game = @controller.startGame
-    @helper = CmdHelper.new(Proc.new {gameover})
+    @helper = CmdHelper.new(Proc.new {puts 'ex CB';gameover; puts @gameover})
     @gameover = false
-    loop
-  end
-  
-  def loop
     
-    while !@gameover
-      #We really shouldn't ever catch anything here
-      begin
-        turn
-      rescue Interrupt
-        puts "User Force Quit"
-        exitGame
-        break
-      rescue Exception => e
-        puts "ERROR: #{e}"
-        puts "Aborted Game"
-        exitGame
-        break
-      end
-    end
-
-  end
-  
-  def exitGame
-    @controller.close
-    @exitCallback.call @game
+#    trap("SIGINT") do
+#      puts "Abortted Game"
+#      @gameover = true
+#    end
+    
+    loop
   end
   
   def gameover
     @gameover = true
-
-    puts "--- GAME OVER ---"
-    if @game.winner != 0
-      if @game.winner == 3
-        puts "Draw!"
-      else
-        puts "Player #{@game.winner} wins!"
-      end
+  end
+  
+  def loop
+    while !@gameover
+      puts @gameover
+#      begin
+        turn
+        @gameover = true
+#      rescue StandardError => e
+#        @helper.logError e
+#        @gameover = true
+#          Process.kill("INT", Process.pid)
+#          sleep
+#          break
+#        rescue Interrupt
+#          puts "Abortted Game2"
+#          exitGame
+#          break
+#      end
     end
-
-    puts "ENTER to continue:"
-    gets
-    
     exitGame
   end
   
+  def exitGame
+    if !@gameover
+      @gameover = true
+      STDIN.flush
+      @exitCallback.call @controller.close
+    end
+  end
   
   # Handles a localPlayer Turn
   # returns false if the game is over
@@ -71,23 +66,33 @@ class BoardCmd
     puts boardToString
     
     if @game.winner != 0
-      gameover
+      puts "--- GAME OVER ---"
+      if @game.winner != 0
+        if @game.winner == 3
+          puts "Draw!"
+        else
+          puts "Player #{@game.winner} wins!"
+        end
+      end
+
+      @gameover = true  
       return
     end
     
     playerTurn = @game.turn % 2
+    
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn + 1}'s turn:"
       @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@cols})", 
         (1..@cols), 
         Proc.new do |col|
-          @controller.placeToken(col - 1)
+          @game = @controller.placeToken(col - 1)
         end
       )
     else
       puts "Opponent's Turn..."
-      @controller.getNextActiveState
+      @game = @controller.getNextActiveState
     end
    
   end

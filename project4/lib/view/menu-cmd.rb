@@ -14,7 +14,20 @@ class MenuCmd
     
     @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame
+        
+    initMenu
     loop
+  end
+  
+  def initMenu
+#    trap("SIGINT") do
+#      puts "Abortted"
+#      exitMenu
+#    end
+  end
+  
+  def exitMenu
+    exit
   end
   
   # attempts to start game
@@ -25,26 +38,34 @@ class MenuCmd
     # start a board view
     BoardView.new(@boardViewType, bController) do |model|
       # exit game callback
-      puts "\n"
+      puts "\nFINISHEDGAME"
       @mode = :options
+      initMenu
     end
-  end
-  
-  def exitMenu
-    exit
   end
   
   def loop
     while true
-      begin
-        case @mode
-          when :options
+      case @mode
+        when :options
+          begin
             getOptions
-          when :startGame
+          rescue StandardError => e
+            # does not rescue interrupt, but does rescue errors caused by interrupt
+            # like when ctrl+C when the user has some input but hasn't hit enter, it breaks -.-
+            @helper.logError e
+            Process.kill("INT", Process.pid)
+            break
+          end
+        when :startGame
+          begin
+#            trap("SIGINT") do
+#              puts "not Aborting"
+#            end
             startGame
-        end
-      rescue Interrupt
-        exitMenu
+          rescue StandardError => e
+            @helper.logError e # we don't want to abort menu if an error escapes game
+          end
       end
     end
   end
