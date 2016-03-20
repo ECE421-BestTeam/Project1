@@ -19,14 +19,14 @@ class BoardGtk
     @window = Gtk::Window.new
     GtkHelper.applyEventHandler(@window, "destroy") do
       @controller.close(@game) if @controller.close
-      Gtk.main_quit
       exitCallback.call(@game) if exitCallback
+      Gtk.main_quit
     end
     @window.title = "Connect4.2 Game"
 #    window.border_width = 10
     
     # set up the board
-    setUpBoard exitCallback
+    setUpBoard
     refreshBoard @controller.startGame
     
     Gtk.main
@@ -34,7 +34,7 @@ class BoardGtk
   end
   
   # Builds the base game board
-  def setUpBoard(exitCallback)
+  def setUpBoard
     
     createPlaceButton = Proc.new do |col|
       {

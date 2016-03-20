@@ -13,6 +13,26 @@ class MenuGtk
     # the menu options
     @controller = MenuController.new menuControllerType
 
+    showMenu
+  end
+  
+  # attempts to start game
+  def startGame
+    # sends options and create a custom boardController
+    bController = @controller.getBoardController
+    
+    @window.destroy
+    
+    # start a board view
+    BoardView.new(@boardViewType, bController) do |model|
+      # exit game callback
+      showMenu
+    end
+  end
+  
+  # shows the menu and allows the user set options
+  def showMenu
+
     Gtk.init
 
     # set up the window
@@ -23,25 +43,7 @@ class MenuGtk
     @window.title = "Connect4.2 Menu"
 #    window.border_width = 10
     
-    showMenu
     
-    Gtk.main
-  end
-  
-  # attempts to start game
-  def startGame
-    # sends options and create a custom boardController
-    bController = @controller.getBoardController
-    
-    # start a board view
-    BoardView.new(@boardViewType, bController) do |model|
-      # exit game callback
-    end
-  end
-  
-  # shows the menu and allows the user set options
-  def showMenu
-#    @window.remove @windowContent
     menu = Gtk::VBox.new
     
     # build options and listeners
@@ -128,6 +130,7 @@ class MenuGtk
     @window.add @menu
     
     @window.show_all
+    Gtk.main
 
   end
   
