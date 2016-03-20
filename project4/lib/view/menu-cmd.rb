@@ -20,10 +20,10 @@ class MenuCmd
   end
   
   def initMenu
-#    trap("SIGINT") do
-#      puts "Abortted"
-#      exitMenu
-#    end
+    trap("SIGINT") do
+      puts "Abortted"
+      exitMenu
+    end
   end
   
   def exitMenu

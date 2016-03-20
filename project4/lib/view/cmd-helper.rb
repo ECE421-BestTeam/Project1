@@ -17,7 +17,11 @@ class CmdHelper
     puts question
     
 #    begin
-    ans = gets.strip
+#    STDIN.flush
+    ans = gets while !ans
+#    raise ProbablyInterrupted, question if !ans
+#    ans = gets if !ans #sometimes gets gets messed up because of interrupt
+    ans = ans.strip
 #    rescue StandardError => e
 #      raise e
 #    rescue Interrupt
@@ -39,7 +43,6 @@ class CmdHelper
     
     if ans == "exit"
       @exitCallback.call
-      puts "helper #{@gameover} gmover"
     elsif answers.include?(ans)
       callback.call(ans)
     elsif is_integer?(ans) && answers.include?(Integer(ans))
@@ -57,5 +60,10 @@ class CmdHelper
   def is_integer?(n)
     true if Integer(n) rescue false
   end
+  
+end
+
+
+class ProbablyInterrupted < StandardError
   
 end

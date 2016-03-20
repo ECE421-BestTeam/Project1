@@ -16,13 +16,20 @@ class BoardCmd
     @localPlayers = @controller.localPlayers
 
     @game = @controller.startGame
-    @helper = CmdHelper.new(Proc.new {puts 'ex CB';gameover; puts @gameover})
+    @helper = CmdHelper.new(Proc.new do
+        puts 'ex CB';
+        gameover; 
+        puts @gameover
+      end
+    )
     @gameover = false
     
-#    trap("SIGINT") do
-#      puts "Abortted Game"
-#      @gameover = true
-#    end
+    trap("SIGINT") do
+      puts "Abortted Game"
+#      STDIN.flush
+      @thread.kill
+      exitGame
+    end
     
     loop
   end
@@ -32,32 +39,35 @@ class BoardCmd
   end
   
   def loop
-    while !@gameover
-      puts @gameover
-#      begin
-        turn
-        @gameover = true
-#      rescue StandardError => e
-#        @helper.logError e
-#        @gameover = true
-#          Process.kill("INT", Process.pid)
-#          sleep
-#          break
-#        rescue Interrupt
-#          puts "Abortted Game2"
-#          exitGame
-#          break
-#      end
+    
+    begin
+      @thread = Thread.new do
+        while !@gameover
+          puts 'loop'
+          turn
+        end
+      end
+    rescue ProbablyInterrupted => e
+      @helper.logError e
+
+      # don't let the loop continue until trap('SIGINT') has caught the interrupt
+      while !@gameover
+        puts 'sleeping'
+        sleep 0
+      end
+    rescue Exception => e
+      puts 'uncaught'
+      @helper.logError e
+    ensure
+      @thread.join
     end
-    exitGame
   end
   
   def exitGame
-    if !@gameover
-      @gameover = true
-      STDIN.flush
-      @exitCallback.call @controller.close
-    end
+puts 'exiting'
+        @gameover = true
+#      STDIN.flush
+    @exitCallback.call @controller.close
   end
   
   # Handles a localPlayer Turn
@@ -75,7 +85,7 @@ class BoardCmd
         end
       end
 
-      @gameover = true  
+      exitGame
       return
     end
     
