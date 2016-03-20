@@ -24,10 +24,12 @@ class BoardCmd
   def loop
     
     while !@gameover
+      #We really shouldn't ever catch anything here
       begin
         turn
       rescue ArgumentError => e
-        puts(e)
+        puts "ERROR: e"
+        @gameover = true
       end
     end
 
@@ -36,14 +38,13 @@ class BoardCmd
   def gameover
     @gameover = true
 
+    puts "--- GAME OVER ---"
     if @game.winner != 0
       if @game.winner == 3
-        puts "GAME OVER: Draw!"
+        puts "Draw!"
       else
-        puts "GAME OVER: Player #{@game.winner} wins!"
+        puts "Player #{@game.winner} wins!"
       end
-    else
-      puts "User Quit Game"
     end
 
     puts "ENTER to continue:"

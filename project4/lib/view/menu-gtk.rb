@@ -11,7 +11,7 @@ class MenuGtk
     @boardViewType = boardViewType
     
     # the menu options
-    @handler = MenuController.new menuControllerType
+    @controller = MenuController.new menuControllerType
 
     Gtk.init
 
@@ -31,7 +31,7 @@ class MenuGtk
   # attempts to start game
   def startGame
     # sends options and create a custom boardController
-    bController = @handler.getBoardController
+    bController = @controller.getBoardController
     
     # start a board view
     BoardView.new(@boardViewType, bController) do |model|
@@ -47,9 +47,9 @@ class MenuGtk
     # build options and listeners
        
     players1 = Gtk::RadioButton.new "1"
-    GtkHelper.applyEventHandler(players1, :clicked) {@players = 1}
+    GtkHelper.applyEventHandler(players1, :clicked) {@controller.players = 1}
     players2 = Gtk::RadioButton.new players1, "2"
-    GtkHelper.applyEventHandler(players2, :clicked) {@players = 2}
+    GtkHelper.applyEventHandler(players2, :clicked) {@controller.players = 2}
     players = GtkHelper.createBox('H', 
       [
         {
@@ -67,9 +67,9 @@ class MenuGtk
     menu.pack_start players
     
     victoryNormal = Gtk::RadioButton.new "Normal"
-    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@victoryType = 0}
+    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@controller.victoryType = 0}
     victoryOtto = Gtk::RadioButton.new victoryNormal, "OTTO/TOOT"
-    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@victoryType = 1}
+    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@controller.victoryType = 1}
     victory = GtkHelper.createBox('H', 
       [
         {
@@ -104,24 +104,24 @@ class MenuGtk
     
     #refresh the menu's values
     
-    if @players == 2
+    if @controller.players == 2
       players1.set_active false
       players2.set_active true
     else
       #default
       players1.set_active true
       players2.set_active false
-      @players = 1
+      @controller.players = 1
     end
     
-    if @victoryType == 1
+    if @controller.victoryType == 1
       victoryNormal.set_active false
       victoryOtto.set_active true
     else
       #default
       victoryNormal.set_active true
       victoryOtto.set_active false
-      @victoryType = 0
+      @controller.victoryType = 0
     end
     
     @menu = menu
