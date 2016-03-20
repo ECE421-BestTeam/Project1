@@ -21,7 +21,7 @@ class MenuCmd
   
   def initMenu
     trap("SIGINT") do
-      puts "Abortted"
+      puts "\nAbortted"
       exitMenu
     end
   end
@@ -38,7 +38,7 @@ class MenuCmd
     # start a board view
     BoardView.new(@boardViewType, bController) do |model|
       # exit game callback
-      puts "\nFINISHEDGAME"
+      puts "\n"
       @mode = :options
       initMenu
     end
@@ -48,24 +48,9 @@ class MenuCmd
     while true
       case @mode
         when :options
-          begin
-            getOptions
-          rescue StandardError => e
-            # does not rescue interrupt, but does rescue errors caused by interrupt
-            # like when ctrl+C when the user has some input but hasn't hit enter, it breaks -.-
-            @helper.logError e
-            Process.kill("INT", Process.pid)
-            break
-          end
+          getOptions
         when :startGame
-          begin
-#            trap("SIGINT") do
-#              puts "not Aborting"
-#            end
-            startGame
-          rescue StandardError => e
-            @helper.logError e # we don't want to abort menu if an error escapes game
-          end
+          startGame
       end
     end
   end

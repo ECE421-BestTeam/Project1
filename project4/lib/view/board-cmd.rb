@@ -16,17 +16,11 @@ class BoardCmd
     @localPlayers = @controller.localPlayers
 
     @game = @controller.startGame
-    @helper = CmdHelper.new(Proc.new do
-        puts 'ex CB';
-        gameover; 
-        puts @gameover
-      end
-    )
+    @helper = CmdHelper.new(Proc.new {exitGame})
     @gameover = false
     
     trap("SIGINT") do
-      puts "Abortted Game"
-#      STDIN.flush
+      puts "\nAbortted Game"
       @thread.kill
       exitGame
     end
@@ -34,39 +28,17 @@ class BoardCmd
     loop
   end
   
-  def gameover
-    @gameover = true
-  end
-  
   def loop
-    
-    begin
-      @thread = Thread.new do
-        while !@gameover
-          puts 'loop'
-          turn
-        end
-      end
-    rescue ProbablyInterrupted => e
-      @helper.logError e
-
-      # don't let the loop continue until trap('SIGINT') has caught the interrupt
+    @thread = Thread.new do
       while !@gameover
-        puts 'sleeping'
-        sleep 0
+        turn
       end
-    rescue Exception => e
-      puts 'uncaught'
-      @helper.logError e
-    ensure
-      @thread.join
     end
+    @thread.join
   end
   
   def exitGame
-puts 'exiting'
-        @gameover = true
-#      STDIN.flush
+    @gameover = true
     @exitCallback.call @controller.close
   end
   
