@@ -12,7 +12,7 @@ class MenuCmd
     # the menu options
     @controller = MenuController.new menuControllerType
     
-    @helper = CmdHelper.new(Proc.new {exit})
+    @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame
     loop
   end
@@ -30,13 +30,21 @@ class MenuCmd
     end
   end
   
+  def exitMenu
+    exit
+  end
+  
   def loop
     while true
-      case @mode
-        when :options
-          getOptions
-        when :startGame
-          startGame
+      begin
+        case @mode
+          when :options
+            getOptions
+          when :startGame
+            startGame
+        end
+      rescue Interrupt
+        exitMenu
       end
     end
   end

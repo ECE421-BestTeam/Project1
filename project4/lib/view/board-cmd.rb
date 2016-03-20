@@ -27,12 +27,23 @@ class BoardCmd
       #We really shouldn't ever catch anything here
       begin
         turn
-      rescue ArgumentError => e
-        puts "ERROR: e"
-        @gameover = true
+      rescue Interrupt
+        puts "User Force Quit"
+        exitGame
+        break
+      rescue Exception => e
+        puts "ERROR: #{e}"
+        puts "Aborted Game"
+        exitGame
+        break
       end
     end
 
+  end
+  
+  def exitGame
+    @controller.close
+    @exitCallback.call @game
   end
   
   def gameover
@@ -50,8 +61,7 @@ class BoardCmd
     puts "ENTER to continue:"
     gets
     
-    @controller.close
-    @exitCallback.call @game
+    exitGame
   end
   
   
