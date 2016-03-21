@@ -20,7 +20,7 @@ class BoardLocalController
   end
     
   def close
-    
+    return @game
   end
   
   #called when a player wishes to place a token

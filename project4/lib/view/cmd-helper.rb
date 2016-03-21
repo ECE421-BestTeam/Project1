@@ -1,17 +1,23 @@
 
 class CmdHelper
   
-   def initialize(exitCallback)
-     @exitCallback = exitCallback
-   end
-   
+  def initialize(exitCallback)
+    @exitCallback = exitCallback
+  end
+
+  def logError (e)
+    puts e
+  end
+  
   # question - string that is printed
   # answers - an array of valid answers
   # callback - called with a valid answer
   # recursive - boolean used to indicate if this is a recursive call
   def getUserInput(question, answers, callback, recursive = false)
     puts question
-    ans = gets.strip
+    
+    ans = gets while !ans # sometimes gets gets messed up because of interrupt
+    ans = ans.strip
     
     # only wrap the callback on the first call
     if !recursive

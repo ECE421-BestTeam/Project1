@@ -14,7 +14,20 @@ class MenuCmd
     
     @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame
+        
+    initMenu
     loop
+  end
+  
+  def initMenu
+    trap("SIGINT") do
+      puts "\nAbortted"
+      exitMenu
+    end
+  end
+  
+  def exitMenu
+    exit
   end
   
   # attempts to start game
@@ -27,24 +40,17 @@ class MenuCmd
       # exit game callback
       puts "\n"
       @mode = :options
+      initMenu
     end
-  end
-  
-  def exitMenu
-    exit
   end
   
   def loop
     while true
-      begin
-        case @mode
-          when :options
-            getOptions
-          when :startGame
-            startGame
-        end
-      rescue Interrupt
-        exitMenu
+      case @mode
+        when :options
+          getOptions
+        when :startGame
+          startGame
       end
     end
   end
