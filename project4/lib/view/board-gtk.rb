@@ -60,16 +60,18 @@ class BoardGtk
     
     
     #build the board
-    board = GtkHelper.createBox('V', 
-      [
-        {
-          :widget => buttons
-        },
-        {
-          :widget => Gtk::Table.new(@rows, @cols)
+    board = Gtk::Table.new(@rows, @cols)
+
+    (0..(@cols-1)).each do |col|
+      (0..(@rows-1)).each do |row|
+        cell = Gtk::EventBox.new
+        cell.add(Gtk::Image.new("image/token0.png"))
+        cell.signal_connect("button_press_event") {
+          cell.children[0].set_file("image/token1.png")
         }
-      ]
-    )
+        board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
+      end
+    end
     
     @board = board
     @window.add @board
