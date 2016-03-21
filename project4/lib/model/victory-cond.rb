@@ -20,24 +20,23 @@ class VictoryCond
   # returns: 0 - no victory, 1 - p1 won, 2 - p2 won, 3 p1 + p2 won
   def checkVictory(board)
     # make bidirectional diagonals
-    diags = makeDiags(board) + makeDiags(board.transpose)
-    diags = diags.uniq.reject(&:empty?)
+    diags = makeDiags(board)
     # p1 victory
-    return 1 if checkArrays(board.transpose, @p1win) \
+    return :player1 if checkArrays(board.transpose, @p1win) \
       || checkArrays(board, @p1win) \
       || checkArrays(diags, @p1win)
     # p2 victory
-    return 2 if checkArrays(board.transpose, @p2win) \
+    return :player2 if checkArrays(board.transpose, @p2win) \
       || checkArrays(board, @p2win) \
       || checkArrays(diags, @p2win)
       
     board.each_index { |c|
       board[c].each_index {|r|
-        return 0 if board[c][r].nil?
+        return nil if board[c][r].nil?
         }
     }
     
-    return 3
+    return :draw
   end
   
   def checkArrays (arrs, win)
@@ -55,15 +54,13 @@ class VictoryCond
     }
     return false
 
-#    (0...arrs.size).each{|r|
-#      if arrs[r].size >= win.size
-#        return true if arrs[r].each_cons(win.size).any?{|c| c==win }
-#      end
-#    }
-#    return false
   end
   
-  def makeDiags (arrs)
+  def makeDiags(arrs)
+    return (generateDiags(arrs) + generateDiags(arrs.transpose)).uniq.reject(&:empty?)
+  end
+  
+  def generateDiags(arrs)
     diags = []
     #SE direction
     arrs[0].size.times { |k|
