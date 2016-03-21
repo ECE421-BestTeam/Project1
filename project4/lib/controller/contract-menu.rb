@@ -51,7 +51,7 @@ module MenuControllerContract
   end
 
   def pre_victoryType=(val)
-    assert val.class == Fixnum && val.between?(0,1), "victoryType must be a Fixnum in 0-1"
+    assert val.class == Symbol && [:victoryNormal, :victoryOtto].include?(val), "victoryType must be a Symbol in [:victoryNormal, :victoryOtto]"
   end
   
   def pre_boardControllerType=(val)

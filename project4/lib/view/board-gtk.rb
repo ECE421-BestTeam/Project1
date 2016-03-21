@@ -18,7 +18,7 @@ class BoardGtk
     Gtk.init
     @window = Gtk::Window.new
     GtkHelper.applyEventHandler(@window, "destroy") do
-      @controller.close(@game) if @controller.close
+      @controller.close if @controller.close
       exitCallback.call(@game) if exitCallback
       Gtk.main_quit
     end

@@ -55,11 +55,11 @@ module GtkHelper
   
   def self.applyEventHandler(widget, event, &handler)
     widget.signal_connect(event) do |*args, &block|
-      begin
+#      begin
         handler.call(*args, &block)
-      rescue Exception => e
-        self.errorHandler(e)
-      end
+#      rescue Exception => e
+#        self.errorHandler(e)
+#      end
     end
   end
   

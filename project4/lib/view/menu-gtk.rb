@@ -69,9 +69,9 @@ class MenuGtk
     menu.pack_start players
     
     victoryNormal = Gtk::RadioButton.new "Normal"
-    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@controller.victoryType = 0}
+    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@controller.victoryType = :victoryNormal}
     victoryOtto = Gtk::RadioButton.new victoryNormal, "OTTO/TOOT"
-    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@controller.victoryType = 1}
+    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@controller.victoryType = :victoryOtto}
     victory = GtkHelper.createBox('H', 
       [
         {
@@ -116,14 +116,14 @@ class MenuGtk
       @controller.players = 1
     end
     
-    if @controller.victoryType == 1
+    if @controller.victoryType == :victoryOtto
       victoryNormal.set_active false
       victoryOtto.set_active true
     else
       #default
       victoryNormal.set_active true
       victoryOtto.set_active false
-      @controller.victoryType = 0
+      @controller.victoryType = :victoryNormal
     end
     
     @menu = menu

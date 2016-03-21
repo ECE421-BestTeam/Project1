@@ -5,7 +5,7 @@ module SettingsContract
   
   def class_invariant
     assert @players.class == Fixnum && @players.between?(1,2), "players must be a Fixnum in 1-2"
-    assert @victoryType.class == Fixnum && @victoryType.between?(0,1), "victoryType must be a Fixnum in 0-1"
+    assert @victoryType.class == Symbol && [:victoryNormal, :victoryOtto].include?(@victoryType), "victoryType must be a Symbol in [:victoryNormal, :victoryOtto]"
     assert @boardControllerType.class == Fixnum && @boardControllerType.between?(0,1), "boardControllerType must be a Fixnum in 0-1"
     assert @rows.class == Fixnum && @rows > 0, "rows must be a Fixnum greater than 0"
     assert @cols.class == Fixnum && @cols > 0, "cols must be a Fixnum greater than 0"
@@ -16,7 +16,7 @@ module SettingsContract
   end
 
   def pre_victoryType=(val)
-    assert val.class == Fixnum && val.between?(0,1), "victoryType must be a Fixnum in 0-1"
+    assert val.class == Symbol && [:victoryNormal, :victoryOtto].include?(val), "victoryType must be a Symbol in [:victoryNormal, :victoryOtto]"
   end
   
   def pre_boardControllerType=(val)
