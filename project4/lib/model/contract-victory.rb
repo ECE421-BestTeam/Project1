@@ -11,7 +11,7 @@ module VictoryContract
   end
   
   def pre_initialize(victoryType)
-    assert victoryType.class == Fixnum && victoryType.between?(0,1), "victoryType must be a Fixnum in range 0-1"
+    assert victoryType.class == Symbol
   end
   
   def post_initialize
@@ -41,7 +41,7 @@ module VictoryContract
   end
   
   def post_checkVictory(result)
-    assert result.class == Fixnum && result.between?(0,3), "result must be a Fixnum in range 0-3"
+    assert (result.class == Symbol || result.class == nil) && [:draw,:player1,:player2,nil].include?(result), "result must be a valid Symbol"
   end
   
 end

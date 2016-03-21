@@ -17,7 +17,8 @@ class VictoryModel
       when :victoryOtto
         #@implementation = VictoryOtto.new
         @implementation = VictoryCond.new("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
-
+      else
+        raise "Not a valid game mode"
     end
 
     post_initialize
