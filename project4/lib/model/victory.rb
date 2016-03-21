@@ -1,6 +1,5 @@
 require_relative './contract-victory'
-require_relative './victory-normal'
-require_relative './victory-otto'
+
 require_relative './victory-cond'
 
 # produces the desired victory object
@@ -12,13 +11,14 @@ class VictoryModel
     pre_initialize(victoryType)
     
     case victoryType
-      when 0
+      when :victoryNormal
         #@implementation = VictoryNormal.new
         @implementation = VictoryCond.new("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
-      when 1
+      when :victoryOtto
         #@implementation = VictoryOtto.new
         @implementation = VictoryCond.new("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
-
+      else
+        raise "Not a valid game mode"
     end
 
     post_initialize

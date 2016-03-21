@@ -38,7 +38,7 @@ class VictoryModelTest < Test::Unit::TestCase
   end
 
   def test_checkVictory_normal
-    v = VictoryModel.new 0
+    v = VictoryModel.new :victoryNormal
     board = [ [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
@@ -76,7 +76,7 @@ class VictoryModelTest < Test::Unit::TestCase
   end
   
   def test_checkVictory_otto
-    v = VictoryModel.new 1
+    v = VictoryModel.new :victoryOtto
     board = [ [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
