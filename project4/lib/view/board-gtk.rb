@@ -65,7 +65,7 @@ class BoardGtk
     #build the board
     board = Gtk::Table.new(@rows, @cols)
 
-    @cells = Array.new(@settings.rows) { Array.new(@settings.cols) {nil} }
+    @cells = Array.new(@rows) { Array.new(@cols) {nil} }
 
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
@@ -76,7 +76,7 @@ class BoardGtk
               refreshBoard(@controller.getNextActiveState)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
-        cells[row][col] = cell
+        @cells[row][col] = cell
       end
     end
     
@@ -97,7 +97,7 @@ class BoardGtk
     # update tokens
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
-        case nil #TODO: replace with actual call to game board[row][col]
+        case 1 #TODO: replace with actual call to game board[row][col]
         when 0
           @cells[row][col].children[0].set_file("#{@currentLocation}/image/token0.png")
         when 1
