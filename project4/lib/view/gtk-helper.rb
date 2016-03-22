@@ -64,17 +64,17 @@ module GtkHelper
   end
   
   def self.errorHandler(err)
-    self.popUp(err)
+    self.popUp("Error", err)
   end
   
-  def self.popUp(err, exitCallback = Proc.new {})
+  def self.popUp(title, err, exitCallback = Proc.new {})
     Gtk.init
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do
       exitCallback.call
       Gtk.main_quit
     end
-    @window.title = "Error"
+    @window.title = title
         
     @window.add Gtk::Label.new(err.to_s)
     @window.show_all

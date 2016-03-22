@@ -44,28 +44,6 @@ class BoardGtk
   # Builds the base game board
   def setUpBoard
     
-    createPlaceButton = Proc.new do |col|
-      {
-        :type => Gtk::Button,
-        :content => "Place",
-        :listeners => [
-          { 
-            :event => :clicked, 
-            :action => Proc.new { 
-              refreshBoard(@controller.placeToken(col)) 
-              refreshBoard(@controller.getNextActiveState) 
-            } 
-          }
-        ]
-      }
-    end
-    
-    buttons = []
-    (0..(@cols-1)).each do |col|
-      buttons.push(createPlaceButton.call(col))
-    end
-    buttons = GtkHelper.createBox('H', buttons)
-    
     #build the board
     board = Gtk::Table.new(@rows, @cols)
 
@@ -77,7 +55,9 @@ class BoardGtk
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
           refreshBoard(@controller.placeToken(col))
+          announceResults(@game.winner)
           refreshBoard(@controller.getNextActiveState)
+          announceResults(@game.winner)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -94,15 +74,15 @@ class BoardGtk
   def refreshBoard(game)
     @game = game
     if !@player1token
-      @player1token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
+      @player1token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
     end
     if !@player2token
-      @player2token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
+      @player2token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
     end
     if !@emptytoken
       @emptytoken = "#{@currentLocation}/image/empty.png"
     end
-    puts 'refreshed'
+
     # check for victory (if so do something like switch to end screen)
     
     #check which player's turn it is (disable/enable buttons)
@@ -122,12 +102,16 @@ class BoardGtk
     end
   end
   
-  # graphically displays token at given location
-  # col - 0 indexed from the left
-  # row - 0 indexed from the bottom up
-  # token - the token to place: nil = empty token, 
-  def placeToken (col, row, token = nil)
-    
+  def announceResults(winner)
+    return if winner == nil
+    message = "Draw!"
+    if (@controller.settings.players == 1)
+      message = "Player wins!" if winner == :player1
+      message = "Computer wins!" if winner == :player2
+    else
+      message = "Player 1 wins!" if winner == :player1
+      message = "Player 2 wins!" if winner == :player2
+    end
+    GtkHelper.popUp("Game Over", message, Proc.new { @window.destroy })
   end
-  
 end
