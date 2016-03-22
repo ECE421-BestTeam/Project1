@@ -5,6 +5,8 @@ require_relative './contract-victory'
 class VictoryModel
   include VictoryContract
   
+  attr_reader :winningrow
+  
   # victoryType - number: 0 = normal, 1 = OTTO
   def initialize (victoryType)
     pre_initialize(victoryType)
@@ -30,6 +32,7 @@ class VictoryModel
     @playerTokens = tokens
     @p1win = p1sequence
     @p2win = p2sequence
+    @winningrow = []
   end
   
   def name
@@ -71,6 +74,7 @@ class VictoryModel
     else
       result = :draw
     end
+
     
     post_checkVictory(result)
     class_invariant
@@ -78,11 +82,13 @@ class VictoryModel
   end
   
   def checkArrays (arrs, win)
-    arrs.each{ |row|
-      row.each_index{ |r|
+    (0...arrs.size).each{ |a|
+      arrs[a].each_index{ |r|
         result = true
+        @winningrow = []
         (0...win.size).each { |i|
-          result = result && row[r+i] == win[i]
+          result = result && arrs[a][r+i] == win[i]
+          @winningrow << [a,r+i]
         }
         return result if result == true
       }
@@ -104,7 +110,8 @@ class VictoryModel
   end
   
   def makeDiags(arrs)
-    return (generateDiags(arrs) + generateDiags(arrs.transpose)).uniq.reject(&:empty?)
+    diags =  (generateDiags(arrs) + generateDiags(arrs.transpose))
+    return diags
   end
   private :makeDiags
 
@@ -112,17 +119,18 @@ class VictoryModel
     diags = []
     #SE direction
     arrs[0].size.times { |k|
-      diags << (0...arrs.size).collect{ |i| arrs[i][i+k]}.compact
+      diags << (0...arrs.size).collect{ |i| arrs[i][i+k]}
+      
     }
     (arrs[0].size-1).downto(0) { |k|
-      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][i-k] if i-k > -1}.compact
+      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][i-k] if i-k > -1}
     }
-    #SW direction
+        #SW direction
     arrs[0].size.times { |k|
-      diags << (0...arrs.size).collect{ |i| arrs[i][k-i] if k-i > -1}.compact
+      diags << (0...arrs.size).collect{ |i| arrs[i][k-i] if k-i > -1}
     }
     (arrs[0].size-1).downto(0) { |k|
-      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][k-(i-(arrs[0].size-1))] if i-k > -1}.compact
+      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][k-(i-(arrs[0].size-1))] if i-k > -1}
     }
     return diags
   end
