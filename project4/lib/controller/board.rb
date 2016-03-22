@@ -10,7 +10,7 @@ class BoardController
     pre_initialize(type, settings)
     
     case type
-      when 0
+      when :boardControllerLocal
         @implementation = BoardLocalController.new settings
     end
     

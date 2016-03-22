@@ -21,7 +21,7 @@ module BoardControllerContract
   end
   
   def pre_initialize(type, settings)
-    assert type.class == Fixnum && type.between?(0,0), "type must be a Fixnum in range 0-0"
+    assert type.class == Symbol && [:boardControllerLocal].include?(type), "type must be a Symbol in [:boardControllerLocal]"
     assert settings.class == SettingsModel, "settings must be a SettingsModel"
   end
   
