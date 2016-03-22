@@ -9,7 +9,7 @@ module BoardViewContract
   end
   
   def pre_initialize(type, controller, exitCallback)
-    assert type.class == Fixnum && type.between?(0,1), "type must be a Fixnum in range 0-1"
+    assert type.class == Symbol && [:boardCmd, :boardGtk].include?(type), "BoardView type must be a Symbol in [:boardCmd, :boardGtk]"
     assert controller.class == BoardController, "controller must be a BoardController"
     if exitCallback
       assert exitCallback.class == Proc && exitCallback.arity == 1, "exitCallback must be a Proc that accepts 1 argument"

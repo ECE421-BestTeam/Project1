@@ -66,7 +66,15 @@ class MenuCmd
     @helper.getUserInput(
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
       [0, 1], 
-      Proc.new { |res| @controller.victoryType = res})
+      Proc.new { |res| 
+        case res
+          when 0
+            res = :victoryNormal
+          when 1
+            res = :victoryOtto
+        end
+        @controller.victoryType = res
+      })
 
     @helper.getUserInput(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 

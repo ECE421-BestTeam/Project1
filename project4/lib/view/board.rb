@@ -10,9 +10,9 @@ class BoardView
     pre_initialize(type, controller, exitCallback)
 
       case type
-        when 0
+        when :boardCmd
           @implementation = BoardCmd.new controller, exitCallback
-        when 1
+        when :boardGtk
           @implementation = BoardGtk.new controller, exitCallback
       end
 

@@ -33,16 +33,8 @@ class BoardControllerTest < Test::Unit::TestCase
   end
   
   def test_all
-    implementationTests(0) #tests board-local
+    implementationTests(:boardControllerLocal) #tests board-local
   end
 
   
 end
-
-      cont = BoardController.new 0, SettingsModel.new
-      cont.settings
-      cont.localPlayers
-      cont.startGame
-      cont.placeToken(0)
-      cont.getNextActiveState
-      cont.close

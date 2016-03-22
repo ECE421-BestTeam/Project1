@@ -9,8 +9,8 @@ module MenuViewContract
   end
   
   def pre_initialize(type, boardType, menuControllerType)
-    assert type.class == Fixnum && type.between?(0,1), "type must be a Fixnum in range 0-1"
-    assert boardType.class == Fixnum && boardType.between?(0,1), "type must be a Fixnum in range 0-1"
+    assert type.class == Symbol && [:menuCmd, :menuGtk].include?(type), "MenuView type must be a Symbol in [:menuCmd, :menuGtk]"
+    assert boardType.class == Symbol && [:boardCmd, :boardGtk].include?(boardType), "BoardView type must be a Symbol in [:boardCmd, :boardGtk]"
     assert menuControllerType.class == Symbol && [:menuControllerDefault].include?(menuControllerType), "menuControllerType must be a Symbol in [:menuControllerDefault]"
   end
   
