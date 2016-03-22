@@ -60,18 +60,18 @@ class VictoryModelTest < Test::Unit::TestCase
               [nil,nil,nil,nil,nil,nil]]
     assert_equal :player2, v.checkVictory(board)
     
-    board = [ [nil,nil, 0 ,nil,nil,nil],
+    board = [ [nil,nil, nil ,nil,nil,nil],
               [ 0 , 0 , 1 , 0 ,nil,nil],
               [nil,nil, 1 ,nil, 0 ,nil],
               [nil,nil, 1 ,nil,nil, 0 ],
-              [nil,nil,nil,nil,nil,nil]]
+              [ 0 , 0 , 0 , 0 ,nil,nil]]
     assert_equal :player1, v.checkVictory(board)
     
     board = [ [nil,nil,nil,nil,nil,nil,nil],
-              [ 1 ,nil, 1 , 1 ,nil,nil,nil],
-              [ 1 , 1 , 0 , 0 , 0 ,nil,nil],
-              [ 0 , 0 , 1 , 0 , 1 , 1 , 1 ],
-              [ 1 , 0 , 0 , 0 , 0 , 0 , 1 ]]
+              [ 1 ,nil, 1 ,nil,nil,nil,nil],
+              [ 1 , 1 , 0 ,nil, 0 ,nil,nil],
+              [ 0 , 0 , 1 ,nil, 1 , 1 , 1 ],
+              [ 1 , 0 , 0 ,0 , 0 , 1 , 1 ]]
     assert_equal :player1, v.checkVictory(board)
     
     board = [ [ 1 ,nil,nil, 0 , 1 , 1 , 1 ],
@@ -81,11 +81,11 @@ class VictoryModelTest < Test::Unit::TestCase
               [ 1 , 0 , 0 , 1 , 0 , 0 , 1 ]]
     assert_equal :player2, v.checkVictory(board)
     
-    board = [ [ 1 , 1 , 0 , 1 , 0 , 0 ],
-              [ 0 , 0 , 1 , 0 , 1 , 1 ],
-              [ 1 , 0 , 0 , 1 , 0 , 1 ],
-              [ 0 , 1 , 1 , 0 , 0 , 1 ],
-              [ 1 , 0 , 0 , 1 , 1 , 0 ]]
+    board = [ [ 1 , 0 , 1 , 0 , 1 , 0 ],
+              [ 1 , 0 , 1 , 0 , 1 , 0 ],
+              [ 0 , 1 , 0 , 1 , 0 , 1 ],
+              [ 0 , 1 , 0 , 1 , 0 , 1 ],
+              [ 1 , 0 , 1 , 0 , 1 , 0 ]]
     assert_equal :draw, v.checkVictory(board)
   end
   
@@ -106,7 +106,7 @@ class VictoryModelTest < Test::Unit::TestCase
     assert_equal :player1, v.checkVictory(board)
     
     board = [ [nil,nil, 1 ,nil,nil,nil],
-              [ 0 , 0 , 0 , 0 ,nil,nil],
+              [ 1 , 0 , 0 , 0 ,nil,nil],
               [nil,nil, 0 ,nil,nil,nil],
               [nil,nil, 1 ,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]

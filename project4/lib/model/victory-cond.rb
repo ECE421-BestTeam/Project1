@@ -21,13 +21,9 @@ class VictoryCond
     # make bidirectional diagonals
     diags = makeDiags(board)
     # p1 victory
-    return :player1 if checkArrays(board.transpose, @p1win) \
-      || checkArrays(board, @p1win) \
-      || checkArrays(diags, @p1win)
+    return :player1 if checkArrays(board.transpose, @p1win) || checkArrays(board, @p1win) || checkArrays(diags, @p1win)
     # p2 victory
-    return :player2 if checkArrays(board.transpose, @p2win) \
-      || checkArrays(board, @p2win) \
-      || checkArrays(diags, @p2win)
+    return :player2 if checkArrays(board.transpose, @p2win) || checkArrays(board, @p2win) || checkArrays(diags, @p2win)
       
     board.each_index { |c|
       board[c].each_index {|r|
@@ -40,12 +36,9 @@ class VictoryCond
   
   def checkArrays (arrs, win)
     arrs.each{ |row|
-      if row.size < win.size then
-        next
-      end
-      row.each_with_index{ |_, r|
+      row.each_index{ |r|
         result = true
-        (0..win.size).each { |i|
+        (0...win.size).each { |i|
           result = result && row[r+i] == win[i]
         }
         return result if result == true
