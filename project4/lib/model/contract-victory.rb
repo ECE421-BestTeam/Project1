@@ -41,7 +41,7 @@ module VictoryContract
   end
   
   def post_checkVictory(result)
-    assert (result.class == Symbol || result.class == nil) && [:draw,:player1,:player2,nil].include?(result), "result must be a valid Symbol"
+    assert (result.class == Symbol || result.class == NilClass) && [:draw,:player1,:player2,nil].include?(result), "result must be a valid Symbol"
   end
   
 end
