@@ -8,11 +8,11 @@ class ServerHub
     
     # creates the other servers
     @gameServers = []
-    (1..servers).each do |num|
+    (1..gameServers).each do |num|
       @gameServers.push(GameServer.new(port + num))
     end
     @menuServers = []
-    (1..servers).each do |num|
+    (1..menuServers).each do |num|
       @menuServers.push(MenuServer.new(port + gameServers + num))
     end
     
