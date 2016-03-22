@@ -1,7 +1,7 @@
 require_relative './database/database'
 
 # handles all typical connect4.2 game requests
-class GameServer
+class MenuServer
   
   attr_reader :address, :connections
   
