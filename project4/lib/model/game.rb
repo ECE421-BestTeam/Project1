@@ -27,6 +27,10 @@ class GameModel
     post_initialize
     class_invariant
   end
+
+  def board
+    @board
+  end
   
   # col - 0 indexed from the left
   # automatically increments player turn

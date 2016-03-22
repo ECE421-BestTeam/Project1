@@ -97,7 +97,7 @@ class BoardGtk
     # update tokens
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
-        case 1 #TODO: replace with actual call to game board[row][col]
+        case game.board[row][col]
         when 0
           @cells[row][col].children[0].set_file("#{@currentLocation}/image/token0.png")
         when 1
