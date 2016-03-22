@@ -35,6 +35,7 @@ class BoardCmd
       end
     end
     @thread.join
+    puts 'done'
   end
   
   def exitGame
@@ -47,14 +48,14 @@ class BoardCmd
   def turn
     puts boardToString
     
-    if @game.winner != 0
+    if @game.winner != nil
       puts "--- GAME OVER ---"
-      if @game.winner != 0
-        if @game.winner == 3
-          puts "Draw!"
-        else
-          puts "Player #{@game.winner} wins!"
-        end
+      if @game.winner == :draw
+        puts "Draw!"
+      elsif @game.winner == :player1
+        puts "Player 1 wins!"
+      elsif @game.winner == :player2
+        puts "Player 2 wins!"
       end
 
       exitGame
