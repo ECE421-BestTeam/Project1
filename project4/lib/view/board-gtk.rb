@@ -55,8 +55,9 @@ class BoardGtk
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
           refreshBoard(@controller.placeToken(col))
-          sleep 0.5 if @controller.settings.players == 1
+          announceResults(@game.winner)
           refreshBoard(@controller.getNextActiveState)
+          announceResults(@game.winner)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -101,4 +102,16 @@ class BoardGtk
     end
   end
   
+  def announceResults(winner)
+    return if winner == nil
+    message = "Draw!"
+    if (@controller.settings.players == 1)
+      message = "Player wins!" if winner == :player1
+      message = "Computer wins!" if winner == :player2
+    else
+      message = "Player 1 wins!" if winner == :player1
+      message = "Player 2 wins!" if winner == :player2
+    end
+    GtkHelper.popUp("Game Over", message, Proc.new { @window.destroy })
+  end
 end
