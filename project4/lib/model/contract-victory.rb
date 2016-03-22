@@ -4,10 +4,9 @@ module VictoryContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @implementation, "implementation must exist"
-    assert @implementation.method(:name).arity == 0, "implementation does not have 'name' method with 0 args"
-    assert @implementation.method(:playerTokens).arity == 0, "implementation does not have 'playerToken' method with 0 args"
-    assert @implementation.method(:checkVictory).arity == 1, "implementation does not have 'checkVictory' method with 1 args"
+#    assert name.arity == 0, "implementation does not have 'name' method with 0 args"
+#    assert playerTokens.arity == 0, "implementation does not have 'playerToken' method with 0 args"
+#    assert checkVictory.arity == 1, "implementation does not have 'checkVictory' method with 1 args"
   end
   
   def pre_initialize(victoryType)
@@ -44,4 +43,10 @@ module VictoryContract
     assert (result.class == Symbol || result.class == NilClass) && [:draw,:player1,:player2,nil].include?(result), "result must be a valid Symbol"
   end
   
+  def pre_boardEmpty(board)
+    assert board.class == Array && board.size > 0 , "board must be an array (size greater than 0) of arrays (of equal sizes, greater than 0)."
+  end
+  
+  def post_boardEmpty
+  end
 end

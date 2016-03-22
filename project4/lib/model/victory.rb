@@ -1,6 +1,5 @@
 require_relative './contract-victory'
 
-require_relative './victory-cond'
 
 # produces the desired victory object
 class VictoryModel
@@ -13,10 +12,10 @@ class VictoryModel
     case victoryType
       when :victoryNormal
         #@implementation = VictoryNormal.new
-        @implementation = VictoryCond.new("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
+        init("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
       when :victoryOtto
         #@implementation = VictoryOtto.new
-        @implementation = VictoryCond.new("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
+        init("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
       else
         raise "Not a valid game mode"
     end
@@ -25,11 +24,18 @@ class VictoryModel
     class_invariant
   end
   
+  attr
+  def init(name, tokens, p1sequence, p2sequence)
+    @name = name
+    @playerTokens = tokens
+    @p1win = p1sequence
+    @p2win = p2sequence
+  end
   
   def name
     pre_name
     
-    result = @implementation.name
+    result = @name
     
     post_name(result)
     class_invariant
@@ -39,7 +45,7 @@ class VictoryModel
   def playerToken(player)
     pre_playerToken(player)
     
-    result = @implementation.playerTokens[player]
+    result = @playerTokens[player]
     
     post_playerToken(result)
     class_invariant
@@ -52,11 +58,74 @@ class VictoryModel
   def checkVictory(board)
     pre_checkVictory(board)
     
-    result = @implementation.checkVictory(board)
-        
+    # make bidirectional diagonals
+    diags = makeDiags(board)
+    # p1 victory
+    if checkArrays(board.transpose, @p1win) || checkArrays(board, @p1win) || checkArrays(diags, @p1win)
+      result = :player1
+    # p2 victory
+    elsif checkArrays(board.transpose, @p2win) || checkArrays(board, @p2win) || checkArrays(diags, @p2win)
+      result = :player2
+    elsif boardEmpty(board)
+      result = nil
+    else
+      result = :draw
+    end
+    
     post_checkVictory(result)
     class_invariant
     return result
   end
+  
+  def checkArrays (arrs, win)
+    arrs.each{ |row|
+      row.each_index{ |r|
+        result = true
+        (0...win.size).each { |i|
+          result = result && row[r+i] == win[i]
+        }
+        return result if result == true
+      }
+    }
+    return false
+  end
+  
+  def boardEmpty(board)
+    pre_boardEmpty(board)
+    board.each_index { |c|
+      board[c].each_index {|r|
+        if board[c][r].nil?
+          return true
+        end
+      }
+    }
+    post_boardEmpty
+    return false
+  end
+  
+  def makeDiags(arrs)
+    return (generateDiags(arrs) + generateDiags(arrs.transpose)).uniq.reject(&:empty?)
+  end
+  private :makeDiags
+
+  def generateDiags(arrs)
+    diags = []
+    #SE direction
+    arrs[0].size.times { |k|
+      diags << (0...arrs.size).collect{ |i| arrs[i][i+k]}.compact
+    }
+    (arrs[0].size-1).downto(0) { |k|
+      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][i-k] if i-k > -1}.compact
+    }
+    #SW direction
+    arrs[0].size.times { |k|
+      diags << (0...arrs.size).collect{ |i| arrs[i][k-i] if k-i > -1}.compact
+    }
+    (arrs[0].size-1).downto(0) { |k|
+      diags << (arrs.size-1).downto(0).collect{ |i| arrs[i][k-(i-(arrs[0].size-1))] if i-k > -1}.compact
+    }
+    return diags
+  end
+  private :generateDiags
   
 end
