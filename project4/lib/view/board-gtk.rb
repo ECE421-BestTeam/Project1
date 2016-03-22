@@ -44,29 +44,6 @@ class BoardGtk
   # Builds the base game board
   def setUpBoard
     
-    createPlaceButton = Proc.new do |col|
-      {
-        :type => Gtk::Button,
-        :content => "Place",
-        :listeners => [
-          { 
-            :event => :clicked, 
-            :action => Proc.new { 
-              refreshBoard(@controller.placeToken(col))
-              sleep 1
-              refreshBoard(@controller.getNextActiveState) 
-            } 
-          }
-        ]
-      }
-    end
-    
-    buttons = []
-    (0..(@cols-1)).each do |col|
-      buttons.push(createPlaceButton.call(col))
-    end
-    buttons = GtkHelper.createBox('H', buttons)
-    
     #build the board
     board = Gtk::Table.new(@rows, @cols)
 
@@ -78,6 +55,7 @@ class BoardGtk
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
           refreshBoard(@controller.placeToken(col))
+          sleep 0.5 if @controller.settings.players == 1
           refreshBoard(@controller.getNextActiveState)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
@@ -103,7 +81,7 @@ class BoardGtk
     if !@emptytoken
       @emptytoken = "#{@currentLocation}/image/empty.png"
     end
-    puts 'refreshed'
+
     # check for victory (if so do something like switch to end screen)
     
     #check which player's turn it is (disable/enable buttons)
@@ -121,14 +99,6 @@ class BoardGtk
         end
       end
     end
-  end
-  
-  # graphically displays token at given location
-  # col - 0 indexed from the left
-  # row - 0 indexed from the bottom up
-  # token - the token to place: nil = empty token, 
-  def placeToken (col, row, token = nil)
-    
   end
   
 end
