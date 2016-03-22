@@ -1,5 +1,6 @@
 require 'socket'
 require_relative './server-game'
+require_relative './server-menu'
 require_relative './database/database'
 
 class ServerHub
@@ -21,12 +22,17 @@ class ServerHub
     
     @continue = true
     @server = TCPServer.open(port)
+    puts "listening on #{port}"
     
+    loop
   end
   
   def loop
     while @continue
-      th = Thread.new(@server.accept) do |client|
+#      client = @server.accept
+      th = Thread.start(@server.accept) do |client|
+        puts "IN"
+        client.puts "ok"
         req = client.gets.chomp
         res = "invalid"
         case req
@@ -37,8 +43,7 @@ class ServerHub
           when "existingGame"
             res = connectToExistingGameServer(client)
         end
-        client.puts(Time.now.ctime) # Send the time to the client
-        client.puts "Closing the connection. Bye!"
+        client.puts res
         client.close                # Disconnect from the client
       end
     end
@@ -82,8 +87,8 @@ class ServerHub
     # find server with minimum connections
     min = nil
     server = nil
-    servers.each do |serv, i|
-      if serv.connections < min || min == nil
+    servers.each do |serv|
+      if min == nil || serv.connections < min
         min = serv.connections
         server = serv
       end
@@ -94,3 +99,5 @@ class ServerHub
  
   
 end
+
+#ServerHub.new
