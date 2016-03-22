@@ -28,10 +28,6 @@ class GameModel
     class_invariant
   end
 
-  def board
-    @board
-  end
-  
   # col - 0 indexed from the left
   # automatically increments player turn
   def placeToken (col)
@@ -88,7 +84,7 @@ class GameModel
     pre_waitForNextUpdate(currentTurn)
     
     # wait until model has been updated by something else
-    while @turn <= currentTurn && @winner == 0
+    while @turn <= currentTurn && @winner == nil
       sleep 0 # allow other threads to do stuff
     end
     result = self
