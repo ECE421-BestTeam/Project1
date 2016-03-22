@@ -35,12 +35,11 @@ class BoardCmd
       end
     end
     @thread.join
-    puts 'done'
+    @exitCallback.call @controller.close
   end
   
   def exitGame
     @gameover = true
-    @exitCallback.call @controller.close
   end
   
   # Handles a localPlayer Turn
