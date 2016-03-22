@@ -6,7 +6,7 @@ require_relative './menu-gtk'
 class MenuView
   include MenuViewContract
   
-  def initialize(type, boardType = 0, menuControllerType = 0)
+  def initialize(type, boardType = 0, menuControllerType = :menuControllerDefault)
     pre_initialize(type, boardType, menuControllerType)
 
       case type

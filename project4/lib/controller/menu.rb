@@ -11,7 +11,7 @@ class MenuController
     pre_initialize(type)
     
     case type
-      when 0
+      when :menuControllerDefault
         @implementation = MenuDefaultController.new
     end
     
