@@ -73,13 +73,9 @@ class BoardGtk
   # refreshes board to reflect the current model
   def refreshBoard(game)
     @game = game
-    if !@player1token
-      @player1token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
-    end
-    if !@player2token
-      @player2token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
-    end
     if !@emptytoken
+      @player1token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
+      @player2token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
       @emptytoken = "#{@currentLocation}/image/empty.png"
     end
 
