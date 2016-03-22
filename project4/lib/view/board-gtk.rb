@@ -65,6 +65,8 @@ class BoardGtk
     #build the board
     board = Gtk::Table.new(@rows, @cols)
 
+    @cells = Array.new(@settings.rows) { Array.new(@settings.cols) {nil} }
+
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
         cell = Gtk::EventBox.new
@@ -74,6 +76,7 @@ class BoardGtk
               refreshBoard(@controller.getNextActiveState)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
+        cells[row][col] = cell
       end
     end
     
@@ -92,6 +95,18 @@ class BoardGtk
     #check which player's turn it is (disable/enable buttons)
     
     # update tokens
+    (0..(@cols-1)).each do |col|
+      (0..(@rows-1)).each do |row|
+        case nil #TODO: replace with actual call to game board[row][col]
+        when 0
+          @cells[row][col].children[0].set_file("#{@currentLocation}/image/token0.png")
+        when 1
+          @cells[row][col].children[0].set_file("#{@currentLocation}/image/token1.png")
+        else
+          @cells[row][col].children[0].set_file("#{@currentLocation}/image/empty.png")
+        end
+      end
+    end
   end
   
   # graphically displays token at given location
