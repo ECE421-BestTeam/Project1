@@ -52,7 +52,8 @@ class BoardGtk
           { 
             :event => :clicked, 
             :action => Proc.new { 
-              refreshBoard(@controller.placeToken(col)) 
+              refreshBoard(@controller.placeToken(col))
+              sleep 1
               refreshBoard(@controller.getNextActiveState) 
             } 
           }
@@ -94,10 +95,10 @@ class BoardGtk
   def refreshBoard(game)
     @game = game
     if !@player1token
-      @player1token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
+      @player1token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
     end
     if !@player2token
-      @player2token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
+      @player2token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
     end
     if !@emptytoken
       @emptytoken = "#{@currentLocation}/image/empty.png"
