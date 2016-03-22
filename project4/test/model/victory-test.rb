@@ -74,6 +74,13 @@ class VictoryModelTest < Test::Unit::TestCase
               [ 1 , 0 , 0 , 0 , 0 , 0 , 1 ]]
     assert_equal :player1, v.checkVictory(board)
     
+    board = [ [ 1 ,nil,nil, 0 , 1 , 1 , 1 ],
+              [ 1 , 1 , 1 , 0 ,nil,nil,nil],
+              [ 1 , 1 , 1 , 0 , 0 ,nil,nil],
+              [ 0 , 0 , 0 , 1 , 0 , 1 , 1 ],
+              [ 1 , 0 , 0 , 1 , 0 , 0 , 1 ]]
+    assert_equal :player2, v.checkVictory(board)
+    
     board = [ [ 1 , 1 , 0 , 1 , 0 , 0 ],
               [ 0 , 0 , 1 , 0 , 1 , 1 ],
               [ 1 , 0 , 0 , 1 , 0 , 1 ],
