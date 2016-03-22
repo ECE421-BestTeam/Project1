@@ -37,7 +37,7 @@ class GameModel
   def placeToken (col)
     pre_placeToken(col)
     
-    raise ArgumentError, "Game is over!" if @winner != nil
+    raise GameOverError, "Game is over!" if @winner != nil
     
     freeRow = false
     
@@ -111,5 +111,9 @@ class GameModel
     class_invariant
     return result
   end
+  
+end
+
+class GameOverError < RuntimeError
   
 end
