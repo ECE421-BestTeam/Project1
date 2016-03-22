@@ -93,6 +93,15 @@ class BoardGtk
   # refreshes board to reflect the current model
   def refreshBoard(game)
     @game = game
+    if !@player1token
+      @player1token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
+    end
+    if !@player2token
+      @player2token = game.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
+    end
+    if !@emptytoken
+      @emptytoken = "#{@currentLocation}/image/empty.png"
+    end
     puts 'refreshed'
     # check for victory (if so do something like switch to end screen)
     
@@ -103,11 +112,11 @@ class BoardGtk
       (0..(@rows-1)).each do |row|
         case game.board[row][col]
         when 0
-          @cells[row][col].children[0].set_file("#{@currentLocation}/image/token0.png")
+          @cells[row][col].children[0].set_file(@player1token)
         when 1
-          @cells[row][col].children[0].set_file("#{@currentLocation}/image/token1.png")
+          @cells[row][col].children[0].set_file(@player2token)
         else
-          @cells[row][col].children[0].set_file("#{@currentLocation}/image/empty.png")
+          @cells[row][col].children[0].set_file(@emptytoken)
         end
       end
     end
