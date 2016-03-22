@@ -67,10 +67,11 @@ module GtkHelper
     self.popUp(err)
   end
   
-  def self.popUp(err)
+  def self.popUp(err, exitCallback = Proc.new {})
     Gtk.init
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do
+      exitCallback.call
       Gtk.main_quit
     end
     @window.title = "Error"

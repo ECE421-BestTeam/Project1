@@ -6,13 +6,14 @@ require_relative '../controller/board'
 class BoardGtk
   
   #controller - a BoardController
-  def initialize (controller, exitCallback)
+  def initialize (controller, exitCallback = Proc.new {})
 
     @controller = controller
     # pull settings we will use frequently, they are constant
     @rows = @controller.settings.rows
     @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
+    @exitCallback = exitCallback
     
     # for displaying issues
     @currentLocation = File.expand_path File.dirname(__FILE__)
@@ -21,9 +22,7 @@ class BoardGtk
     Gtk.init
     @window = Gtk::Window.new
     GtkHelper.applyEventHandler(@window, "destroy") do
-      @controller.close if @controller.close
-      exitCallback.call(@game) if exitCallback
-      Gtk.main_quit
+      exitGame
     end
     @window.title = "Connect4.2 Game"
 #    window.border_width = 10
@@ -34,6 +33,12 @@ class BoardGtk
     
     Gtk.main
 
+  end
+  
+  def exitGame
+      @controller.close if @controller.close
+      @exitCallback.call(@game)
+      Gtk.main_quit
   end
   
   # Builds the base game board
