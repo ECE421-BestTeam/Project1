@@ -64,6 +64,10 @@ module GtkHelper
   end
   
   def self.errorHandler(err)
+    self.popUp(err)
+  end
+  
+  def self.popUp(err)
     Gtk.init
     @window = Gtk::Window.new
     @window.signal_connect("destroy") do

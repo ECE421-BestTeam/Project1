@@ -5,7 +5,7 @@ class SettingsModel
   include SettingsContract
   
   # initializes the settings
-  def initialize(players = 1, victoryType = :victoryNormal, boardControllerType = 0, rows = 6, cols = 7)
+  def initialize(players = 1, victoryType = :victoryNormal, boardControllerType = :boardControllerLocal, rows = 6, cols = 7)
     
     @players = players
     @victoryType = victoryType

@@ -61,7 +61,6 @@ class BoardGtk
     end
     buttons = GtkHelper.createBox('H', buttons)
     
-    
     #build the board
     board = Gtk::Table.new(@rows, @cols)
 
