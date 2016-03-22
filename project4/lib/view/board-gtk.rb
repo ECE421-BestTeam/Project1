@@ -68,9 +68,10 @@ class BoardGtk
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
         cell = Gtk::EventBox.new
-        cell.add(Gtk::Image.new("#{@currentLocation}/image/token0.png"))
+        cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         cell.signal_connect("button_press_event") {
-          cell.children[0].set_file("#{@currentLocation}/image/token1.png")
+              refreshBoard(@controller.placeToken(col))
+              refreshBoard(@controller.getNextActiveState)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
       end
