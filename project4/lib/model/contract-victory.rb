@@ -4,9 +4,10 @@ module VictoryContract
   include Test::Unit::Assertions
   
   def class_invariant
-#    assert name.arity == 0, "implementation does not have 'name' method with 0 args"
-#    assert playerTokens.arity == 0, "implementation does not have 'playerToken' method with 0 args"
-#    assert checkVictory.arity == 1, "implementation does not have 'checkVictory' method with 1 args"
+    assert @name.class == String, "name must be a String"
+    assert @playerTokens.class == Array && @playerTokens.size == 2, "playerTokens must be an Array of 2 Strings"
+    assert @p1win.class == Array && @p1win.size > 0, "p1sequence must be an Array of size >1"
+    assert @p2win.class == Array && @p2win.size > 0, "p2sequence must be an Array of size >1"
   end
   
   def pre_initialize(victoryType)

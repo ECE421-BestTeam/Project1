@@ -32,7 +32,6 @@ class VictoryModel
     @playerTokens = tokens
     @p1win = p1sequence
     @p2win = p2sequence
-    @winningrow = []
   end
   
   def name
@@ -57,7 +56,7 @@ class VictoryModel
   
   # checks if a victory condition is met
   # board - 2D array filled with nil/player1Token/player2Token
-  # returns: 0 - no victory, 1 - p1 won, 2 - p2 won, 3 p1 + p2 won
+  # returns: nil - no victory, :player1 - p1 won, :player2 - p2 won, :draw p1 + p2 won
   def checkVictory(board)
     pre_checkVictory(board)
     
@@ -85,10 +84,8 @@ class VictoryModel
     (0...arrs.size).each{ |a|
       arrs[a].each_index{ |r|
         result = true
-        @winningrow = []
         (0...win.size).each { |i|
           result = result && arrs[a][r+i] == win[i]
-          @winningrow << [a,r+i]
         }
         return result if result == true
       }
@@ -113,7 +110,6 @@ class VictoryModel
     diags =  (generateDiags(arrs) + generateDiags(arrs.transpose))
     return diags
   end
-  private :makeDiags
 
   def generateDiags(arrs)
     diags = []
@@ -134,6 +130,5 @@ class VictoryModel
     }
     return diags
   end
-  private :generateDiags
   
 end
