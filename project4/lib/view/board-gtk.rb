@@ -55,9 +55,7 @@ class BoardGtk
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
           refreshBoard(@controller.placeToken(col))
-          announceResults(@game.winner)
           refreshBoard(@controller.getNextActiveState)
-          announceResults(@game.winner)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -79,10 +77,6 @@ class BoardGtk
       @emptytoken = "#{@currentLocation}/image/empty.png"
     end
 
-    # check for victory (if so do something like switch to end screen)
-    
-    #check which player's turn it is (disable/enable buttons)
-    
     # update tokens
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
@@ -96,6 +90,10 @@ class BoardGtk
         end
       end
     end
+    
+    # check for victory (if so do something like switch to end screen)
+    announceResults(game.winner)
+    
   end
   
   def announceResults(winner)
