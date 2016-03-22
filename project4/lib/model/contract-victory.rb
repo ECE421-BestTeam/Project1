@@ -11,7 +11,7 @@ module VictoryContract
   end
   
   def pre_initialize(victoryType)
-    assert victoryType.class == Symbol
+    assert victoryType.class == Symbol, "victoryType must be valid Symbol"
   end
   
   def post_initialize

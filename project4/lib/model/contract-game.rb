@@ -7,7 +7,7 @@ module GameContract
   
   def class_invariant
     assert @settings.class == SettingsModel, "settings must be a SettingsModel"
-    assert @winner.class == Fixnum && @winner.between?(0,3), "winner must be a Fixnum in 0-3"
+    assert (@winner.class == Symbol || @winner.class == NilClass) && [:draw, :player1, :player2, nil].include?(@winner), "winner must be a valid Symbol"
     assert @victory.class == VictoryModel, "victory must be a VictoryModel"
     assert @turn.class == Fixnum && @turn >= 0, "turn must be a Fixnum greater than or equal to 0"
     msg = "board must be an array (size greater than 0) of arrays (of equal sizes, greater than 0)."
@@ -51,7 +51,7 @@ module GameContract
   end
   
   def post_checkVictory(result)
-    assert result.class == Fixnum && result.between?(0,3), "winner must be a Fixnum in 0-3"
+    assert (result.class == Symbol || result.class == NilClass) && [:draw, :player1, :player2, nil].include?(result), "winner must be a valid Symbol"
   end
   
 end

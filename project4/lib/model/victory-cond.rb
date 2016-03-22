@@ -8,7 +8,6 @@ class VictoryCond
     @playerTokens = tokens
     @p1win = p1sequence
     @p2win = p2sequence
-    @winningrow = []
   end
   
   def newPlayer(playernum, token, wincondition)

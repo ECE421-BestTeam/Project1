@@ -17,7 +17,7 @@ class GameModel
     pre_initialize(settings)
     
     @settings = settings
-    @winner = 0
+    @winner = nil
     @victory = VictoryModel.new @settings.victoryType
     @turn = 0
     
@@ -33,7 +33,7 @@ class GameModel
   def placeToken (col)
     pre_placeToken(col)
     
-    raise ArgumentError, "Game is over!" if @winner != 0
+    raise ArgumentError, "Game is over!" if @winner != nil
     
     freeRow = false
     
@@ -98,7 +98,7 @@ class GameModel
   # returns false - no winner, true - winner exists
   def checkVictory
     pre_checkVictory
-    if @winner == 0  
+    if @winner == :draw
       @winner = @victory.checkVictory @board
     end
     result = @winner

@@ -33,8 +33,8 @@ class VictoryModelTest < Test::Unit::TestCase
   end
   
   def test_all
-    implementationTests(0) #tests victory-normal
-    implementationTests(1) #tests victory-otto
+    implementationTests(:victoryNormal) #tests victory-normal
+    implementationTests(:victoryOtto) #tests victory-otto
   end
 
   def test_checkVictory_normal
@@ -44,35 +44,35 @@ class VictoryModelTest < Test::Unit::TestCase
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 0, v.checkVictory(board)
+    assert_equal nil, v.checkVictory(board)
     
     board = [ [nil,nil,nil,nil,nil,nil],
               [ 0 , 0 , 0 , 0 ,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 1, v.checkVictory(board)
+    assert_equal :player1, v.checkVictory(board)
     
     board = [ [nil,nil, 1 ,nil,nil,nil],
               [ 0 , 0 , 1 , 0 ,nil,nil],
               [nil,nil, 1 ,nil,nil,nil],
               [nil,nil, 1 ,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 2, v.checkVictory(board)
+    assert_equal :player2, v.checkVictory(board)
     
     board = [ [nil,nil, 0 ,nil,nil,nil],
               [ 0 , 0 , 1 , 0 ,nil,nil],
               [nil,nil, 1 ,nil, 0 ,nil],
               [nil,nil, 1 ,nil,nil, 0 ],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 1, v.checkVictory(board)
+    assert_equal :player1, v.checkVictory(board)
     
     board = [ [ 1 , 1 , 0 , 1 , 0 , 0 ],
               [ 0 , 0 , 1 , 0 , 1 , 1 ],
               [ 1 , 0 , 0 , 1 , 0 , 1 ],
               [ 0 , 1 , 1 , 0 , 0 , 1 ],
               [ 1 , 0 , 0 , 1 , 1 , 0 ]]
-    assert_equal 3, v.checkVictory(board)
+    assert_equal :draw, v.checkVictory(board)
   end
   
   def test_checkVictory_otto
@@ -82,35 +82,35 @@ class VictoryModelTest < Test::Unit::TestCase
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 0, v.checkVictory(board)
+    assert_equal nil, v.checkVictory(board)
     
     board = [ [nil,nil,nil,nil,nil,nil],
               [ 0 , 1 , 1 , 0 ,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 1, v.checkVictory(board)
+    assert_equal :player1, v.checkVictory(board)
     
     board = [ [nil,nil, 1 ,nil,nil,nil],
               [ 0 , 0 , 0 , 0 ,nil,nil],
               [nil,nil, 0 ,nil,nil,nil],
               [nil,nil, 1 ,nil,nil,nil],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 2, v.checkVictory(board)
+    assert_equal :player2, v.checkVictory(board)
     
     board = [ [nil,nil, 1 ,nil,nil,nil],
               [ 0 , 1 , 0 , 0 ,nil,nil],
               [nil,nil, 1 ,nil, 0 ,nil],
               [nil,nil, 1 ,nil,nil, 1 ],
               [nil,nil,nil,nil,nil,nil]]
-    assert_equal 2, v.checkVictory(board)
+    assert_equal :player2, v.checkVictory(board)
     
     board = [ [ 1 , 1 , 1 , 1 , 1 , 1 ],
               [ 1 , 1 , 1 , 1 , 1 , 1 ],
               [ 1 , 1 , 1 , 1 , 1 , 1 ],
               [ 1 , 1 , 1 , 1 , 1 , 1 ],
               [ 1 , 1 , 1 , 1 , 1 , 1 ]]
-    assert_equal 3, v.checkVictory(board)
+    assert_equal :draw, v.checkVictory(board)
   end
   
 end
