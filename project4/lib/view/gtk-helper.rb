@@ -67,19 +67,22 @@ module GtkHelper
     self.popUp("Error", err)
   end
   
-  def self.popUp(title, err, exitCallback = Proc.new {})
-    Gtk.init
-    @window = Gtk::Window.new
-    @window.signal_connect("destroy") do
-      exitCallback.call
-      Gtk.main_quit
-    end
-    @window.title = title
-        
-    @window.add Gtk::Label.new(err.to_s)
-    @window.show_all
+  def self.popUp(title, msg, exitCallback = Proc.new {})
+    dialog = Gtk::Dialog.new(
+      title,
+      $main_application_window,
+      Gtk::Dialog::DESTROY_WITH_PARENT,
+      [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
     
-    Gtk.main
+    # Ensure that the dialog box is destroyed when the user responds.
+    dialog.signal_connect('response') { 
+      dialog.destroy 
+      exitCallback.call
+    }
+
+    # Add the message in a label, and show everything we've added to the dialog.
+    dialog.vbox.add(Gtk::Label.new(msg.to_s))
+    dialog.show_all
   end
   
 end

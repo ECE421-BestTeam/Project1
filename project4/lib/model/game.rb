@@ -67,6 +67,8 @@ class GameModel
     pre_computerTurn
     begin
       placeToken(rand(0..(@settings.cols-1))) # do something better (col might be full)
+    rescue GameOverError
+      # don't place
     rescue ArgumentError
       retry #silently retry
     end

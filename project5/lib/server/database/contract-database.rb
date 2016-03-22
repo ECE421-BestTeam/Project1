@@ -4,6 +4,10 @@ module DatabaseContract
 
   end
   
+  def pre_checkOut(table, id, wait, &checkOutFn)
+  
+  end
+  
   def pre_getAll(table)
     
   end

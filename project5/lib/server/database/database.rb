@@ -11,6 +11,19 @@ class Database
     end
   end
   
+  # checks out an entry for the duration of checkOutFn
+  # wait specifies if we should block until we get the checkOut
+  # returns false if we did block and did not obtain the checkOut, else true
+  def checkOut(table, id, wait = true, &checkOutFn)
+    
+    pre_checkOut(table, id, wait, &checkOutFn)
+    
+    checkOutFn.call get(table, id)  # TODO remove and do real implementation
+#    @implementation.checkOut(table, id, wait, &checkOutFn)
+
+    class_invariant
+  end
+  
   # returns all entries as an array of hashes
   def getAll(table)
     pre_getAll(table)
