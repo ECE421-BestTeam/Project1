@@ -26,7 +26,7 @@ module MenuControllerContract
   end
   
   def pre_initialize(type)
-    assert type.class == Fixnum && type.between?(0,0), "type must be a Fixnum in 0-0"
+    assert type.class == Symbol && [:menuControllerDefault].include?(type), "menuController type must be a Symbol in [:menuControllerDefault]"
   end
 
   def post_initialize
