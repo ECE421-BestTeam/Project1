@@ -17,14 +17,14 @@ class ServerTest < Test::Unit::TestCase
 
   def teardown
     @s.close
-    @th.kill
+    @th.kill # kills the server thread
     @th.join
   end
   
-  def test_stats
-    @s.puts "stats"
-    address = @s.gets.chomp
-    assert_equal String, address.class
+  def test_createPlayer
+    @s.puts "createPlayer"
+    res = @s.gets.chomp
+    assert_equal String, res.class
   end
  
   
