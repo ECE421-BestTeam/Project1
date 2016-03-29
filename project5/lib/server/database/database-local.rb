@@ -2,7 +2,7 @@ require 'json'
 
 class DatabaseLocal
   
-  def initialize
+  def initialize(settings)
     
   end
   
