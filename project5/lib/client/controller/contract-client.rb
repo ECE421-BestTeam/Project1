@@ -3,7 +3,7 @@
 module ClientContract
   
   def class_invariant
-
+    @implementation, "implementation must exist"
   end
   
   def pre_initialize(settings)
@@ -19,12 +19,13 @@ module ClientContract
   # will automatically append user's identity token (if exists)
   # will automatically append game Id (if exists)
   def pre_sendRequest(req)
+    assert req.class == String, "req must be a valid String"
   
   end
   
   # should return the result of the request
   def post_sendRequest(result)
-  
+    assert result
   end
   
   def pre_createPlayer(username, password)
@@ -75,6 +76,7 @@ module ClientContract
   end
   
   def post_newGame(gameId)
+    assert gameId.class == String, "gameId must be a String"
 
   end
 
@@ -88,7 +90,7 @@ module ClientContract
   end
 
   def pre_placeToken(col)
-    assert col.class == String, "
+    assert col.class == Fixnum && col.between?(0, @implementation.rows), "col number must be a Fixnum within the width of the board"
   end
   
   def post_placeToken(result)  
@@ -103,8 +105,9 @@ module ClientContract
 
   end
 
-  def pre_saveResponse(yes)
+  def pre_saveResponse(resp)
     #yes = true or false
+    assert resp == true || resp == false, "resp is not a valid save response"
     
   end
   
@@ -117,6 +120,7 @@ module ClientContract
   end
   
   def post_forfeit(result)
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
 
   end
 

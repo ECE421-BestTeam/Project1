@@ -1,7 +1,9 @@
 module ServerContract
   
   def class_invariant
-
+    assert @port.class == Fixnum, "server must have a port number"
+    assert @db, "Database must exist"
+    assert @server, "server object must exist"
   end
   
   def pre_initialize(port, timeout)
@@ -23,7 +25,7 @@ module ServerContract
   end
   
   def pre_buildResponse(status, data)
-    assert status.class == Symbol and [:ok, :failed].include?(status), "status is an invalid Symbol"
+    assert status.class == Symbol and [:ok, :fail].include?(status), "status is an invalid Symbol"
     assert data.class == String, "data must be a String"
   end
   
