@@ -1,10 +1,10 @@
-require_relative './lib/view/menu'
+require_relative './lib/client/view/menu'
 
 # for a complete gui interface
-game = MenuView.new :menuGtk, :boardGtk
+#game = MenuView.new :menuGtk, :boardGtk
 
 # OR for a cmd interface, you can do
-#game = MenuView.new :menuCmd, :boardCmd
+game = MenuView.new :menuCmd, :boardCmd
 
 # OR for a cmd menu and gtk board, you can do
 #game = MenuView.new :menuCmd, :boardGtk

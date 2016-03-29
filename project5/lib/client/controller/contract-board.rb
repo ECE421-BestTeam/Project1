@@ -1,6 +1,6 @@
 require 'test/unit/assertions'
-require_relative '../model/game'
-require_relative '../model/settings'
+require_relative '../../common/model/game'
+require_relative '../../common/model/settings'
 
 module BoardControllerContract
   include Test::Unit::Assertions

@@ -1,4 +1,4 @@
-require_relative '../model/settings'
+require_relative '../../common/model/settings'
 
 # menu/settings controller interface
 class MenuDefaultController

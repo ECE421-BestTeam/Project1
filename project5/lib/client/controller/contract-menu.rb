@@ -1,7 +1,7 @@
 require 'test/unit/assertions'
 
 require_relative './board'
-require_relative '../model/settings'
+require_relative '../../common/model/settings'
 
 module MenuControllerContract
   include Test::Unit::Assertions
