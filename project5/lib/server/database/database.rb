@@ -4,23 +4,39 @@ require_relative './database-local'
 class Database
   include DatabaseContract
   
-  def initialize(type = :databaseLocal)
+  def initialize(type = :databaseLocal, settings = {})
+    pre_initialize(type, settings)
     case type
       when :databaseLocal
-        @implementation = DatabaseLocal.new
+        @implementation = DatabaseLocal.new settings
     end
+    post_initialize
+    class_invariant
   end
   
-  # checks out an entry for the duration of checkOutFn
-  # wait specifies if we should block until we get the checkOut
-  # returns false if we did block and did not obtain the checkOut, else true
-  def checkOut(table, id, wait = true, &checkOutFn)
+  # locks a table for the duration of checkOutFn
+  # blocks until we get the lock
+  def lockTable(table, wait = true, &checkOutFn)
     
-    pre_checkOut(table, id, wait, &checkOutFn)
+    pre_lockTable(table, wait, &checkOutFn)
     
-    checkOutFn.call get(table, id)  # TODO remove and do real implementation
+    checkOutFn.call(getAll(table))  # TODO remove and do real implementation
 #    @implementation.checkOut(table, id, wait, &checkOutFn)
 
+    post_lockTable
+    class_invariant
+  end
+  
+  # locks an entry for the duration of checkOutFn
+  # blocks until we get the lock
+  def lockEntry(table, id, &checkOutFn)
+    
+    pre_lockEntry(table, id, &checkOutFn)
+    
+    checkOutFn.call(get(table, id))  # TODO remove and do real implementation
+#    @implementation.checkOut(table, id, wait, &checkOutFn)
+
+    post_lockEntry
     class_invariant
   end
   

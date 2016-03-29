@@ -5,7 +5,7 @@ class DatabaseMySql
   # settings is a hash
   def initialize(settings)
     begin
-      @db = Mysql.new(settings.host, settings.user, settings.pwd, settings.db, settings.port)
+      @db = Mysql.new(settings.host, settings.username, settings.password, settings.db, settings.port)
     rescue Mysql::Error => e
       puts e.error
     end
