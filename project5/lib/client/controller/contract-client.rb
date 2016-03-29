@@ -1,3 +1,5 @@
+
+
 module ClientContract
   
   def class_invariant
@@ -6,6 +8,7 @@ module ClientContract
   
   def pre_initialize(settings)
     #should be a hash with clientAddress
+    assert settings.class == Hash && settings.has_key?(:clientAddress), "client settings must be a Hash and have clientAddress"
     
   end
 
@@ -25,6 +28,8 @@ module ClientContract
   end
   
   def pre_createPlayer(username, password)
+    assert username.class == String, "username must be a String"
+    assert password.class == String, "password must be a String"
     
   end
   
@@ -33,7 +38,8 @@ module ClientContract
   end
   
   def pre_login(username, password)
-    
+    assert username.class == String, "username must be a String"
+    assert password.class == String, "password must be a String"
   end
   
   def post_login(result)
@@ -73,15 +79,16 @@ module ClientContract
   end
 
   def pre_joinGame(gameId)
+    assert gameId.class == String, "gameId must be a String"
     
   end
   
-  def post_joinGame(result)   
+  def post_joinGame
 
   end
 
   def pre_placeToken(col)
-    
+    assert col.class == String, "
   end
   
   def post_placeToken(result)  

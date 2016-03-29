@@ -5,6 +5,8 @@ module ServerContract
   end
   
   def pre_initialize(port, timeout)
+    assert port.class == Fixnum, "port must be initalized as a Fixnum"
+    assert timeout.class == Float, "timeout must be initalized as a Float"
     
   end
 
@@ -13,7 +15,7 @@ module ServerContract
   end
   
   def pre_getRequest(client)
-  
+    assert client.class == Client, "invalid client"
   end
   
   def post_getRequest
@@ -21,15 +23,16 @@ module ServerContract
   end
   
   def pre_buildResponse(status, data)
-    
+    assert status.class == Symbol and [:ok, :failed].include?(status), "status is an invalid Symbol"
+    assert data.class == String, "data must be a String"
   end
   
-  def post_buildResponse(result)
+  def post_buildResponse
     
   end
   
   def pre_createPlayer(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_createPlayer
@@ -37,7 +40,7 @@ module ServerContract
   end
   
   def pre_login(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_login    
@@ -45,7 +48,7 @@ module ServerContract
   end
 
   def pre_logout(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_logout    
@@ -53,15 +56,15 @@ module ServerContract
   end
 
   def pre_getStats(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_getStats    
-
+    assert client.class == Client, "invalid client"
   end
 
   def pre_getGames(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_getGames    
@@ -69,7 +72,7 @@ module ServerContract
   end
 
   def pre_newGame(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_newGame    
@@ -77,15 +80,16 @@ module ServerContract
   end
 
   def pre_joinGame(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
-  def post_joinGame    
+  def post_joinGame(result)
+    assert result.class == String, "result must be a valid address of type String"
 
   end
 
   def pre_placeToken(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_placeToken    
@@ -93,7 +97,7 @@ module ServerContract
   end
 
   def pre_saveRequest(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_saveRequest    
@@ -101,7 +105,7 @@ module ServerContract
   end
 
   def pre_saveResponse(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_saveResponse    
@@ -109,7 +113,7 @@ module ServerContract
   end
 
   def pre_forfeit(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
   def post_forfeit    
@@ -117,10 +121,11 @@ module ServerContract
   end
 
   def pre_getGame(client)
-    
+    assert client.class == Client, "invalid client"
   end
   
-  def post_getGame    
+  def post_getGame(result)
+    assert result.class == GameModel
 
   end
   
