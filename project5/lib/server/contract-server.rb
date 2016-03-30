@@ -1,3 +1,5 @@
+require_relative '../client/client'
+
 module ServerContract
   
   def class_invariant
@@ -11,15 +13,15 @@ module ServerContract
   end
 
   def post_initialize
-    
   end
   
   def pre_getRequest(client)
     assert client.class == Client, "invalid client"
   end
   
-  def post_getRequest
-  
+  def post_getRequest(req)
+    reqs = ["closeConnection","createPlayer","login","logout","getStats","getGames","newGame","joinGame","placeToken","saveRequest","saveResponse","forfeit","getGame"]
+    assert req.class == String && reqs.include?(req), "request must be a valid String"
   end
   
   def pre_buildResponse(status, data)
@@ -28,7 +30,6 @@ module ServerContract
   end
   
   def post_buildResponse
-    
   end
   
   def pre_createPlayer(client)
@@ -36,7 +37,6 @@ module ServerContract
   end
   
   def post_createPlayer
-    
   end
   
   def pre_login(client)
@@ -44,7 +44,6 @@ module ServerContract
   end
   
   def post_login    
-
   end
 
   def pre_logout(client)
@@ -52,15 +51,13 @@ module ServerContract
   end
   
   def post_logout    
-
   end
 
   def pre_getStats(client)
     assert client.class == Client, "invalid client"
   end
   
-  def post_getStats    
-    assert client.class == Client, "invalid client"
+  def post_getStats
   end
 
   def pre_getGames(client)
@@ -68,7 +65,6 @@ module ServerContract
   end
   
   def post_getGames    
-
   end
 
   def pre_newGame(client)
@@ -76,7 +72,6 @@ module ServerContract
   end
   
   def post_newGame    
-
   end
 
   def pre_joinGame(client)
@@ -85,7 +80,6 @@ module ServerContract
   
   def post_joinGame(result)
     assert result.class == String, "result must be a valid address of type String"
-
   end
 
   def pre_placeToken(client)
@@ -93,15 +87,13 @@ module ServerContract
   end
   
   def post_placeToken    
-
   end
 
   def pre_saveRequest(client)
     assert client.class == Client, "invalid client"
   end
   
-  def post_saveRequest    
-
+  def post_saveRequest  
   end
 
   def pre_saveResponse(client)
@@ -109,7 +101,6 @@ module ServerContract
   end
   
   def post_saveResponse    
-
   end
 
   def pre_forfeit(client)
@@ -117,7 +108,6 @@ module ServerContract
   end
   
   def post_forfeit    
-
   end
 
   def pre_getGame(client)
@@ -126,7 +116,6 @@ module ServerContract
   
   def post_getGame(result)
     assert result.class == GameModel
-
   end
   
 end
