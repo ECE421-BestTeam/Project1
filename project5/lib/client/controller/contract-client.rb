@@ -4,7 +4,7 @@ module ClientContract
   #
   
   def class_invariant
-
+    @implementation, "implementation must exist"
   end
   
   def pre_initialize(settings)
@@ -18,12 +18,12 @@ module ClientContract
   # will automatically append user's identity token (if exists)
   # will automatically append game Id (if exists)
   def pre_sendRequest(req)
-    assert req.class == String, "request must be a String"
+    assert req.class == String, "req must be a valid String"
   end
   
   # should return the result of the request
   def post_sendRequest(result)
-  
+    assert result.class == Class, "result must be a Class (for Errno)"
   end
   
   def pre_createPlayer(username, password)
@@ -48,21 +48,21 @@ module ClientContract
   end
   
   def post_logout(result)
-    assert result.class == Class, "result must be a Class (for Errno)"
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
   end
 
   def pre_getStats
   end
   
   def post_getStats(result) 
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Hash, "result must be a Hash"
   end
 
   def pre_getGames
   end
   
   def post_getGames(result)
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Array, "result must be an Array"
   end
 
   def pre_newGame
@@ -80,41 +80,41 @@ module ClientContract
   end
 
   def pre_placeToken(col)
-    assert col.class == String, "col must be a String"
+    assert col.class == Fixnum && col.between?(0, @implementation.rows), "col number must be a Fixnum within the width of the board"
   end
   
   def post_placeToken(result)  
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
   end
 
   def pre_saveRequest
   end
   
   def post_saveRequest(result) 
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
   end
 
-  def pre_saveResponse(yes)
+  def pre_saveResponse(resp)
     #yes = true or false
-    assert yes == true || yes == false, "yes must be true or false"
+    assert resp == true || resp == false, "resp is not a valid save response"
   end
   
   def post_saveResponse(result)
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
   end
 
   def pre_forfeit
   end
   
   def post_forfeit(result)
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == Symbol && [:ok, :fail].include?(result), "result must be a valid status message of type Symbol"
   end
 
   def pre_getGame
   end
   
   def post_getGame(result) 
-    assert result.class == Hash && result.has_key?(:data), "request must be a Hash with data key"
+    assert result.class == GameModel, "result must be a GameModel"
   end
   
 end
