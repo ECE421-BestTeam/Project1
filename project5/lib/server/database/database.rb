@@ -1,103 +1,173 @@
 require_relative './contract-database'
-require_relative './database-local'
-
+require 'mysql'
 class Database
   include DatabaseContract
   
-  def initialize(type = :databaseLocal, settings = {})
-    pre_initialize(type, settings)
-    case type
-      when :databaseLocal
-        @implementation = DatabaseLocal.new settings
+  def initialize(settings)
+    pre_initialize
+    
+    begin
+#      @db = Mysql.new("mysqlsrv.ece.ualberta.ca",
+#      "placeholderusr",
+#      "placeholderpwd",
+#      "placeholderdbn",
+#      13010
+#      )
+      @db= Mysql.new("localhost", nil, nil, 'test', nil)
+    rescue Mysql::Error => e
+      puts e.error
     end
+    
     post_initialize
     class_invariant
   end
   
-  # locks a table for the duration of checkOutFn
-  # blocks until we get the lock
-  def lockTable(table, wait = true, &checkOutFn)
-    
-    pre_lockTable(table, wait, &checkOutFn)
-    
-    checkOutFn.call(getAll(table))  # TODO remove and do real implementation
-#    @implementation.checkOut(table, id, wait, &checkOutFn)
+  def addStats(playerId, wins, losses, draws)
+    pre_addStats(playerId, wins, losses, draws)
+    begin
+      @db.query("INSERT INTO playerStats (playerID, wins, losses, draws) \
+              VALUES ( '#{playerId}', #{wins}, #{losses}, #{draws}" )
+    rescue Mysql::Error => e
+      puts "DB ERROR: Rolling back change"
+      puts e.error
+      @db.rollback
+    end
+    post_addStats
+  end
+  
+  # updates a playerId's stat by adding a delta value to the existing stat value
+  # on record
+  def updateStat(playerId, stat, delta)
+    pre_updateStat(playerId, stat, delta)
+    begin
+      @db.query("UPDATE playerStats \
+                  SET #{stat}=#{stat}+ #{delta} \
+                  WHERE playerID=#{playerId}")
+    rescue Mysql::Error => e
+      puts "DB ERROR: Rolling back change"
+      puts e.error
+      @db.rollback
+    end
+    post_updateStat
+  end
+  
+  def getStats(playerId)
+    pre_getStats(playerId)
+    begin
+      res = @db.query("SELECT * FROM playerStats \
+                       WHERE playerID='#{playerI}'")
+    rescue Mysql::Error => e
+      puts e.error
+    end
+    result = res.fetch_hash
+    post_getStats(result)
+    return result
+  end
+  
+  def addGame(gameID, player1ID=nil, playet2ID=nil, playerTurn=nil, gameBoard, state)
+    pre_addGame(gameID, player1ID, player2ID, playerTurn, gameBoard, state)
+    s_gameBoard = serializeBoard(gameBoard)
+    begin
+      @db.query("INSERT INTO games (gameID, player1ID, player2ID, playerTurn,\
+                gameBoard, state) \
+                VALUES ( '#{gameID}', #{niltonull(player1id)}, #{niltonull(player2id)}, #{niltonull(playerTurn)}, '#{s_gameBoard}' , '#{state}'" )
+    rescue Mysql::Error => e
+      puts "DB ERROR: Rolling back change"
+      puts e.error
+      @db.rollback
+    end
 
-    post_lockTable
-    class_invariant
+    post_addGame
   end
   
-  # locks an entry for the duration of checkOutFn
-  # blocks until we get the lock
-  def lockEntry(table, id, &checkOutFn)
-    
-    pre_lockEntry(table, id, &checkOutFn)
-    
-    checkOutFn.call(get(table, id))  # TODO remove and do real implementation
-#    @implementation.checkOut(table, id, wait, &checkOutFn)
-
-    post_lockEntry
-    class_invariant
-  end
-  
-  # returns all entries as an array of hashes
-  def getAll(table)
-    pre_getAll(table)
-    
-    result = @implementation.getAll(table)
-    
-    post_getAll(result)
-    class_invariant
+  def updateGame(gameId, field, value)
+    pre_updateGame(gameId, field, value)
+    begin
+      @db.query("UPDATE Games \
+                  SET #{field}=#{value} \
+                  WHERE gameID=#{gameId}")
+    rescue Mysql::Error => e
+      puts "DB ERROR: Rolling back change"
+      puts e.error
+      @db.rollback
+    end
+    post_updateGame
     return result
   end
   
-  # returns entry (hash)
-  def get(table, id)
-    pre_get(table, id)
-    
-    result = @implementation.get(table, id)
-    
-    post_get(result)
-    class_invariant
+  def getGame(gameId)
+    pre_getGame(gameId)
+    begin
+      res = @db.query("SELECT * FROM games \
+                       WHERE gameID='#{gameId}'")
+    rescue Mysql::Error => e
+      puts e.error
+    end
+    result = res.fetch_hash
+    post_getGame(result)
     return result
   end
   
-  # adds an entry
-  # returns the id
-  def add(table, newEntry)
-    pre_add(table, newEntry)
-    
-    result = @implementation.add(table, newEntry)
-    
-    post_add(result)
-    class_invariant
+  def getPlayerGames(playerId)
+    pre_getGame(gameId)
+    begin
+      res = @db.query("SELECT * FROM games \
+                       WHERE player1ID='#{playerId} or player2ID='#{playerId}'")
+    rescue Mysql::Error => e
+      puts e.error
+    end
+    result = []
+    res.each_hash { |h|
+      result << h
+    }
+    post_getGame(result)
     return result
   end
   
-  # updates an entry
-  # returns id
-  def update(table, updatedEntry)
-    pre_update(table, updatedEntry)
-    
-    result = @implementation.update(table, updatedEntry)
-    
-    post_update(result)
-    class_invariant
-    return result
+  def checkLogin(username, password)
+    pre_checkLogin(username, password)
+    begin
+      @db.query("select * from users where username='#{username} and password='#{password}'")
+    rescue Mysql::Error => e
+      puts e.error
+    end
+    result = @db.affected_rows == 1
+    post_checkLogin(result)
   end
   
-  # deletes an entry by id
-  # returns true on success
-  def delete(table, id)
-    pre_delete(table, id)
-    
-    result = @implementation.delete(table, id)
-    
-    post_delete(result)
-    class_invariant
-    return result
+  def serializeBoard(gameBoard)
+    stream = "(" + gameBoard.size.to_s + "," gameBoard[0].size.to_s + ")"
+    gameBoard.each{ |r|
+      r.each{ |c|
+        c = 'n' if c==nil
+        stream += c.to_s
+      }
+    }
+    return stream
   end
   
+  def unserializeBoard(stream)
+    stream = stream.scan(/\w+/)
+    dim = stream[0..1]
+    board = stream[2].split("")
+    i = 0
+    gameBoard = Array.new(dim[0].to_i) { |r|
+      Array.new(dim[1].to_i) { |c|
+        b = board.shift
+        c = b=='n' ? nil : break
+      }
+    }
+    
+    return gameBoard
+  end
+  
+  def niltonull(value)
+    if value == nil
+      return "NULL"
+    end
+    return "'#{value}'"
+  end
+    
 end
-
-puts Database.new(:databaseLocal).getAll(:checkedOutGames)
+  
+  

@@ -1,92 +1,89 @@
+require 'test/unit/assertions'
+
 module DatabaseContract
   
   def class_invariant
-
+    assert @db.class == Mysql, "db must be a Myql database"
+  end
+ 
+  def pre_initialize
   end
   
-  def pre_initialize(type, settings)
-    # type should be a symbol, :local or :mysql
-    assert type.class == Symbol, "type must be initalized as a Symbol"
-    # settings should be a hash with contents dependant on the type
-    assert settings.class == Hash, "settings must be of type Hash"
-    # :local - nothing required
-    if type == :mysql
-      assert setting.has_key?(:host) && setting(:host).class == String, "host must be of type String"
-      assert setting.has_key?(:password) && setting(:password).class == String, "password must be of type String"
-      assert setting.has_key?(:db) && setting(:db).class == Mysql, "db must be of type Mysql"
-      assert setting.has_key?(:port) && setting(:port).class == Fixnum, "port must be of type Fixnum"
-    end
-    # :mysql - host, username, password, db, port  (all string, except port => fixnum)
-  end
-
   def post_initialize
-    
   end
   
-  def pre_lockTable(table, wait, &checkOutFn)
-    assert table.class == String, "table must be a String"
-    assert wait.class == Float, "wait must be a Float"
+  def pre_addStats(playerId, wins, losses, draws)
+    assert playerId.class == String, "playerId must be a String"
+    assert wins.class == Fixnum, "wins must be a Fixnum"
+    assert losses.class == Fixnum, "losses must be a Fixnum"
+    assert draws.class == Fixnum, "draws must be a Fixnum"
   end
   
-  def post_lockTable
-  
+  def post_addStats
+    # Stat is added to database
   end
   
-  def pre_lockEntry(table, id, wait, &checkOutFn)
-    assert table.class == String, "table must be a String"
-    assert id.class == String, "id must be a String"
-    assert wait.class == Float, "wait must be a Float"
+  def pre_updateStat (playerId, stat, delta)
+    assert playerId.class == String, "playerId must be a String"
+    assert stat.class == String && ["wins", "losses", "draws"].include?(stat), "stat must be a String and be wins losses or draws"
+    assert delta.class == Fixnum, "delta must be an integer"
   end
   
-  def post_lockEntry
-  
+  def post_updateStat
   end
   
-  def pre_getAll(table)
-    assert table.class == String, "table must be a String"
-    
+  def pre_getStats(playerId)
+    assert playerId.class == String, "playerId must be a String"
   end
   
-  def post_getAll(result)
-    assert result.class == Hash, "result must be a Hash"
+  def post_getStats(result)
+    assert result.class == Hash || result==nil, "result must be a db record in Hash format or nil"
   end
   
-  def pre_get(table, id)
-   assert table.class == String, "table must be a String"
-   assert id.class == String "id must be a String"
+  def pre_addGame(gameId, player1Id, player2Id, playerTurn, gameBoard, state)
+    assert gameId.class == String, "gameId must be a String"
+    assert player1Id.class == String || player1Id==nil, "player1Id must be a String or nil"
+    assert player2Id.class == String || player2Id==nil, "player2Id must be a String or nil"
+    assert (playerTurn == Fixnum  && playerTurn.between?(1,2)) || playerTurn==nil, "playerTurn must be a Fixnum of either 1 or 2, or nil"
+    assert gameBoard.class == Array && gameBoard[0].class == Array, "gameBoard must be an array of arrays"
+    assert state.class == String && ["active", "saved"].include?(state), "state must be a String, either active or saved"
   end
   
-  def post_get(result)
-    assert result.class == Hash, "result must be a Hash"
+  def post_addGame
   end
   
-  def pre_add(table, entry)
-    assert table.class == String, "table must be a String"
-    assert entry.class == String "entry must be a String"
-    
+  def pre_updateGame(gameId, field, value)
+    assert gameId.class == String, "gameID must be a String"
+    assert field.class == String && ['player1id', 'player2id', 'playerturn', 'gameboard', 'state'].include?(field.downcase), "must be a valid field in the games table"
+    # value types are protected by database
   end
   
-  def post_add(result)
-    assert result.class == String, "result must be a an id of type String"
+  def post_updateGame
   end
   
-  def pre_update(table, id, entry)
-    assert table.class == String, "table must be a String"
-    assert entry.class == String "entry must be a String"
-    assert id.class == String "id must be a String"
-  end
-    
-  def post_update(result)
-    assert result.class == String, "result must be a String"
+  def pre_getGame(gameId)
+    assert gameId.class == String, "gameId must be a String"
   end
   
-  def pre_delete(table, id)
-    assert table.class == String, "table must be a String"
-    assert id.class == String "id must be a String"
+  def post_getGame(result)
+    assert result.class == Hash, "getGame must return a Hash object"
   end
   
-  def post_delete(result)
-    assert result == True || result == False, "result must either be True or False"
+  def pre_getPlayerGames(playerId)
+    assert playerId.class == String, "playerId must be a String"
+  end
+  
+  def post_getPlayerGame(result)
+    assert result.class == Array && result[0].class == Hash, "getGame must return an array of Hashes"
+  end
+  
+  def pre_checklogin(username, password)
+    assert username.class == String, "username must be a String"
+    assert passwrod.class == String, "password must be a String"
+  end
+  
+  def post_checkLogin(result)
+    assert result == true || result == false, "login result must be true or false"
   end
   
 end
