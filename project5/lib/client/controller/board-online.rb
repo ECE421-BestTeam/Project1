@@ -1,7 +1,7 @@
 require_relative '../model/game'
 
 # local implementation of board controller
-class BoardClientController
+class BoardOnlineController
   
   attr_reader :settings, :localPlayers
   

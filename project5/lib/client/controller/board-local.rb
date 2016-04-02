@@ -6,17 +6,19 @@ class BoardLocalController
   attr_reader :settings, :localPlayers
   
   def initialize (settings)
-    @settings = settings
+    @settings = settings.gameSettings
     if @settings.players == 2
       @localPlayers = [0, 1]
     else
       @localPlayers = [0]
     end
+    @game = GameModel.new @settings
   end
 
-  # returns a new GameModel
-  def startGame
-    @game = GameModel.new @settings
+  # registers the refresh command so the 
+  # controller can call it when needed
+  def registerRefresh(refresh)
+    @refresh = refresh
   end
     
   def close

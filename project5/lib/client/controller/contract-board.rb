@@ -1,28 +1,27 @@
 require 'test/unit/assertions'
 require_relative '../../common/model/game'
-require_relative '../../common/model/settings'
+require_relative '../../common/model/game-settings'
+require_relative '../model/client-settings'
 
+# handles the creation and playing of a game
 module BoardControllerContract
   include Test::Unit::Assertions
   
   def class_invariant
     assert @implementation, "implementation must exist"
-    methods = [
-      { :name => :settings, :args => 0 },
-      { :name => :localPlayers, :args => 0 },
-      { :name => :startGame, :args => 0 },
-      { :name => :close, :args => 0 },
-      { :name => :placeToken, :args => 1 },
-      { :name => :getNextActiveState, :args => 0 }
-    ]
-    methods.each do |method|
-      assert @implementation.method(method[:name]).arity == method[:args], "implementation does not have '#{method[:name]}' method with #{method[:args]} args"
-    end
   end
   
   def pre_initialize(type, settings)
-    assert type.class == Symbol && [:boardControllerLocal].include?(type), "type must be a Symbol in [:boardControllerLocal]"
-    assert settings.class == SettingsModel, "settings must be a SettingsModel"
+    assert type.class == Symbol && [:boardControllerLocal, :boardControllerOnline].include?(type), "type must be a Symbol in [:boardControllerLocal, :boardControllerOnline]"
+    assert settings.class == Hash, "settings must be a Hash"
+    # settings should be a hash with contents dependant on the type
+    assert settings.gameSettings.class == GameSettingsModel, "settings must contain gameSettings with a GameSettingsModel"
+    case type
+      when :boardControllerLocal
+        # nothing else required
+      when :boardControllerOnline
+        assert settings.clientSettings.class == ClientSettingsModel, "settings for BoardControllerOnline must contain clientSettings with a ClientSettingsModel"
+    end
   end
   
   def post_initialize
@@ -32,7 +31,7 @@ module BoardControllerContract
   end
   
   def post_settings(result)
-    assert result.class == SettingsModel, " must be of class SettingsModel"
+    assert result.class == GameSettingsModel, "settings must be of class GameSettingsModel"
   end
   
   def pre_localPlayers
@@ -42,11 +41,11 @@ module BoardControllerContract
     assert result.class == Array, "result must be an Array"
   end
   
-  def pre_startGame
+  def pre_registerRefresh(refresh)
+    assert refresh.arity = 1 && (refresh.class == Proc || refresh.class = Method), "refresh must be a function which accepts one argument"
   end
   
-  def post_startGame(result)
-    assert result.class == GameModel, "result must be of class GameModel"
+  def post_registerRefresh
   end
   
   def pre_close
@@ -60,13 +59,6 @@ module BoardControllerContract
   end
   
   def post_placeToken(result)
-    assert result.class == GameModel, "result must be of class GameModel"
-  end
-  
-  def pre_getNextActiveState
-  end
-  
-  def post_getNextActiveState(result)
     assert result.class == GameModel, "result must be of class GameModel"
   end
   

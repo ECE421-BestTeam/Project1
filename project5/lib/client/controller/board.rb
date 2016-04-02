@@ -1,5 +1,6 @@
 require_relative './contract-board'
 require_relative './board-local'
+require_relative './board-online'
 
 # board controller interface
 class BoardController
@@ -12,6 +13,8 @@ class BoardController
     case type
       when :boardControllerLocal
         @implementation = BoardLocalController.new settings
+      when :boardControllerOnline
+        @implementation = BoardOnlineController.new settings
     end
     
     post_initialize
@@ -38,16 +41,15 @@ class BoardController
     return result
   end
   
-  # called after a user has completed all settings
-  # returns GameModel successful
-  def startGame
-    pre_startGame
+  # registers the refresh command so the 
+  # controller can call it when needed
+  def registerRefresh(refresh)
+    pre_registerRefresh(refresh)
     
-    result = @implementation.startGame
+    @implementation.registerRefresh(refresh)
     
-    post_startGame(result)
+    post_registerRefresh
     class_invariant
-    return result
   end
   
   # called when closing the game
@@ -68,17 +70,6 @@ class BoardController
     result = @implementation.placeToken(col)
     
     post_placeToken(result)
-    class_invariant
-    return result
-  end
-  
-  # returns the next model where it is a local player's turn
-  def getNextActiveState
-    pre_getNextActiveState
-    
-    result = @implementation.getNextActiveState
-    
-    post_getNextActiveState(result)
     class_invariant
     return result
   end

@@ -1,23 +1,24 @@
 require 'test/unit/assertions'
 
-require_relative './board'
-require_relative '../../common/model/settings'
+require_relative '../model/client-settings'
+require_relative '../../common/model/game-settings'
 
 module MenuControllerContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @settings.class = SettingsModel, "settings must be a SettingsModel"
+    assert @settings.class = ClientSettingsModel, "settings must be a ClientSettingsModel"
   end
   
   def pre_initialize(settings)
-    assert settings.class = SettingsModel, "settings must be a SettingsModel"
+    assert settings.class = ClientSettingsModel, "settings must be a ClientSettingsModel"
   end
 
   def post_initialize
   end
   
-  def pre_getBoardController
+  def pre_getBoardController(settings)
+    assert settings.class = GameSettingsModel, "settings must be a GameSettingsModel"
   end
   
   def post_getBoardController(result)
