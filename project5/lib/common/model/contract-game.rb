@@ -1,5 +1,5 @@
 require 'test/unit/assertions'
-require_relative './settings'
+require_relative './game-settings'
 require_relative './victory'
 
 module GameContract

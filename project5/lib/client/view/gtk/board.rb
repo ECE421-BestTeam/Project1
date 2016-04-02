@@ -1,9 +1,9 @@
 require 'gtk2'
-require_relative './gtk-helper'
-require_relative '../controller/board'
+require_relative './helper'
+require_relative '../../controller/board'
 
 # should not contain any logic as it is the view
-class BoardGtk
+class ViewGtkBoard
   
   #controller - a BoardController
   def initialize (controller, exitCallback = Proc.new {|game|})

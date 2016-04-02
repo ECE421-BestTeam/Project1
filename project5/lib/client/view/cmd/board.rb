@@ -1,6 +1,6 @@
-require_relative './contract-view-board'
-require_relative './cmd-helper'
-require_relative '../controller/board'
+require_relative './contract-board'
+require_relative './helper'
+require_relative '../../controller/board'
 
 # should not contain any logic as it is the view
 class ViewCmdBoard

@@ -1,5 +1,5 @@
 require 'test/unit/assertions'
-require_relative '../controller/board'
+require_relative '../../controller/board'
 
 module CmdBoardViewContract
   include Test::Unit::Assertions

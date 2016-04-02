@@ -1,4 +1,4 @@
-require_relative '../model/game'
+require_relative '../../common/model/game'
 
 # local implementation of board controller
 class BoardOnlineController

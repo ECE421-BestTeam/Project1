@@ -1,10 +1,10 @@
 require 'gtk2'
-require_relative './gtk-helper'
+require_relative './helper'
 require_relative './board'
-require_relative '../controller/menu'
+require_relative '../../controller/menu'
 
 # should not contain any logic as it is the view
-class MenuGtk
+class GtkView
   
   # creates the board and sets the listeners
   def initialize(boardViewType, menuControllerType)

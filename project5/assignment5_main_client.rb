@@ -6,4 +6,3 @@ require_relative './lib/client/view/gtk/view'
 
 # OR for a cmd interface, you can do
 game = CmdView.new
-

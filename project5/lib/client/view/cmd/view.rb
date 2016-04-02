@@ -1,9 +1,9 @@
-require_relative './cmd-helper'
+require_relative './helper'
 require_relative './board'
-require_relative '../controller/menu'
+require_relative '../../controller/menu'
 
 # should not contain any logic as it is the view
-class MenuCmd
+class CmdView
   
   # creates the board and sets the listeners
   def initialize
