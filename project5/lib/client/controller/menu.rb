@@ -1,5 +1,6 @@
 require_relative './contract-menu'
 
+#require_relative '../model/client-settings'
 require_relative './board-local'
 require_relative './board-online'
 
@@ -19,18 +20,19 @@ class MenuController
     class_invariant
   end
   
-  # called after a user has completed all settings
-  # returns GameModel successful
-  def getBoardController(settings)
-    pre_getBoardController(settings)
+  # returns a boardController initialized with a game by gameSettings
+  # gameSettings should be GameSettingsModel for a new game
+  # or an id String for a game, to join an existing game
+  def getBoardController(gameSettings)
+    pre_getBoardController(gameSettings)
     
     controllerSettings = {
-      :gameSettings => settings,
+      :gameSettings => gameSettings,
       :clientSettings => @clientSettings
     }
     
     result = nil
-    case settings.mode
+    case gameSettings.mode
       when :practice
         result = BoardController.new(:boardControllerLocal, controllerSettings)
       when :compete
