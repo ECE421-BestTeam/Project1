@@ -1,12 +1,14 @@
+require_relative './contract-view-board'
 require_relative './cmd-helper'
 require_relative '../controller/board'
 
 # should not contain any logic as it is the view
-class BoardCmd
+class ViewCmdBoard
   
   #controller - a BoardController
   def initialize (controller, exitCallback)
-
+    pre_initialize(controller, exitCallback)
+    
     @exitCallback = exitCallback
     @controller = controller
     
@@ -26,6 +28,8 @@ class BoardCmd
     end
     
     loop
+    
+    post_initialize
   end
   
   def loop

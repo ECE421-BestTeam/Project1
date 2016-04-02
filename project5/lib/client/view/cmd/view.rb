@@ -6,11 +6,10 @@ require_relative '../controller/menu'
 class MenuCmd
   
   # creates the board and sets the listeners
-  def initialize(boardViewType, menuControllerType)
-    @boardViewType = boardViewType
+  def initialize
     
     # the menu options
-    @controller = MenuController.new menuControllerType
+    @controller = MenuController.new
     
     @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame

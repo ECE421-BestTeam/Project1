@@ -6,14 +6,11 @@ require_relative './board'
 class MenuController
   include MenuControllerContract
   
-  #initializes the selected board controller
-  def initialize(type)
-    pre_initialize(type)
+  #initializes the menu controller
+  def initialize(settings = SettingsModel.new)
+    pre_initialize(settings)
     
-    case type
-      when :menuControllerDefault
-        @implementation = MenuDefaultController.new
-    end
+    @settings = settings
     
     post_initialize
     class_invariant
@@ -24,7 +21,7 @@ class MenuController
   def getBoardController
     pre_getBoardController
     
-    result = BoardController.new(@implementation.boardControllerType, settings)
+    result = BoardController.new(@settings)
 
     post_getBoardController(result)
     class_invariant
@@ -34,7 +31,7 @@ class MenuController
   def settings
     pre_settings
     
-    result = @implementation.settings
+    result = @settings
     
     post_settings(result)
     class_invariant
@@ -54,7 +51,7 @@ class MenuController
     
     #create getter
     define_method("#{setting}") do |*args, &block|
-      result = @implementation.method("#{setting}").call
+      result = @settings.method("#{setting}").call
       class_invariant
       return result
     end
@@ -62,10 +59,7 @@ class MenuController
     #create setter
     define_method("#{setting}=") do |*args, &block|
       val = args[0]
-      self.method("pre_#{setting}=").call(val)
-      
-      @implementation.method("#{setting}=").call(val)
-      
+      @settings.method("#{setting}=").call(val)
       class_invariant
     end
     
