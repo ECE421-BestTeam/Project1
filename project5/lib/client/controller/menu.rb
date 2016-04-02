@@ -44,4 +44,22 @@ class MenuController
     return result
   end
   
+  # attempts to connect to the current server
+  # return true/false on success/failure
+  def connectToServer
+    @clientSettings.serverAddress
+  end
+  
+  def createAccount
+    
+  end
+  
+  def login(username, password)
+    
+  end
+  
+  def logout
+    
+  end
+  
 end

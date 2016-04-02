@@ -5,7 +5,7 @@ class GameSettingsModel
   include GameSettingsContract
   
   # initializes the settings
-  def initialize(players = 1, victoryType = :victoryNormal, mode = :practice, rows = 6, cols = 7)
+  def initialize(players = 2, victoryType = :victoryNormal, mode = :practice, rows = 6, cols = 7)
     
     @players = players
     @victoryType = victoryType

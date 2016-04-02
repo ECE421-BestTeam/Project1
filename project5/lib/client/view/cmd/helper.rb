@@ -34,22 +34,23 @@ class CmdHelper
     
     if ans == "exit"
       @exitCallback.call
-    elsif answers.include?(ans)
+    elsif validAnswer(answers, ans)
       callback.call(ans)
-    elsif is_integer?(ans) && answers.include?(Integer(ans))
-      callback.call(Integer(ans))
     else
       puts "Invalid.  Should be one of: #{answers}"
       getUserInput(question, answers, callback, true)
     end
   end
   
-  def errorHandler(err)
-    puts err.to_s
+  def validAnswer(validAnswers, answer)
+    validAnswers.each do |pattern|
+      return true if pattern.match(answer)
+    end
+    return false
   end
   
-  def is_integer?(n)
-    true if Integer(n) rescue false
+  def errorHandler(err)
+    puts err.to_s
   end
   
 end
