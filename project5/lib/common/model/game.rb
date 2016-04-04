@@ -80,22 +80,6 @@ class GameModel
     return result
   end
   
-  # handles inbetween of human turns
-  # returns updated model
-  def waitForNextUpdate (currentTurn = @turn)
-    pre_waitForNextUpdate(currentTurn)
-    
-    # wait until model has been updated by something else
-    while @turn <= currentTurn && @winner == nil
-      sleep 0 # allow other threads to do stuff
-    end
-    result = self
-    
-    post_waitForNextUpdate(result)
-    class_invariant
-    return result
-  end
-  
   # checks for victory conditions
   # returns false - no winner, true - winner exists
   def checkVictory

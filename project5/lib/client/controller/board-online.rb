@@ -6,16 +6,29 @@ class BoardOnlineController
   attr_reader :settings, :localPlayers
   
   def initialize (settings)
-    @settings = settings
-    if @settings.players == 2
-      @localPlayers = [0, 1]
-    else
-      @localPlayers = [0]
-    end
+    @gameSettings = settings[:gameSettings]
+    @clientSettings = settings[:clientSettings]
+    
+    # open the connection
+    @connection = nil
+    
+    # get game
+    @game = getGame
+    
+    # set localPlayers based on game
+    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
   end
 
-  # returns a new GameModel
-  def startGame
+  # registers the refresh command so the 
+  # controller can call it when needed
+  def registerRefresh(refresh)
+    @refresh = refresh
+    @refresh.call @game
+  end
+  
+  # returns a GameModel
+  # either starts a new game or joins an existing one
+  def getGame
     # the host and port to be returned for storage
     serverAdd = {
       :host => @s.remote_address.ip_address,
@@ -27,23 +40,15 @@ class BoardOnlineController
   end
     
   def close
+    #close the connection
+    
     return @game
   end
   
   #called when a player wishes to place a token
   def placeToken (col)
-    @game.placeToken (col)
+    @refresh.call @game.placeToken(col)
   end
   
-  # returns the next model where it is a local player's turn
-  # if local 2P, return instantly
-  # if vs. com, return after (maybe with delay) the computer's move is complete
-  def getNextActiveState
-    if @settings.players == 1
-      # let the model take the computer's turn
-      @game.computerTurn
-    end
-    return @game
-  end
   
 end
