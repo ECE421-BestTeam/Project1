@@ -19,7 +19,7 @@ module GameSettingsContract
     assert val.class == Symbol && [:victoryNormal, :victoryOtto].include?(val), "victoryType must be a Symbol in [:victoryNormal, :victoryOtto]"
   end
   
-  def pre_boardControllerType=(val)
+  def pre_mode=(val)
     assert val.class == Symbol && [:practice, :compete].include?(val), "mode must be a Symbol in [:practice, :compete]"
   end
   

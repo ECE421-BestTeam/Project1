@@ -6,7 +6,7 @@ module GameContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @settings.class == SettingsModel, "settings must be a SettingsModel"
+    assert @settings.class == GameSettingsModel, "settings must be a SettingsModel"
     assert (@winner.class == Symbol || @winner.class == NilClass) && [:draw, :player1, :player2, nil].include?(@winner), "winner must be a valid Symbol"
     assert @victory.class == VictoryModel, "victory must be a VictoryModel"
     assert @turn.class == Fixnum && @turn >= 0, "turn must be a Fixnum greater than or equal to 0"
@@ -18,7 +18,7 @@ module GameContract
   end
     
   def pre_initialize(settings)
-    assert settings.class == SettingsModel, "settings must be a SettingsModel"
+    assert settings.class == GameSettingsModel, "settings must be a SettingsModel"
   end
   
   def post_initialize

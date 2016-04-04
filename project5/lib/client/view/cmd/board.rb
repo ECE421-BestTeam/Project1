@@ -1,9 +1,9 @@
 require_relative './contract-board'
 require_relative './helper'
-require_relative '../../controller/board'
 
 # should not contain any logic as it is the view
 class ViewCmdBoard
+  include CmdBoardViewContract
   
   #controller - a BoardController
   def initialize (controller, exitCallback)
@@ -17,40 +17,29 @@ class ViewCmdBoard
     @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
 
-    @game = @controller.startGame
     @helper = CmdHelper.new(Proc.new {exitGame})
+    
     @gameover = false
-    
-    trap("SIGINT") do
-      puts "\nAbortted Game"
-      @thread.kill
-      exitGame
-    end
-    
-    loop
+    @controller.registerRefresh(method(:refresh))
     
     post_initialize
   end
-  
-  def loop
-    @thread = Thread.new do
-      while !@gameover
-        turn
-      end
-    end
-    @thread.join
+    
+  def exitGame
+    @gameover = true
     @exitCallback.call @controller.close
   end
   
-  def exitGame
-    @gameover = true
-  end
-  
-  # Handles a localPlayer Turn
-  # returns false if the game is over
-  def turn
+  def refresh(game)
+    # don't let additional calls go through if game is over
+    return if @gameover
+    
+    @game = game
+    
+    # re-display the board
     puts boardToString
     
+    # Check if the game is over
     if @game.winner != nil
       puts "--- GAME OVER ---"
       if @game.winner == :draw
@@ -60,11 +49,11 @@ class ViewCmdBoard
       elsif @game.winner == :player2
         puts "Player 2 wins!"
       end
-
-      exitGame
+        exitGame
       return
     end
-    
+
+    # if it is a player turn, let them take their turn!
     playerTurn = @game.turn % 2
     
     if @localPlayers.include?playerTurn #it is a local player's turn
@@ -73,12 +62,11 @@ class ViewCmdBoard
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@cols})", 
         (1..@cols), 
         Proc.new do |col|
-          @game = @controller.placeToken(col - 1)
+          @controller.placeToken(col - 1)
         end
       )
     else
       puts "Opponent's Turn..."
-      @game = @controller.getNextActiveState
     end
    
   end

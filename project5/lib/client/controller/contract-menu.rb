@@ -18,7 +18,7 @@ module MenuControllerContract
   end
   
   def pre_getBoardController(settings)
-    assert settings.class = GameSettingsModel, "settings must be a GameSettingsModel"
+    assert settings.class == GameSettingsModel || settings.class == String, "settings must be a GameSettingsModel or game ID String"
   end
   
   def post_getBoardController(result)

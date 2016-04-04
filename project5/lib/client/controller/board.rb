@@ -67,11 +67,10 @@ class BoardController
   def placeToken(col)
     pre_placeToken(col)
     
-    result = @implementation.placeToken(col)
+    @implementation.placeToken(col)
     
-    post_placeToken(result)
+    post_placeToken
     class_invariant
-    return result
   end
   
 end

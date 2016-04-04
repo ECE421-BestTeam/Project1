@@ -12,7 +12,7 @@ class GameModel
     :board
   
   # creates the board and sets the listeners
-  # settings a SettingsModel object
+  # settings - a GameSettingsModel object
   def initialize (settings)
     pre_initialize(settings)
     

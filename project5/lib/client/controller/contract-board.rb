@@ -15,12 +15,12 @@ module BoardControllerContract
     assert type.class == Symbol && [:boardControllerLocal, :boardControllerOnline].include?(type), "type must be a Symbol in [:boardControllerLocal, :boardControllerOnline]"
     assert settings.class == Hash, "settings must be a Hash"
     # settings should be a hash with contents dependant on the type
-    assert settings.gameSettings.class == GameSettingsModel, "settings must contain gameSettings with a GameSettingsModel"
+    assert [GameSettingsModel, String].include?(settings[:gameSettings].class), "settings must contain gameSettings which is either a GameSettingsModel or a game ID String"
     case type
       when :boardControllerLocal
         # nothing else required
       when :boardControllerOnline
-        assert settings.clientSettings.class == ClientSettingsModel, "settings for BoardControllerOnline must contain clientSettings with a ClientSettingsModel"
+        assert settings[:clientSettings].class == ClientSettingsModel, "settings for BoardControllerOnline must contain clientSettings with a ClientSettingsModel"
     end
   end
   
@@ -42,7 +42,7 @@ module BoardControllerContract
   end
   
   def pre_registerRefresh(refresh)
-    assert refresh.arity = 1 && (refresh.class == Proc || refresh.class = Method), "refresh must be a function which accepts one argument"
+    assert refresh.arity == 1 && (refresh.class == Proc || refresh.class == Method), "refresh must be a function which accepts one argument"
   end
   
   def post_registerRefresh
@@ -58,8 +58,7 @@ module BoardControllerContract
     assert col.class == Fixnum && col.between?(0, @implementation.settings.cols - 1), "col must be a Fixnum in range 0-#{@implementation.settings.cols - 1}"
   end
   
-  def post_placeToken(result)
-    assert result.class == GameModel, "result must be of class GameModel"
+  def post_placeToken
   end
   
 end

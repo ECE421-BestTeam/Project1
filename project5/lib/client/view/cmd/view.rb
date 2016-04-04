@@ -14,44 +14,39 @@ class CmdView
     @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame
         
-    initMenu
-    loop
-  end
-  
-  def initMenu
     trap("SIGINT") do
       puts "\nAbortted"
       exitMenu
     end
+    
+    loop
   end
   
   def exitMenu
     exit
   end
   
-    def loop
+  def loop
     while true
-      case @mode
-        when :options
-          getOptions
-        when :startGame
-          startGame
-      end
+      getOptions
     end
   end
   
   # attempts to start game
   def startGame
+#    @mode = :playingGame
+    
     # sends options and create a custom boardController
-    bController = @controller.getBoardController
+    bController = @controller.getBoardController(@gameSettings)
     
     # start a board view
-    BoardView.new(@boardViewType, bController) do |model|
-      # exit game callback
-      puts "\n"
-      @mode = :options
-      initMenu
-    end
+    ViewCmdBoard.new(
+      bController, 
+      Proc.new do |model|
+        # exit game callback
+        puts "\n"
+      end
+    )
   end
   
   # queries the user for their desired options
@@ -63,29 +58,29 @@ class CmdView
     puts "--OPTIONS--"
     @helper.getUserInput(
       "0 = Practice, 1 = Compete, 2 = Statistics", 
-      ['0', '1', '2'], 
+      [0, 1, 2], 
       Proc.new { |res| temp = res })
     case temp
-      when '0'
-        gameSettings.mode = :practice
+      when 0
+        @gameSettings.mode = :practice
         getPracticeOptions
-      when '1'
-        gameSettings.mode = :compete
+      when 1
+        @gameSettings.mode = :compete
         getCompeteOptions
-      when '2'
+      when 2
         showStatistics
         return
     end
 
     @helper.getUserInput(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 
-      ['0', '1'], 
+      [0, 1], 
       Proc.new do |res| 
         case res
-          when '0'
-            @mode = :startGame
-          when '1'
-            @mode = :options
+          when 0
+            startGame
+          when 1
+            return
         end
 
       end
@@ -95,12 +90,12 @@ class CmdView
   def getVictoryType
     @helper.getUserInput(
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
-      ['0', '1'], 
+      [0, 1], 
       Proc.new { |res| 
         case res
-          when '0'
+          when 0
             res = :victoryNormal
-          when '1'
+          when 1
             res = :victoryOtto
         end
         @gameSettings.victoryType = res
@@ -110,8 +105,8 @@ class CmdView
   def getPracticeOptions
     @helper.getUserInput(
       "How many players? (1 or 2)", 
-      ['1', '2'], 
-      Proc.new { |res| @gameSettings.players = Integer(res)})
+      [1, 2], 
+      Proc.new { |res| @gameSettings.players = res})
     getVictoryType
   end
   
@@ -128,12 +123,12 @@ class CmdView
     while !@controller.checkSession
       @helper.getUserInput(
         "0 = Login, or 1 = Create Account", 
-        ['0', '1'],
+        [0, 1],
         Proc.new { |res| 
           case
-            when '0'
+            when 0
               login
-            when '1'
+            when 1
               createAccount
           end
         })
@@ -145,18 +140,18 @@ class CmdView
     while !selectedGame
       @helper.getUserInput(
         "0 = New Game, 1 = Active Games(#{games['active'].size}), 2 = Saved Games(#{games['saved'].size}), 3 = Join Game(#{games['joinable'].size})", 
-        ['0', '1', '2', '3'],
+        [0, 1, 2, 3],
         Proc.new { |res| 
           case
-            when '0'
+            when 0
               getVictoryType
               selectedGame = nil
               break
-            when '1'
+            when 1
               selectedGame = showGameList("Active Games", games['active'])
-            when '2'
+            when 2
               selectedGame = showGameList("Saved Games", games['saved'])
-            when '3'
+            when 3
               selectedGame = showGameList("Joinable Games", games['joinable'])
           end
         })
@@ -200,7 +195,7 @@ class CmdView
     answers = ['back']
     games.each_with_index do |game, i|
       text += "#{i} = #{game.victoryType} Turn: #{game.turn}\n"
-      answers.push("#{i}")
+      answers.push(i)
     end
     text += "Please select a game, or enter 'back' to return."
     
@@ -208,7 +203,7 @@ class CmdView
     @helper.getUserInput(
       text, 
       answers,
-      Proc.new { |res| result = games[Integer(res)] if res != 'back' })
+      Proc.new { |res| result = games[res] if res != 'back' })
     return result
   end
   

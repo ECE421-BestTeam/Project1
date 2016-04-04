@@ -34,8 +34,8 @@ class CmdHelper
     
     if ans == "exit"
       @exitCallback.call
-    elsif validAnswer(answers, ans)
-      callback.call(ans)
+    elsif (a = validAnswer(answers, ans))[0]
+      callback.call(a[1])
     else
       puts "Invalid.  Should be one of: #{answers}"
       getUserInput(question, answers, callback, true)
@@ -43,10 +43,27 @@ class CmdHelper
   end
   
   def validAnswer(validAnswers, answer)
-    validAnswers.each do |pattern|
-      return true if pattern.match(answer)
+    validAnswers.each do |validAns|
+      if validAns.class == String
+        return [true, answer] if validAns == answer
+      elsif validAns.class == Regexp
+        a = pattern.match(answer)
+        return [true, a] if a
+      elsif validAns.class == Fixnum
+        begin
+          a = Integer(answer)
+          return [true, a] if validAns == a
+        rescue ArgumentError
+        end
+      elsif validAns.class == Float
+        begin
+          a = Float(answer)
+          return [true, a] if validAns == a
+        rescue ArgumentError
+        end
+      end
     end
-    return false
+    return [false]
   end
   
   def errorHandler(err)

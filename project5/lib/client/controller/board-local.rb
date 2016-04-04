@@ -6,7 +6,8 @@ class BoardLocalController
   attr_reader :settings, :localPlayers
   
   def initialize (settings)
-    @settings = settings.gameSettings
+    
+    @settings = settings[:gameSettings]
     if @settings.players == 2
       @localPlayers = [0, 1]
     else
@@ -19,6 +20,7 @@ class BoardLocalController
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
+    @refresh.call @game
   end
     
   def close
@@ -27,18 +29,12 @@ class BoardLocalController
   
   #called when a player wishes to place a token
   def placeToken (col)
-    @game.placeToken (col)
-  end
-  
-  # returns the next model where it is a local player's turn
-  # if local 2P, return instantly
-  # if vs. com, return after (maybe with delay) the computer's move is complete
-  def getNextActiveState
+    @refresh.call @game.placeToken (col)
+    
     if @settings.players == 1
       # let the model take the computer's turn
-      @game.computerTurn
+      @refresh.call @game.computerTurn
     end
-    return @game
   end
   
 end
