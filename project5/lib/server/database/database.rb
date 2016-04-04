@@ -1,5 +1,8 @@
 require_relative './contract-database'
+require 'json'
 require 'mysql'
+
+
 class Database
   include DatabaseContract
   
@@ -136,29 +139,31 @@ class Database
   end
   
   def serializeBoard(gameBoard)
-    stream = "(" + gameBoard.size.to_s + "," gameBoard[0].size.to_s + ")"
-    gameBoard.each{ |r|
-      r.each{ |c|
-        c = 'n' if c==nil
-        stream += c.to_s
-      }
-    }
-    return stream
+#    stream = "(" + gameBoard.size.to_s + "," + gameBoard[0].size.to_s + ")"
+#    gameBoard.each{ |r|
+#      r.each{ |c|
+#        c = 'n' if c==nil
+#        stream += c.to_s
+#      }
+#    }
+#    return stream
+  return JSON.generate(gameBoard)
   end
   
   def unserializeBoard(stream)
-    stream = stream.scan(/\w+/)
-    dim = stream[0..1]
-    board = stream[2].split("")
-    i = 0
-    gameBoard = Array.new(dim[0].to_i) { |r|
-      Array.new(dim[1].to_i) { |c|
-        b = board.shift
-        c = b=='n' ? nil : break
-      }
-    }
-    
-    return gameBoard
+#    stream = stream.scan(/\w+/)
+#    dim = stream[0..1]
+#    board = stream[2].split("")
+#    i = 0
+#    gameBoard = Array.new(dim[0].to_i) { |r|
+#      Array.new(dim[1].to_i) { |c|
+#        b = board.shift
+#        c = b=='n' ? nil : break
+#      }
+#    }
+#    
+#    return gameBoard
+  return JSON.parse(stream)
   end
   
   def niltonull(value)
