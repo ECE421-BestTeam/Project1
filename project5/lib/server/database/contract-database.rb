@@ -79,7 +79,7 @@ module DatabaseContract
   
   def pre_checklogin(username, password)
     assert username.class == String, "username must be a String"
-    assert passwrod.class == String, "password must be a String"
+    assert password.class == String, "password must be a String"
   end
   
   def post_checkLogin(result)

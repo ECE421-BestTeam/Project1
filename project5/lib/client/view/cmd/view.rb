@@ -79,12 +79,12 @@ class CmdView
 
     @helper.getUserInput(
       "We're done.  (0 = Start game, 1 = Restart menu options)", 
-      [0, 1], 
+      ['0', '1'], 
       Proc.new do |res| 
         case res
-          when 0
+          when '0'
             @mode = :startGame
-          when 1
+          when '1'
             @mode = :options
         end
 
@@ -95,35 +95,121 @@ class CmdView
   def getVictoryType
     @helper.getUserInput(
       "What game mode would you like? (0 = Normal, 1 = OTTO)", 
-      [0, 1], 
+      ['0', '1'], 
       Proc.new { |res| 
         case res
-          when 0
+          when '0'
             res = :victoryNormal
-          when 1
+          when '1'
             res = :victoryOtto
         end
-        @gameSettigs = res
+        @gameSettings.victoryType = res
       })
   end
   
   def getPracticeOptions
     @helper.getUserInput(
       "How many players? (1 or 2)", 
-      [1, 2], 
-      Proc.new { |res| @controller.players = res})
+      ['1', '2'], 
+      Proc.new { |res| @gameSettings.players = Integer(res)})
     getVictoryType
   end
   
-  
   def getCompeteOptions
-    while !@controller.testServer
+    # get server address if current one is invalid
+    while !@controller.connectToServer
       @helper.getUserInput(
         "Server at #{@controller.clientSettings.serverAddress} not responding. Enter a new serverAddress.", 
         [//],
         Proc.new { |res| @controller.clientSettings.serverAddress = res if res.length > 0})
     end
     
+    # get user to authenticate if current session is invlaid
+    while !@controller.checkSession
+      @helper.getUserInput(
+        "0 = Login, or 1 = Create Account", 
+        ['0', '1'],
+        Proc.new { |res| 
+          case
+            when '0'
+              login
+            when '1'
+              createAccount
+          end
+        })
+    end
+    
+    # Let the user choose the game to play
+    games = @controller.getGames
+    selectedGame = nil
+    while !selectedGame
+      @helper.getUserInput(
+        "0 = New Game, 1 = Active Games(#{games['active'].size}), 2 = Saved Games(#{games['saved'].size}), 3 = Join Game(#{games['joinable'].size})", 
+        ['0', '1', '2', '3'],
+        Proc.new { |res| 
+          case
+            when '0'
+              getVictoryType
+              selectedGame = nil
+              break
+            when '1'
+              selectedGame = showGameList("Active Games", games['active'])
+            when '2'
+              selectedGame = showGameList("Saved Games", games['saved'])
+            when '3'
+              selectedGame = showGameList("Joinable Games", games['joinable'])
+          end
+        })
+    end
+    
+    @gameSettings = selectedGame.id if selectedGame
+    
+  end
+  
+  def login
+    while true
+      creds = getCreds
+      break if @controller.login(creds[0], creds[1])
+      puts "Login Failed.  Try again."
+    end
+  end
+  
+  def createAccount
+    while true
+      creds = getCreds
+      break if @controller.createAccount(creds[0], creds[1])
+      puts "Account creation Failed.  Try again."
+    end
+  end
+  
+  def getCreds
+    result = ['', '']
+    @helper.getUserInput(
+      "Username:", 
+      [//],
+      Proc.new { |res| result[0] = res})
+    @helper.getUserInput(
+      "Password:", 
+      [//],
+      Proc.new { |res| result[1] = res})
+    return result
+  end
+  
+  def showGameList(title, games)
+    text = "--- #{title} ---\n"
+    answers = ['back']
+    games.each_with_index do |game, i|
+      text += "#{i} = #{game.victoryType} Turn: #{game.turn}\n"
+      answers.push("#{i}")
+    end
+    text += "Please select a game, or enter 'back' to return."
+    
+    result = nil
+    @helper.getUserInput(
+      text, 
+      answers,
+      Proc.new { |res| result = games[Integer(res)] if res != 'back' })
+    return result
   end
   
 end

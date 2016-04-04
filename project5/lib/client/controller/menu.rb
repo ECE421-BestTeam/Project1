@@ -15,6 +15,7 @@ class MenuController
     pre_initialize(clientSettings)
     
     @clientSettings = clientSettings
+    @connected = false
     
     post_initialize
     class_invariant
@@ -47,15 +48,27 @@ class MenuController
   # attempts to connect to the current server
   # return true/false on success/failure
   def connectToServer
+    closeServerConnection
     @clientSettings.serverAddress
   end
   
-  def createAccount
-    
+  def closeServerConnection
+    @connection.close
   end
   
+  # check if sessionID is still valid
+  def checkSession
+    @clientSettings.sessionId
+  end
+  
+  # on success will set the sessionID
+  def createAccount(username, password)
+#    @clientSettings.sessionId = 
+  end
+  
+  # on success will set the sessionID
   def login(username, password)
-    
+#    @clientSettings.sessionId = 
   end
   
   def logout
