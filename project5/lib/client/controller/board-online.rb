@@ -1,3 +1,4 @@
+require 'socket'
 require 'xmlrpc/client'
 require_relative '../../common/model/game'
 
@@ -100,9 +101,18 @@ class BoardOnlineController
       getGame
     end
     
-    handleResponse(
-      connection.call('registerReciever', @clientSettings.sessionId, @recieverPort)
-    )
+    #register the receiver
+    mpIps = myPossibleIps
+    i = 0
+    while true
+      handleResponse(
+        connection.call('registerReciever', @clientSettings.sessionId, "#{myIps[i]}:#{@recieverPort}"),
+        Proc.new do |data|
+          break
+        end
+      )
+      i += 1
+    end
   end
     
   def close
@@ -122,4 +132,15 @@ class BoardOnlineController
     @refresh.call @game
   end
 
+  def myPossibleIps
+    result = []
+    addr_infos = Socket.ip_address_list
+    addr_infos.each do |addr_info|
+  #    if addr_info.ipv4_private? || addr_info.ipv6_private? 
+        result.push addr_info.ip_address
+  #    end
+    end
+    return result
+  end
+  
 end
