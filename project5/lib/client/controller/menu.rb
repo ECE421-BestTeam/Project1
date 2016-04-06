@@ -1,12 +1,14 @@
 require_relative './contract-menu'
 
 #require_relative '../model/client-settings'
+require_relative './online-helper'
 require_relative './board-local'
 require_relative './board-online'
 
 # menu/settings controller interface
 class MenuController
   include MenuControllerContract
+  include OnlineHelper
   
   attr_accessor :clientSettings
   
@@ -45,28 +47,55 @@ class MenuController
     return result
   end
   
-  # attempts to connect to the current server
-  # return true/false on success/failure
-  def connectToServer
-    closeServerConnection
-    @clientSettings.serverAddress
-  end
-  
-  def closeServerConnection
-    @connection.close
-  end
   
   # on success will set the sessionID
   def createPlayer(username, password)
-#    @clientSettings.sessionId = 
+    handleResponse(
+      @connection.call('createPlayer', username, password),
+      Proc.new do |data|
+        @clientSettings.sessionId = data
+      end
+    )
   end
   
   # on success will set the sessionID
   def login(username, password)
-#    @clientSettings.sessionId = 
+    handleResponse(
+      @connection.call('login', username, password),
+      Proc.new do |data|
+        @clientSettings.sessionId = data
+      end
+    )
   end
   
+  # on success no exceptions are thrown
   def logout
+    handleResponse(
+      @connection.call('logout', @clientSettings.sessionId)
+    )
+  end
+  
+  # returns a hash of arrays 
+  # keys = active/saved/joinable
+  # arrays contain gameIds
+  def getGames
+    result = {}
+    handleResponse(
+      @connection.call('getGames', @clientSettings.sessionId),
+      Proc.new do |data|
+        result = data
+      end
+    )
+    return result
+  end
+  
+  # returns the stats for the current player
+  def getMyStatistics
+    
+  end
+  
+  # returns the top statistics for everyone
+  def getTopStatistics
     
   end
   

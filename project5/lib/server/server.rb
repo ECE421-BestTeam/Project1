@@ -1,6 +1,7 @@
 require 'socket'
 require 'json'
 require_relative './database/database'
+require_relative '../common/model/game'
 
 # a server for all things connect4.2
 class Server
@@ -11,6 +12,7 @@ class Server
     @timeout = timeout # default is an hour
     
     @db = Database.new
+    @db.registerServer()
     
     @registeredRefreshes = {}
     
@@ -58,24 +60,45 @@ class Server
       })
     end
     
+    # attempts to logout a client
     @server.add_handler('logout') do |sessionId|
       getResult(Proc.new {
         @db.logout(sessionId)
       })
     end
     
-    @server.add_handler('placeToken') do |sessionId, col|
-       
+    #returns a list of games
+    @server.add_handler('getGames') do |sessionId|
+      getResult(Proc.new {
+        @db.getPlayerGames(sessionId)
+      }) 
+    end
+    
+    @server.add_handler('getTopStatistics') do
+      getResult(Proc.new {
+        @db.getTopStats
+      }) 
+    end
+    
+    @server.add_handler('getMyStatistics') do |sessionId|
+      getResult(Proc.new {
+        @db.getMyStats(sessionId)
+      }) 
     end
   end
 
   def boardFunctions
     @server.add_handler('newGame') do |sessionId, gameSettings|
-       
+      game = GameModel.new gameSettings
+      getResult(Proc.new {
+        @db.newGame(sessionId, game)
+      })
     end
      
     @server.add_handler('joinGame') do |sessionId, gameId|
-       
+      getResult(Proc.new {
+        @db.joinGame(sessionId, gameId)
+      })
     end
     
     @server.add_handler('registerReciever') do |sessionId, clientAddress|

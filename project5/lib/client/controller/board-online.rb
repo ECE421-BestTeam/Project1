@@ -1,9 +1,10 @@
 require 'socket'
-require 'xmlrpc/client'
+require_relative './online-helper'
 require_relative '../../common/model/game'
 
 # local implementation of board controller
 class BoardOnlineController
+  include OnlineHelper
   
   attr_reader :settings, :localPlayers
   
@@ -43,39 +44,12 @@ class BoardOnlineController
     
     @reciever.serve
   end
-  
-  def connect
-    close
-    @connection = XMLRPC::Client.new(@clientSettings.serverAddress)
-    @clientSettings.save
-  end
-  
-  def close
-    @connection.close
-  end
-  
-  def redirect(newAddress)
-    @clientSettings.serverAddress = newAddress
-    connect
-  end
-  
+ 
   # registers the refresh command so the 
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
     @refresh.call @game
-  end
-  
-  def handleResponse(response, success = Proc.new {|data|}, postRedirect = Proc.new {})
-    case response.status
-      when 'redirect'
-        redirect(result.data)
-        postRedirect.call
-      when 'exception'
-        raise result.data.type, result.data.msg
-    when 'ok'
-      success.call result.data      
-    end
   end
   
   # either starts a new game or joins an existing one
@@ -102,18 +76,12 @@ class BoardOnlineController
     end
     
     #register the receiver
-    myIps = myPossibleIps
-    i = 0
-    while true
-      handleResponse(
-        connection.call('registerReciever', @clientSettings.sessionId, "#{myIps[i]}:#{@recieverPort}"),
-        Proc.new do |data|
-          break
-        end
-      )
-      i += 1
-      raise IOError, "Failed to register reciever with server." if i >= myIps.size
-    end
+    handleResponse(
+      connection.call('registerReciever', @clientSettings.sessionId, "#{local_ip}:#{@recieverPort}"),
+      Proc.new do |data|
+        break
+      end
+    )
   end
     
   def close
@@ -131,17 +99,6 @@ class BoardOnlineController
       end
     )
     @refresh.call @game
-  end
-
-  def myPossibleIps
-    result = []
-    addr_infos = Socket.ip_address_list
-    addr_infos.each do |addr_info|
-  #    if addr_info.ipv4_private? || addr_info.ipv6_private? 
-        result.push addr_info.ip_address
-  #    end
-    end
-    return result
   end
   
 end

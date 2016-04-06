@@ -15,6 +15,7 @@ class CmdView
     @mode = :options #can be :options, :startGame
         
     trap("SIGINT") do
+      close
       puts "\nAbortted"
       exitMenu
     end
@@ -110,14 +111,23 @@ class CmdView
     getVictoryType
   end
   
-  def getCompeteOptions
+  def connect
+    close
     # get server address if current one is invalid
-    while !@controller.connectToServer
+    while !@controller.connect
       @helper.getUserInput(
         "Server at #{@controller.clientSettings.serverAddress} not responding. Enter a new serverAddress.", 
         [//],
         Proc.new { |res| @controller.clientSettings.serverAddress = res if res.length > 0})
     end
+  end
+  
+  def close
+    @controller.close
+  end
+  
+  def getCompeteOptions
+    connect
     
     # get user to login
     @helper.getUserInput(
@@ -156,22 +166,30 @@ class CmdView
     end
     
     @gameSettings = selectedGame.id if selectedGame
-    
+    close
   end
   
   def login
     while true
       creds = getCreds
-      break if @controller.login(creds[0], creds[1])
-      puts "Login Failed.  Try again."
+      begin
+        @controller.login(creds[0], creds[1])
+        break
+      rescue Exception => e
+        puts "Login Failed.  Try again. #{e}"
+      end
     end
   end
   
   def createAccount
     while true
       creds = getCreds
-      break if @controller.createAccount(creds[0], creds[1])
-      puts "Account creation Failed.  Try again."
+      begin
+        @controller.createAccount(creds[0], creds[1])
+        break
+      rescue Exception => e
+        puts "Account creation Failed.  Try again. #{e}"
+      end
     end
   end
   
@@ -203,6 +221,12 @@ class CmdView
       answers,
       Proc.new { |res| result = games[res] if res != 'back' })
     return result
+  end
+  
+  def showStatistics
+    connect
+    stats = @controller.getTopStatistics
+    close
   end
   
 end
