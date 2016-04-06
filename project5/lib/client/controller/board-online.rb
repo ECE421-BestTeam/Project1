@@ -102,7 +102,7 @@ class BoardOnlineController
     end
     
     #register the receiver
-    mpIps = myPossibleIps
+    myIps = myPossibleIps
     i = 0
     while true
       handleResponse(
@@ -112,6 +112,7 @@ class BoardOnlineController
         end
       )
       i += 1
+      raise IOError, "Failed to register reciever with server." if i >= myIps.size
     end
   end
     

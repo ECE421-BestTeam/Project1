@@ -6,101 +6,104 @@ require_relative './database/database'
 class Server
   
   # time out is how long before a client is deemed inactive
-  def initialize(port, timeout = 60 * 60)
+  def initialize(port = 50500, timeout = 60 * 60)
     @port = port
     @timeout = timeout # default is an hour
     
     @db = Database.new
     
-    @continue = true
-    @server = TCPServer.open(port)
-    puts "listening on #{port}"
+    @registeredRefreshes = {}
     
-    loop
+    startServer
+    puts "listening on #{@port}"
     
   end
   
-  def loop
-    while @continue
-#      client = @server.accept
-      Thread.start(@server.accept) do |client, client_addr|
-        client.puts "ok" # let client know connection was successful
-        
-        while true do
-          # get client request
-          req = getRequest(client)
-          res = nil
-          begin
-            # choose our handler
-            case req
-              when "closeConnection"
-                break
-              when "createPlayer"
-                createPlayer(client)
-              when "login"
-                login(client)
-              when "logout"
-                logout(client)
-              when "getStats"
-                getStats(client)
-              when "getGames"
-                getGames(client)
-              when "newGame"
-                newGame(client)
-              when "joinGame"
-                joinGame(client)
-              when "placeToken"
-                placeToken(client)
-              when "saveRequest"
-                saveRequest(client)
-              when "saveResponse"
-                saveResponse(client)
-              when "forfeit"
-                forfeit(client)
-              when "getGame"
-                getGame(client)
-              else
-                res = buildResponse(:invalid, "invalid request '#{req}'")
-            end
-          rescue Exception => e
-            res = buildResponse(:exception, e.msg)
-          end
-          
-          client.puts res if res
-        end
-        
-        puts 'closing server'
-        client.close # Disconnect from the client
-      end
-    end
+  # Starts the server and registers all it's handlers
+  def startServer
+    
+     while true
+       begin
+         @server = XMLRPC::Server.new(@port)
+         break
+       end
+       @port += 1
+       if @port > 50550
+         raise IOError, "Can not start Server."
+       end
+     end
+
+    menuFunctions
+    
+    boardFunctions    
+
+    @server.serve
   end
   
-  def getRequest(client)
-    req = nil
-    begin
-      Timeout::timeout(@timeout) {
-        req = client.gets.chomp
-      }
-    rescue Timeout
-      req = "close"  # defaults to close if the client appears to be gone
+  def menuFunctions
+    
+    # attempts to create a player
+    # resturns the session id on success
+    @server.add_handler('createPlayer') do |username, password|
+      getResult(Proc.new {
+        @db.createPlayer(username, password)
+      })
     end
-    return req
+     
+    # attempts to login a client, will create a session on success
+    # resturns the session id on success
+    @server.add_handler('login') do |username, password|
+      getResult(Proc.new {
+        @db.checkLogin(username, password)
+      })
+    end
+    
+    @server.add_handler('logout') do |sessionId|
+      getResult(Proc.new {
+        @db.logout(sessionId)
+      })
+    end
+    
+    @server.add_handler('placeToken') do |sessionId, col|
+       
+    end
+  end
+
+  def boardFunctions
+    @server.add_handler('newGame') do |sessionId, gameSettings|
+       
+    end
+     
+    @server.add_handler('joinGame') do |sessionId, gameId|
+       
+    end
+    
+    @server.add_handler('registerReciever') do |sessionId, clientAddress|
+      getResult(Proc.new {
+        @registeredRefreshes[sessionId] = XMLRPC::Client.new(clientAddress)
+      })
+    end
+    
+    @server.add_handler('placeToken') do |sessionId, col|
+       
+    end
   end
   
   def buildResponse(status, data) 
     JSON.generate({:status => status, :data => data})
   end
   
-  # attempts to create a player
-  def createPlayer(client)
-    client.puts buildResponse(:ok, "data") 
+  def getResult(proc)
+    result = {}
+    begin
+      result[:data] = proc.call
+      result[:status] = :ok
+    rescue Exception => e
+      result[:status] = :exception
+      result[:data] = e
+    end
+    return result
   end
-  
-  # attempts to login a client, will create a session on success
-  # resturns the session id
-  def login(client)
-    client.puts buildResponse(:ok, "data")
-  end  
   
   # logs a client out, destroys their session
   def logout(client)

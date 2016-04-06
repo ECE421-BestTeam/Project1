@@ -119,20 +119,18 @@ class CmdView
         Proc.new { |res| @controller.clientSettings.serverAddress = res if res.length > 0})
     end
     
-    # get user to authenticate if current session is invlaid
-    while !@controller.checkSession
-      @helper.getUserInput(
-        "0 = Login, or 1 = Create Account", 
-        [0, 1],
-        Proc.new { |res| 
-          case
-            when 0
-              login
-            when 1
-              createAccount
-          end
-        })
-    end
+    # get user to login
+    @helper.getUserInput(
+      "0 = Login, or 1 = Create Account", 
+      [0, 1],
+      Proc.new { |res| 
+        case
+          when 0
+            login
+          when 1
+            createPlayer
+        end
+      })
     
     # Let the user choose the game to play
     games = @controller.getGames

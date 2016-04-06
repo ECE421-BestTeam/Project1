@@ -56,13 +56,8 @@ class MenuController
     @connection.close
   end
   
-  # check if sessionID is still valid
-  def checkSession
-    @clientSettings.sessionId
-  end
-  
   # on success will set the sessionID
-  def createAccount(username, password)
+  def createPlayer(username, password)
 #    @clientSettings.sessionId = 
   end
   
