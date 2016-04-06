@@ -6,34 +6,51 @@ require_relative '../common/model/game'
 # a server for all things connect4.2
 class Server
   
+  attr_reader :address
+  
   # time out is how long before a client is deemed inactive
   def initialize(port = 50500, timeout = 60 * 60)
     @port = port
     @timeout = timeout # default is an hour
     
     @db = Database.new
-    @db.registerServer()
     
-    @registeredRefreshes = {}
+    # Hash of all current games.
+#    {
+#      :gameID1 => {
+#        :game => gameObject
+#        :players => {
+#          :sessId1 => refreshConnectionPlayer1
+#          :sessId2 => refreshConnectionPlayer2
+#        }
+#      }
+#    }
+    @games = {}
     
     startServer
-    puts "listening on #{@port}"
     
   end
   
   # Starts the server and registers all it's handlers
   def startServer
     
-     while true
-       begin
-         @server = XMLRPC::Server.new(@port)
-         break
-       end
-       @port += 1
-       if @port > 50550
-         raise IOError, "Can not start Server."
-       end
-     end
+    while true
+      begin
+        @server = XMLRPC::Server.new(@port)
+        break
+      end
+      @port += 1
+      if @port > 50550
+        raise IOError, "Can not start Server."
+      end
+    end
+    
+    @address = "#{local_ip}:#{@port}"
+    puts "listening on #{address}"
+    games = @db.registerServer(address)
+    games.each do |game|
+      
+    end
 
     menuFunctions
     
@@ -45,7 +62,7 @@ class Server
   def menuFunctions
     
     # attempts to create a player
-    # resturns the session id on success
+    # returns the session id on success
     @server.add_handler('createPlayer') do |username, password|
       getResult(Proc.new {
         @db.createPlayer(username, password)
@@ -53,7 +70,7 @@ class Server
     end
      
     # attempts to login a client, will create a session on success
-    # resturns the session id on success
+    # returns the session id on success
     @server.add_handler('login') do |username, password|
       getResult(Proc.new {
         @db.checkLogin(username, password)
@@ -201,15 +218,15 @@ class Server
     client.puts buildResponse(:ok, "data")
   end
 
-  def myPossibleIps
-    result = []
-    addr_infos = Socket.ip_address_list
-    addr_infos.each do |addr_info|
-  #    if addr_info.ipv4_private? || addr_info.ipv6_private? 
-        result.push addr_info.ip_address
-  #    end
+  def local_ip
+    orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true  # turn off reverse DNS resolution temporarily
+
+    UDPSocket.open do |s|
+      s.connect '64.233.187.99', 1
+      s.addr.last
     end
-    return result
+    ensure
+      Socket.do_not_reverse_lookup = orig
   end
 
 end

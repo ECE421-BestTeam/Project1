@@ -1,12 +1,12 @@
 require_relative './contract-database'
 require 'json'
-require 'mysql'
+require 'mysql2'
 
 
 class Database
   include DatabaseContract
   
-  def initialize(settings)
+  def initialize(address)
     pre_initialize
     
     begin
