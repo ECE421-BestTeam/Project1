@@ -1,56 +1,119 @@
 require 'test/unit/assertions'
 
 module DatabaseContract
+  include Test::Unit::Assertions
   
   def class_invariant
     assert @db.class == Mysql, "db must be a Myql database"
   end
- 
+  
+  ####
+  
   def pre_initialize
   end
   
   def post_initialize
   end
   
-  def pre_addStats(playerId, wins, losses, draws)
-    assert playerId.class == String, "playerId must be a String"
-    assert wins.class == Fixnum, "wins must be a Fixnum"
-    assert losses.class == Fixnum, "losses must be a Fixnum"
-    assert draws.class == Fixnum, "draws must be a Fixnum"
+  ####
+  
+  def pre_registerServer(serverAddress)
+    assert serverAddress.class == String, "serverAddress must be a String"
+  end
+
+  
+  def post_registerServer(game_ids)
+    assert game_ids.class == Array && game_ids[0].class == String, "game_ids must be an Array of Strings"
+    # implies the game_ids must be length >=1
+  end
+
+  ####
+
+  def pre_getLeastActiveServer
   end
   
-  def post_addStats
-    # Stat is added to database
+  def post_getLeastActiveServer(server_address)
+    assert server_address.class == String, "return server_address must be a string"
   end
   
-  def pre_updateStat (playerId, stat, delta)
-    assert playerId.class == String, "playerId must be a String"
-    assert stat.class == String && ["wins", "losses", "draws"].include?(stat), "stat must be a String and be wins losses or draws"
-    assert delta.class == Fixnum, "delta must be an integer"
+  ####
+  
+  def pre_createPlayer(username, password)
+    assert username.class == String, "username must be a String"
+    assert password.class == String, "password must be a String"
   end
   
-  def post_updateStat
+  def post_createPlayer(sess_id)
+    assert sess_id.class == String, "sess_id must be a String"
   end
   
-  def pre_getStats(playerId)
-    assert playerId.class == String, "playerId must be a String"
+  ####
+  
+  def pre_checklogin(username, password)
+    assert username.class == String, "username must be a String"
+    assert password.class == String, "password must be a String"
   end
   
-  def post_getStats(result)
-    assert result.class == Hash || result==nil, "result must be a db record in Hash format or nil"
+  def post_checkLogin(result)
+    assert result.class == String, "login sessID must be String"
   end
   
-  def pre_addGame(gameId, player1Id, player2Id, playerTurn, gameBoard, state)
+  ####
+  
+  def pre_logout(sessionId)
+    assert sessionId.class == String, "sessionId must be a String"
+  end
+  
+  def post_logout
+  end
+  
+  ####
+  
+  def pre_getPlayerGames(sessionId)
+    assert sessionId.class == String, "sessionId must be a String"
+  end
+  
+  def post_getPlayerGames(result)
+    assert result.class == Array, "getPlayerGames must return an array"
+    if !result.empty?
+      assert result[0].class == Hash, "result array must contain Hash types"
+    end
+  end
+  
+  ####
+  
+  def pre_newGame(sessionId, game)
+    assert sessionId.class == String, "sessionId must be a String"
+    assert game.class == GameModel, "game must be a valid GameModel (unserialized)"
+  end
+  
+  def post_newGame(gameId)
+    assert gameId.class == String, "returned gameId must be a String"
+  end
+  
+  ####
+  
+  def pre_joinGame(sessionId, gameId)
+    assert sessionId.class == String, "sessionId must be a String"
     assert gameId.class == String, "gameId must be a String"
-    assert player1Id.class == String || player1Id==nil, "player1Id must be a String or nil"
-    assert player2Id.class == String || player2Id==nil, "player2Id must be a String or nil"
-    assert (playerTurn == Fixnum  && playerTurn.between?(1,2)) || playerTurn==nil, "playerTurn must be a Fixnum of either 1 or 2, or nil"
-    assert gameBoard.class == Array && gameBoard[0].class == Array, "gameBoard must be an array of arrays"
-    assert state.class == String && ["active", "saved"].include?(state), "state must be a String, either active or saved"
+
   end
   
-  def post_addGame
+  def post_joinGame(server_address)
+    assert server_address.class == String, "returned server_address must be a String"
   end
+  
+  ####
+  
+  def pre_getGame(gameId)
+    assert gameId.class == String, "gameId must be a String"
+  end
+  
+  def post_getGame(result)
+    assert result.class == Hash, "game result must be a hash"
+  end
+  
+  ####
   
   def pre_updateGame(gameId, field, value)
     assert gameId.class == String, "gameID must be a String"
@@ -61,29 +124,48 @@ module DatabaseContract
   def post_updateGame
   end
   
-  def pre_getGame(gameId)
-    assert gameId.class == String, "gameId must be a String"
+  ####
+  
+  def pre_updateStat (sessionId, stat, delta)
+    assert sessionId.class == String, "sessionId must be a String"
+    assert stat.class == String && ["wins", "losses", "draws"].include?(stat), "stat must be a String and be wins losses or draws"
+    assert delta.class == Fixnum, "delta must be an integer"
   end
   
-  def post_getGame(result)
-    assert result.class == Hash, "getGame must return a Hash object"
+  def post_updateStat
   end
   
-  def pre_getPlayerGames(playerId)
+  ####
+  
+  def pre_getMyStats(sessionId)
+    assert sessionId.class == String, "playerId must be a String"
+  end
+  
+  def post_getMyStats(result)
+    assert result.class == Hash, "result must be a db record in Hash format"
+  end
+  
+  ####
+  
+  def pre_getTopStats(num)
+    assert num.class == Fixnum, "num must be a Fixnum"
+  end
+  
+  def post_getTopStats(results)
+    assert results.class == Array, "top stats results must be an Array"
+    if !results.empty?
+      assert results[0].class == Hash, "results Array must contain Hash types"
+    end
+  end
+  
+  ####
+  
+  def pre_getPlayerID(sessionId)
+    assert sessionId.class == String, "sessionId must be a String"
+  end
+  
+  def post_getPlayerID(playerId)
     assert playerId.class == String, "playerId must be a String"
-  end
-  
-  def post_getPlayerGame(result)
-    assert result.class == Array && result[0].class == Hash, "getGame must return an array of Hashes"
-  end
-  
-  def pre_checklogin(username, password)
-    assert username.class == String, "username must be a String"
-    assert password.class == String, "password must be a String"
-  end
-  
-  def post_checkLogin(result)
-    assert result == true || result == false, "login result must be true or false"
   end
   
 end
