@@ -365,22 +365,26 @@ class Database
   def assignNewSessionID(playerId)
     length = 15
     
-    @db.query("START TRANSACTION")
-    
-    #find a unique sessionId
-    res = []
-    while res.length != 0
+    while true
+      @db.query("START TRANSACTION")
+
+      #find a unique sessionId
+      res = []
       id = rand(36**length).to_s(36)
       res = @db.query("SELECT current_session_id FROM Player \
                 WHERE current_session_id='#{id}'")
+    
+      if @db.affected_rows == 0
+        # add it to the player
+        @db.query("UPDATE Player \
+                  SET current_session_id='#{id}' \
+                  WHERE username='#{playerId}'")
+        @db.query("COMMIT")
+        break
+      end
+    
+      @db.query("COMMIT")
     end
-    
-    # add it to the player
-    @db.query("UPDATE Player \
-              SET current_session_id='#{id}' \
-              WHERE username='#{playerId}'")
-    
-    @db.query("COMMIT")
       
     return id
   end
