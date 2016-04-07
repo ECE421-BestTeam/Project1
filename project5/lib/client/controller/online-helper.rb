@@ -6,15 +6,6 @@ module OnlineHelper
   def connect
     close
     @connection = XMLRPC::Client.new(@clientSettings.host, nil, @clientSettings.port)
-    @clientSettings.save
-  end
-  
-  def close
-    if @connection
-      handleResponse(
-        @connection.call('close')
-      )
-    end
   end
   
   def redirect(newAddress)

@@ -17,7 +17,7 @@ class GameModel
     pre_initialize(settings)
     
     @settings = settings
-    @winner = nil
+    @winner = 0
     @victory = VictoryModel.new @settings.victoryType
     @turn = 0
     

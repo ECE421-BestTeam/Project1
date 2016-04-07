@@ -14,7 +14,7 @@ class Server
     @port = port
     @timeout = timeout # default is an hour
     
-#    @db = Database.new
+    @db = Database.new
     
     # Hash of all current games.
 #    {
@@ -113,6 +113,7 @@ class Server
       getResult(Proc.new {
         @db.newGame(sessionId, game)
       })
+    {'status' => 'ok', 'data' => 'hi'}
     end
      
     @server.add_handler('joinGame') do |sessionId, gameId|
@@ -121,14 +122,24 @@ class Server
       })
     end
     
-    @server.add_handler('registerReciever') do |sessionId, clientAddress|
+    @server.add_handler('registerReciever') do |sessionId, gameId, clientAddress|
       getResult(Proc.new {
-        @registeredRefreshes[sessionId] = XMLRPC::Client.new(clientAddress)
+        @games[gameId][sessionId] = clientAddress
+        true
       })
     end
     
     @server.add_handler('placeToken') do |sessionId, col|
        
+    end
+  end
+  
+  def sendRefresh(gameId, sessionId, game)
+    begin
+      XMLRPC::Client.new(@games[gameId][sessionId]).call('refresh', game)
+    rescue Exception => e
+      puts 'Error refresshing game #{gameId}, session #{sessionId}, client #{@games[gameId][sessionId]}'
+      puts e
     end
   end
   
@@ -139,86 +150,13 @@ class Server
   def getResult(proc)
     result = {}
     begin
-      result[:data] = proc.call
-      result[:status] = :ok
+      result['data'] = proc.call
+      result['status'] = :ok
     rescue Exception => e
-      result[:status] = :exception
-      result[:data] = e
+      result['status'] = :exception
+      result['data'] = e
     end
     return result
-  end
-  
-  # logs a client out, destroys their session
-  def logout(client)
-    client.puts buildResponse(:ok, "data")
-  end  
-  
-  # returns all of the stats
-  def getStats(client)
-    client.puts buildResponse(:ok, "data") 
-  end
-
-  # returns the list of games the player is involved in
-  def getGames(client)
-    client.puts buildResponse(:ok, "data")
-  end  
-
-  # returns the address of the server that the game will be hosted on
-  def newGame(client)
-    a = client.addr
-    myHost = a[3]
-    gameId = client.gets.chomp
-    client.puts buildResponse(:ok, "data")
-  end
-  
-  # returns the address of the server that the game is hosted on
-  def joinGame(client)
-    client.puts "ok" # proceed
-    gameId = client.gets.chomp
-    
-    # ensure we are only trying to check out a game one at a time
-    @db.checkOut(:games, gameId) do |game|
-      if !game # Invalid gameId
-        return "invalid"
-      end
-
-      # check if game is currently checked out to a server
-      serverAddress = game[:checkedOutTo]
-      # send there
-      return serverAddress if serverAddress
-
-      #else check it out to us
-      game[:checkedOutTo] = address
-      @db.update(:games, game)
-      return address
-    end
-    client.puts buildResponse(:ok, "data")
-    
-  end
-  
-  # returns the list of games the player is involved in
-  def placeToken(client)
-    client.puts buildResponse(:ok, "data")
-  end  
-  
-  # sends a request for save
-  def saveRequest(client)
-    client.puts buildResponse(:ok, "data")
-  end
-  
-  # responds to a save request
-  def saveRespond(client)
-    client.puts buildResponse(:ok, "data")
-  end
-
-  # allows a client to forfeit
-  def forfeit(client)
-    client.puts buildResponse(:ok, "data")
-  end
-  
-  # returns the game model
-  def getGame(client)
-    client.puts buildResponse(:ok, "data")
   end
 
   def local_ip

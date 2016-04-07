@@ -13,17 +13,17 @@ class BoardOnlineController
     @gameSettings = settings[:gameSettings]
     @clientSettings = settings[:clientSettings]
     
-    # Start our reciever
-#    startReciever
+    # Start our receiver
+    startReciever
     
     # open the connection
     connect
     
     # get game
-#    @game = getGame
+    @game = getGame
     
     # set localPlayers based on game
-#    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
+    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
   end
 
   def startReciever
@@ -48,11 +48,19 @@ class BoardOnlineController
     end
   end
  
+  def close
+    @reciever.shutdown
+    @recieverThread.kill
+    @recieverThread.join
+  end
+  
   # registers the refresh command so the 
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
-    @refresh.call @game
+    handleResponse(
+      @connection.call('registerReciever', @clientSettings.sessionId, @gameId, local_ip)
+    )
   end
   
   # either starts a new game or joins an existing one
@@ -62,8 +70,9 @@ class BoardOnlineController
       handleResponse(
         @connection.call('joinGame', @clientSettings.sessionId, @gameSettings),
         Proc.new do |data|
-          # we were returned the new game ID
+          # we were returned the new game
           @game = data
+          @gameId = @gameSettings
         end
       )
     else 
@@ -90,11 +99,7 @@ class BoardOnlineController
   #called when a player wishes to place a token
   def placeToken (col)
     handleResponse(
-      @connection.call('placeToken', @clientSettings.sessionId, col),
-      Proc.new do |data|
-        # we were returned the new game ID
-        @game = data
-      end
+      @connection.call('placeToken', @clientSettings.sessionId, col)
     )
     @refresh.call @game
   end
@@ -110,22 +115,3 @@ class BoardOnlineController
   end
   
 end
-
-require_relative '../model/client-settings'
-sett = ClientSettingsModel.new
-sett.host = 'localhost'
-sett.port = 50500
-sett.save
-
-a = {
-  :clientSettings => sett
-}
-
-b = BoardOnlineController.new(a)
-
-while true
-  b.test
-  gets
-end
-
-

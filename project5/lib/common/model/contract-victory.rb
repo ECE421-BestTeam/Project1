@@ -11,7 +11,7 @@ module VictoryContract
   end
   
   def pre_initialize(victoryType)
-    assert victoryType.class == Symbol, "victoryType must be valid Symbol"
+    assert victoryType.class == String, "victoryType must be valid String"
   end
   
   def post_initialize
@@ -41,7 +41,7 @@ module VictoryContract
   end
   
   def post_checkVictory(result)
-    assert (result.class == Symbol || result.class == NilClass) && [:draw,:player1,:player2,nil].include?(result), "result must be a valid Symbol"
+    assert result.class == Fixnum && [0, 1, 2, 3].include?(result), "result must be a Fixnum.  0=noWinner, 1=player1, 2=player2, 3=draw."
   end
   
   def pre_boardEmpty(board)

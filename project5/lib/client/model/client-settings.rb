@@ -16,7 +16,7 @@ class ClientSettingsModel
     # defaults
     @host = "localhost"
     @port = 4222
-    @sessionId = nil
+    @sessionId = ''
 
     file = nil
     begin
@@ -24,7 +24,7 @@ class ClientSettingsModel
       file = JSON.parse(file)
       @host = file['host'] || @host
       @port = file['port'] || @port
-      @sessionId = file['sessionId']
+      @sessionId = file['sessionId'] || @sessionId
     rescue Errno::ENOENT => e
       # just leave the defaults
     end

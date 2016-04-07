@@ -1,11 +1,13 @@
+require 'xmlrpc/client'
 require_relative './contract-game-settings'
 
 # A model for the settings for the connect four game
 class GameSettingsModel
   include GameSettingsContract
+  include XMLRPC::Marshallable
   
   # initializes the settings
-  def initialize(players = 2, victoryType = :victoryNormal, mode = :practice, rows = 6, cols = 7)
+  def initialize(players = 2, victoryType = 'victoryNormal', mode = 'practice', rows = 6, cols = 7)
     
     @players = players
     @victoryType = victoryType

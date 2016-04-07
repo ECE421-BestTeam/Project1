@@ -12,10 +12,10 @@ class VictoryModel
     pre_initialize(victoryType)
     
     case victoryType
-      when :victoryNormal
+      when 'victoryNormal'
         #@implementation = VictoryNormal.new
         init("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
-      when :victoryOtto
+      when 'victoryOtto'
         #@implementation = VictoryOtto.new
         init("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
       else
@@ -64,14 +64,14 @@ class VictoryModel
     diags = makeDiags(board)
     # p1 victory
     if checkArrays(board.transpose, @p1win) || checkArrays(board, @p1win) || checkArrays(diags, @p1win)
-      result = :player1
+      result = 1
     # p2 victory
     elsif checkArrays(board.transpose, @p2win) || checkArrays(board, @p2win) || checkArrays(diags, @p2win)
-      result = :player2
+      result = 2
     elsif boardEmpty(board)
-      result = nil
+      result = 0
     else
-      result = :draw
+      result = 3
     end
 
     

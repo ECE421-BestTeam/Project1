@@ -6,8 +6,8 @@ module GameContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @settings.class == GameSettingsModel, "settings must be a SettingsModel"
-    assert (@winner.class == Symbol || @winner.class == NilClass) && [:draw, :player1, :player2, nil].include?(@winner), "winner must be a valid Symbol"
+    assert @settings.class == GameSettingsModel, "settings must be a GameSettingsModel, not a #{@settings.class}"
+    assert @winner.class == Fixnum &&[0,1,2,3].include?(@winner), "winner must be a Fixnum.  0=noWinner, 1=player1, 2=player2, 3=draw."
     assert @victory.class == VictoryModel, "victory must be a VictoryModel"
     assert @turn.class == Fixnum && @turn >= 0, "turn must be a Fixnum greater than or equal to 0"
     msg = "board must be an array (size greater than 0) of arrays (of equal sizes, greater than 0)."
@@ -18,7 +18,7 @@ module GameContract
   end
     
   def pre_initialize(settings)
-    assert settings.class == GameSettingsModel, "settings must be a SettingsModel"
+    assert settings.class == GameSettingsModel, "settings must be a GameSettingsModel, not a #{@settings.class}"
   end
   
   def post_initialize
@@ -51,7 +51,7 @@ module GameContract
   end
   
   def post_checkVictory(result)
-    assert (result.class == Symbol || result.class == NilClass) && [:draw, :player1, :player2, nil].include?(result), "winner must be a valid Symbol"
+    assert result.class == Fixnum &&[0,1,2,3].include?(result), "winner must be a Fixnum.  0=noWinner, 1=player1, 2=player2, 3=draw."
   end
   
 end
