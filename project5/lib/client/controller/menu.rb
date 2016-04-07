@@ -58,6 +58,9 @@ class MenuController
       @connection.call('createPlayer', username, password),
       Proc.new do |data|
         @clientSettings.sessionId = data
+                puts 'CREATEEEEEEEEEEEEEEEEEEEEEEEEEE'
+        puts username
+        puts data
       end
     )
   end
@@ -68,6 +71,9 @@ class MenuController
       @connection.call('login', username, password),
       Proc.new do |data|
         @clientSettings.sessionId = data
+        puts 'LOGINNNNNNNNNNNNNNNNNNNNNN'
+        puts username
+        puts data
       end
     )
   end

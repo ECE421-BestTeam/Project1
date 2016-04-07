@@ -65,7 +65,7 @@ class ServerTest < Test::Unit::TestCase
     @client1.createPlayer($acc1[:username], $acc1[:password])
     puts 'CLIENT1 CREATED ACCOUNTS'
 
-    @client2.login($acc1[:username], $acc1[:password])
+    @client2.login($acc2[:username], $acc2[:password])
     puts 'CLIENT2 LOGGED IN'
   end
   

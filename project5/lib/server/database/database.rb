@@ -350,8 +350,8 @@ class Database
     result = res.first
     raise ArgumentError, "invalid SessionId.  Please re-authenticate." if !result
     
-    post_getPlayerID(result['player_id'])
-    return result['player_id']
+    post_getPlayerID(result['username'])
+    return result['username']
   end
     
   def remove(table, id)
