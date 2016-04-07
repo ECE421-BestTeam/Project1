@@ -128,6 +128,8 @@ class Database
     if @db.affected_rows == 1
       sess_id = assignNewSessionID(username)        
       result = sess_id
+    else 
+      raise ArgumentError, "Invalid credentials"
     end
 
     post_checkLogin(result)
