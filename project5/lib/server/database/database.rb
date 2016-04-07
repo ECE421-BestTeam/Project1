@@ -30,7 +30,7 @@ class Database
     rescue Mysql2::Error => e
       puts "Please Ensure #{$dbSettingsFile} is populated correctly."
       raise e
-    rescue ENONET => e
+    rescue Errno::ENONET => e
       puts "Please Ensure #{$dbSettingsFile} exists and is populated correctly."
       puts "You can find an example at #{$dbSettingsTemplate}."
       raise e
@@ -55,8 +55,8 @@ class Database
         game_ids = getServerGames(serverAddress)
       end
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+ e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_registerServer(game_ids)
     return game_ids
@@ -71,10 +71,10 @@ class Database
       res = @db.query("SELECT server_address, count(game_id) AS num_games FROM server s \
                         NATURAL LEFT JOIN game g GROUP BY server_address \
                         ORDER BY num_games limit 1" )
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+ e.error
+    rescue Mysql2::Error => e
+      raise e
     end
-    server = res.fetch_hash
+    server = res.first
     post_getLeastActiveServer(server['server_address'])
     return server['server_address']
   end
@@ -90,10 +90,10 @@ class Database
                   FROM Server s, Game g \
                   WHERE s.server_address=g.server_address")
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+ e.error
+    rescue Mysql2::Error => e
+      raise e
     end
-    res.each_hash {|h|
+    res.each {|h|
       result << h['game_id']
     }
     post_getServerGames(result)
@@ -113,8 +113,8 @@ class Database
                   VALUES ( '#{username}', '#{password}',0, 0, 0, 0, '#{sess_id}')" )
       
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+ e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_createPlayer(sess_id)
     return sess_id
@@ -141,8 +141,8 @@ class Database
         @db.query("COMMIT")
         result = sess_id
       end
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_checkLogin(result)
     return result
@@ -160,8 +160,8 @@ class Database
                   WHERE username = '#{username}'")
       @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
   end
   
@@ -175,16 +175,16 @@ class Database
                        WHERE p.session_id='#{sessionId} AND (g.player1_id=p.player_id OR g.player2_id=p.player_id) \
                        AND state='saved'");
       res2 = @db.query("SELECT game_id, player1_id, player2_id, state, game_mode, server_addres, last_update FROM Game WHERE state='joinable'")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     result = []
-    res1.each_hash { |h|
+    res1.each { |h|
       
       h['game_model'] = unserialize(h['game_model'])
       result << h
     }
-    res2.each_hash { |h|
+    res2.each { |h|
       h['game_model'] = unserialize(h['game_model'])
       result << h
     }
@@ -204,8 +204,8 @@ class Database
       server_address = getLeastActiveServer()
       addGame(gameId, playerId, 'NULL', state="joinable", game, server_address)
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_newGame(gameId)
     return gameId
@@ -232,7 +232,7 @@ class Database
       playerId = getPlayerID(sessionId)
       res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}' AND state='joinable'")
       if @db.affected_rows == 1
-        game = res.fetch_hash
+        game = res.first
         if game['player1_id'] == nil && game['player2_id'].downcase != playerId
           query = "UPDATE Game \
                       SET player1_id='#{playerId}', state='active', last_update = curdate() \
@@ -256,8 +256,8 @@ class Database
       end
       @db.query("COMMIT")
       
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_joinGame(server_address)
     return server_address
@@ -271,10 +271,10 @@ class Database
     begin
       res = @db.query("SELECT * FROM Game \
                        WHERE game_id='#{gameId}'")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
-    result = res.fetch_hash
+    result = res.first
     result['game_model'] = unserialize(result['game_model'])
     post_getGame(result)
     return result
@@ -288,8 +288,8 @@ class Database
       @db.query("START TRANSACTION")
       @db.query("UPDATE Game SET #{field}='saved', last_update=curdate() WHERE game_id='#{gameId}'")
       @db.query("COMMIT")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_updateGame
   end
@@ -311,8 +311,8 @@ class Database
                   Set points=3*wins+draws \
                   WHERE player_id='#{playerId}'")
       
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
     post_updateStat
   end
@@ -326,10 +326,10 @@ class Database
       playerId = getPlayerID(sessionId)
       res = @db.query("SELECT username, points, wins, losses, draws FROM Player \
                 WHERE username='#{playerId}'")
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
-    result = res.fetch_hash if res.num_rows ==1
+    result = res.first if @db.affected_rows ==1
     post_getMyStats(result)
     return result
   end
@@ -350,10 +350,10 @@ class Database
       end
       
       res = @db.query(query)
-    rescue Mysql::Error => e
-      puts "DB ERROR: "+e.error
+    rescue Mysql2::Error => e
+      raise e
     end
-    res.each_hash {|h|
+    res.each {|h|
       results << h
     }
     post_getTopStats(results)
@@ -366,7 +366,7 @@ class Database
     # Propagates the mysql error
     res = @db.query("SELECT * FROM Session WHERE session_id='#{sessionId}'")
     
-    result = res.fetch_hash
+    result = res.first
     post_getPlayerID(result['player_id'])
     return result['player_id']
   end
