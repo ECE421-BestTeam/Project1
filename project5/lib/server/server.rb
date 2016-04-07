@@ -1,106 +1,149 @@
 require 'socket'
 require 'json'
 require_relative './database/database'
+require_relative '../common/model/game'
 
 # a server for all things connect4.2
 class Server
   
+  attr_reader :address
+  
   # time out is how long before a client is deemed inactive
-  def initialize(port, timeout = 60 * 60)
+  def initialize(port = 50500, timeout = 60 * 60)
     @port = port
     @timeout = timeout # default is an hour
     
     @db = Database.new
     
-    @continue = true
-    @server = TCPServer.open(port)
-    puts "listening on #{port}"
+    # Hash of all current games.
+#    {
+#      :gameID1 => {
+#        :game => gameObject
+#        :players => {
+#          :sessId1 => refreshConnectionPlayer1
+#          :sessId2 => refreshConnectionPlayer2
+#        }
+#      }
+#    }
+    @games = {}
     
-    loop
+    startServer
     
   end
   
-  def loop
-    while @continue
-#      client = @server.accept
-      Thread.start(@server.accept) do |client, client_addr|
-        client.puts "ok" # let client know connection was successful
-        
-        while true do
-          # get client request
-          req = getRequest(client)
-          res = nil
-          begin
-            # choose our handler
-            case req
-              when "closeConnection"
-                break
-              when "createPlayer"
-                createPlayer(client)
-              when "login"
-                login(client)
-              when "logout"
-                logout(client)
-              when "getStats"
-                getStats(client)
-              when "getGames"
-                getGames(client)
-              when "newGame"
-                newGame(client)
-              when "joinGame"
-                joinGame(client)
-              when "placeToken"
-                placeToken(client)
-              when "saveRequest"
-                saveRequest(client)
-              when "saveResponse"
-                saveResponse(client)
-              when "forfeit"
-                forfeit(client)
-              when "getGame"
-                getGame(client)
-              else
-                res = buildResponse(:invalid, "invalid request '#{req}'")
-            end
-          rescue Exception => e
-            res = buildResponse(:exception, e.msg)
-          end
-          
-          client.puts res if res
-        end
-        
-        puts 'closing server'
-        client.close # Disconnect from the client
+  # Starts the server and registers all it's handlers
+  def startServer
+    
+    while true
+      begin
+        @server = XMLRPC::Server.new(@port)
+        break
+      end
+      @port += 1
+      if @port > 50550
+        raise IOError, "Can not start Server."
       end
     end
+    
+    @address = "#{local_ip}:#{@port}"
+    puts "listening on #{address}"
+    games = @db.registerServer(address)
+    games.each do |game|
+      
+    end
+
+    menuFunctions
+    
+    boardFunctions    
+
+    @server.serve
   end
   
-  def getRequest(client)
-    req = nil
-    begin
-      Timeout::timeout(@timeout) {
-        req = client.gets.chomp
-      }
-    rescue Timeout
-      req = "close"  # defaults to close if the client appears to be gone
+  def menuFunctions
+    
+    # attempts to create a player
+    # returns the session id on success
+    @server.add_handler('createPlayer') do |username, password|
+      getResult(Proc.new {
+        @db.createPlayer(username, password)
+      })
     end
-    return req
+     
+    # attempts to login a client, will create a session on success
+    # returns the session id on success
+    @server.add_handler('login') do |username, password|
+      getResult(Proc.new {
+        @db.checkLogin(username, password)
+      })
+    end
+    
+    # attempts to logout a client
+    @server.add_handler('logout') do |sessionId|
+      getResult(Proc.new {
+        @db.logout(sessionId)
+      })
+    end
+    
+    #returns a list of games
+    @server.add_handler('getGames') do |sessionId|
+      getResult(Proc.new {
+        @db.getPlayerGames(sessionId)
+      }) 
+    end
+    
+    @server.add_handler('getTopStatistics') do
+      getResult(Proc.new {
+        @db.getTopStats
+      }) 
+    end
+    
+    @server.add_handler('getMyStatistics') do |sessionId|
+      getResult(Proc.new {
+        @db.getMyStats(sessionId)
+      }) 
+    end
+  end
+
+  def boardFunctions
+    @server.add_handler('newGame') do |sessionId, gameSettings|
+      game = GameModel.new gameSettings
+      getResult(Proc.new {
+        @db.newGame(sessionId, game)
+      })
+    end
+     
+    @server.add_handler('joinGame') do |sessionId, gameId|
+      getResult(Proc.new {
+        @db.joinGame(sessionId, gameId)
+      })
+    end
+    
+    @server.add_handler('registerReciever') do |sessionId, clientAddress|
+      getResult(Proc.new {
+        @registeredRefreshes[sessionId] = XMLRPC::Client.new(clientAddress)
+      })
+    end
+    
+    @server.add_handler('placeToken') do |sessionId, col|
+       
+    end
   end
   
   def buildResponse(status, data) 
     JSON.generate({:status => status, :data => data})
   end
   
-  # attempts to create a player
-  def createPlayer(client)
-    client.puts buildResponse(:ok, "data") 
+  def getResult(proc)
+    result = {}
+    begin
+      result[:data] = proc.call
+      result[:status] = :ok
+    rescue Exception => e
+      result[:status] = :exception
+      result[:data] = e
+    end
+    return result
   end
-  
-  # attempts to login a client, will create a session on success
-  # resturns the session id
-  def login(client)
-    client.puts buildResponse(:ok, "data")
-  end  
   
   # logs a client out, destroys their session
   def logout(client)
@@ -175,15 +218,15 @@ class Server
     client.puts buildResponse(:ok, "data")
   end
 
-  def myPossibleIps
-    result = []
-    addr_infos = Socket.ip_address_list
-    addr_infos.each do |addr_info|
-  #    if addr_info.ipv4_private? || addr_info.ipv6_private? 
-        result.push addr_info.ip_address
-  #    end
+  def local_ip
+    orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true  # turn off reverse DNS resolution temporarily
+
+    UDPSocket.open do |s|
+      s.connect '64.233.187.99', 1
+      s.addr.last
     end
-    return result
+    ensure
+      Socket.do_not_reverse_lookup = orig
   end
 
 end

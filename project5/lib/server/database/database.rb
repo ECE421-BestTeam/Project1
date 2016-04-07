@@ -1,12 +1,19 @@
+#<<<<<<< HEAD
 require_relative './contract-database'
 require 'mysql'
 require 'securerandom'
+#=======
+#require 'json'
+#require 'mysql'
+#require_relative './contract-database'
+#>>>>>>> ee664cade96579ef84a0b0bf351665401e0a42f4
 
 
 class Database
   include DatabaseContract
   
-  def initialize()
+#<<<<<<< HEAD
+  def initialize
     pre_initialize
     
     begin
@@ -19,10 +26,35 @@ class Database
       @db= Mysql.new("localhost", 'root', nil, 'ece421grp4', nil)
     rescue Mysql::Error => e
       puts e.error
+#=======
+#  $dbSettingsFile = "#{File.expand_path File.dirname(__FILE__)}/db-settings.json"
+#  $dbSettingsTemplate = "#{File.expand_path File.dirname(__FILE__)}/db-settings-template.json"
+#  
+#  def initialize
+#    pre_initialize
+#    
+#    begin
+#      dbSettings = File.read($dbSettingsFile)
+#      dbSettings = JSON.parse(dbSettings)
+#      @db = Mysql.new(
+#        dbSettings["host"],
+#        dbSettings["username"],
+#        dbSettings["password"],
+#        dbSettings["database"],
+#        Integer(dbSettings["port"])
+#      )
+##      @db= Mysql.new("localhost", nil, nil, 'test', nil)
+##    rescue Mysql::Error => e
+##      puts e.error
+#    rescue ENONET => e
+#      puts "Please Ensure #{$dbSettingsFile} exists and is populated correctly."
+#      puts "You can find an example at #{$dbSettingsTemplate}."
+#      raise e
+#>>>>>>> ee664cade96579ef84a0b0bf351665401e0a42f4
     end
     
     post_initialize
-#    class_invariant
+    class_invariant
   end
   
   def registerServer(serverAddress)
