@@ -11,7 +11,6 @@ class Database
   $tableKeys = {
     'Game' => 'game_id',
     'Server' => 'server_address',
-    'Session' => 'session_id',
     'Player' => 'username'
   }
   
@@ -105,14 +104,14 @@ class Database
     # and assigns a new session ID (which is also added to Session table)
     # Returns: String -- sess_id
     pre_createPlayer(username, password)
-    sess_id = newSessionID()
+    
     
     @db.query("START TRANSACTION")
-    @db.query("INSERT INTO Session(session_id, player_id) VALUES('#{sess_id}', '#{username}')")
     @db.query("INSERT INTO Player(username, password, points, wins, losses, draws, current_session_id) \
-                  VALUES ( '#{username}', '#{password}',0, 0, 0, 0, '#{sess_id}')" )
-      
+                  VALUES ( '#{username}', '#{password}',0, 0, 0, 0, 'null')" )
     @db.query("COMMIT")
+    
+    sess_id = assignNewSessionID(username)
 
     post_createPlayer(sess_id)
     return sess_id
@@ -127,16 +126,7 @@ class Database
     
     @db.query("SELECT * from Player WHERE username='#{username}' and password='#{password}'")
     if @db.affected_rows == 1
-      sess_id = newSessionID()
-      @db.query("START TRANSACTION")
-      @db.query("DELETE FROM Session \
-                    WHERE player_id='#{username}'")
-      @db.query("INSERT INTO Session(session_id) VALUES('#{sess_id}')");
-      @db.query("UPDATE Player \
-                  SET current_session_id='#{sess_id}' \
-                  WHERE username = '#{username}'")
-        
-      @db.query("COMMIT")
+      sess_id = assignNewSessionID(username)        
       result = sess_id
     end
 
@@ -353,7 +343,7 @@ class Database
     # helper function to retrieve playerID associated with sessionID
     pre_getPlayerID(sessionId)
     # Propagates the mysql error
-    res = @db.query("SELECT * FROM Session WHERE session_id='#{sessionId}'")
+    res = @db.query("SELECT username FROM Player WHERE current_session_id='#{sessionId}'")
     
     result = res.first
     raise ArgumentError, "invalid SessionId.  Please re-authenticate." if !result
@@ -363,7 +353,7 @@ class Database
   end
     
   def remove(table, id)
-    @db.query("DELETE FROM #{table} WHERE #{$tableKeys[table]}='#{id}'")
+    @db.query("DELETE FROM #{table} WHERE #{$tableKeys[table]}='#{id}'")    
   end
   
   def newGameID()
@@ -371,9 +361,28 @@ class Database
     return rand(36**length).to_s(36)
   end
   
-  def newSessionID()
+  # assigns a new session Id to the player
+  def assignNewSessionID(playerId)
     length = 15
-    return rand(36**length).to_s(36)
+    
+    @db.query("START TRANSACTION")
+    
+    #find a unique sessionId
+    res = []
+    while res.length != 0
+      id = rand(36**length).to_s(36)
+      res = @db.query("SELECT current_session_id FROM Player \
+                WHERE current_session_id='#{id}'")
+    end
+    
+    # add it to the player
+    @db.query("UPDATE Player \
+              SET current_session_id='#{id}' \
+              WHERE username='#{playerId}'")
+    
+    @db.query("COMMIT")
+      
+    return id
   end
   
   def serialize(gameBoard)

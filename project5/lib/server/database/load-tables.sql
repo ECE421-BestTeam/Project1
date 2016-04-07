@@ -20,12 +20,6 @@ CREATE TABLE IF NOT EXISTS Server(
   UNIQUE(server_address),
   PRIMARY KEY(server_address));
 
-CREATE TABLE IF NOT EXISTS Session(
-  session_id varchar(200),
-  player_id Text,
-  unique(session_id),
-  PRIMARY KEY(session_id));
-
 CREATE TABLE IF NOT EXISTS Player(
   username varchar(200),
   password Text,
@@ -36,7 +30,7 @@ CREATE TABLE IF NOT EXISTS Player(
   current_session_id varchar(200),
   UNIQUE(username),
   PRIMARY KEY(username),
-  FOREIGN KEY(current_session_id) REFERENCES Session(session_id) ON DELETE CASCADE);
+  UNIQUE(current_session_id);
 
 
 
