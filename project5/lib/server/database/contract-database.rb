@@ -111,8 +111,8 @@ module DatabaseContract
 
   end
   
-  def post_joinGame(server_address)
-    assert server_address.class == String, "returned server_address must be a String"
+  def post_joinGame(game)
+    assert game.class == Hash, "returned game from joinGame must be a Hash"
   end
   
   ####
