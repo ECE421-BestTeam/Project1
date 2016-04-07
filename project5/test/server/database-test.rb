@@ -8,6 +8,7 @@ class ServerTest < Test::Unit::TestCase
   
   # not an extensive test for validity
   # used for debugging sql queries, mostly
+  # mysql -u us -p -h 142.179.143.183 -P 3306
   def setup
     @db = Database.new
     @user = "user1"
