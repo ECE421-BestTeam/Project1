@@ -113,7 +113,6 @@ class Server
       getResult(Proc.new {
         @db.newGame(sessionId, game)
       })
-    {'status' => 'ok', 'data' => 'hi'}
     end
      
     @server.add_handler('joinGame') do |sessionId, gameId|
