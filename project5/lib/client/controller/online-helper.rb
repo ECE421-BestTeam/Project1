@@ -19,7 +19,18 @@ module OnlineHelper
         redirect(response.data)
         postRedirect.call
       when 'exception'
-        raise response['data']
+        exClass = Exception
+        begin
+          exClass = Object.const_get(response['data']['class'])
+        rescue
+          # can't get the exception class for some reason
+        end
+        msg = response['data']['message']
+        response['data']['backtrace'].each do |level|
+          msg += "\n\t#{level}"
+        end
+        ex = exClass.new msg
+        raise ex
     when 'ok'
       success.call response['data']
     end

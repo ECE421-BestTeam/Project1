@@ -8,6 +8,12 @@ class Database
   
   $dbSettingsFile = "#{File.expand_path File.dirname(__FILE__)}/db-settings.json"
   $dbSettingsTemplate = "#{File.expand_path File.dirname(__FILE__)}/db-settings-template.json"
+  $tableKeys = {
+    'Game' => 'game_id',
+    'Server' => 'server_address',
+    'Session' => 'session_id',
+    'Player' => 'username'
+  }
   
   def initialize
     pre_initialize
@@ -178,7 +184,7 @@ class Database
     return result
   end
   
-  def newGame(sessionId,game)
+  def newGame(sessionId, game)
     # Adds a game where the player associated with sessionId is player1
     # Assigns the server_address as the leastActiveServer
     # Returns: String -- gameId
@@ -188,7 +194,7 @@ class Database
     @db.query("START TRANSACTION")
     playerId = getPlayerID(sessionId)
     server_address = getLeastActiveServer()
-    addGame(gameId, playerId, 'NULL', state="joinable", game, server_address)
+    addGame(gameId, playerId, 'NULL', "joinable", game, server_address)
     @db.query("COMMIT")
   
     post_newGame(gameId)
@@ -212,36 +218,53 @@ class Database
     # Return: String -- server_address
     pre_joinGame(sessionId, gameId)
     
+    canJoin = false
+    
     @db.query("START TRANSACTION")
     playerId = getPlayerID(sessionId)
-    res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}' AND state='joinable'")
+    res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}'")
     if @db.affected_rows == 1
       game = res.first
-      if game['player1_id'] == nil && game['player2_id'].downcase != playerId
-        query = "UPDATE Game \
-                    SET player1_id='#{playerId}', state='active', last_update = curdate() \
-                    WHERE game_id='#{gameId}'"
-      elsif game['player2_id'] == nil && game['player1_id'].downcase != playerId
-        query = "UPDATE Game \
-                    SET player2_id='#{playerId}', state='active',last_update = curdate()\
-                    WHERE game_id='#{gameId}'"
-      else
-        query = ""
+      
+      # Is player already part of game?
+      if [game['player1_id'], game['player2_id']].include? playerId
+        canJoin = true
+        
+      elsif game['state'] == 'joinable'
+        # they can also join the game! (probably!)
+        freePlayerSlot = nil
+        if game['player2_id'] == nil
+          freePlayerSlot = '2'
+        elsif game['player1_id'] == nil
+          freePlayerSlot = '1'
+        end
+        
+        if freePlayerSlot
+          canJoin = true
+          query = "UPDATE Game \
+                      SET player#{freePlayerSlot}_id='#{playerId}', state='active', last_update = curdate() \
+                      WHERE game_id='#{gameId}'"
+          @db.query(query);
+        end
       end
-      @db.query(query);
-      if game['server_address'].downcase =='null'
+      
+      if canJoin 
+        if game['server_address'].downcase =='null'
         server_address = getLeastActiveServer()
         @db.query("UPDATE Game \
                     SET server_address =  \
                     WHERE server_address='#{server_address}'")
-      else
-        server_address = game['server_address']
-      end
+          game['server_address'] = server_address
+        end
+        @db.query("COMMIT")
+        post_joinGame(game)
+        return game
+      end      
+    
     end
-    @db.query("COMMIT")
+    
+    raise ArgumentError, "Player can not join game."
 
-    post_joinGame(server_address)
-    return server_address
   end
 
   def getGame(gameId)
@@ -333,10 +356,15 @@ class Database
     res = @db.query("SELECT * FROM Session WHERE session_id='#{sessionId}'")
     
     result = res.first
+    raise ArgumentError, "invalid SessionId.  Please re-authenticate." if !result
+    
     post_getPlayerID(result['player_id'])
     return result['player_id']
   end
     
+  def remove(table, id)
+    @db.query("DELETE FROM #{table} WHERE #{$tableKeys[table]}='#{id}'")
+  end
   
   def newGameID()
     length = 5

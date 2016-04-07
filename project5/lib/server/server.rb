@@ -7,7 +7,7 @@ require_relative '../common/model/game'
 # a server for all things connect4.2
 class Server
   
-  attr_reader :address
+  attr_reader :address, :db
   
   # time out is how long before a client is deemed inactive
   def initialize(port = 50500, timeout = 60 * 60)
@@ -39,10 +39,11 @@ class Server
       begin
         @server = XMLRPC::Server.new(@port)
         break
-      end
-      @port += 1
-      if @port > 50550
-        raise IOError, "Can not start Server."
+      rescue Errno::EADDRINUSE
+        @port += 1
+        if @port > 50550
+          raise IOError, "Can not start Server."
+        end
       end
     end
     
@@ -109,15 +110,23 @@ class Server
 
   def boardFunctions
     @server.add_handler('newGame') do |sessionId, gameSettings|
-      game = GameModel.new gameSettings
       getResult(Proc.new {
+        game = GameModel.new gameSettings
         @db.newGame(sessionId, game)
       })
     end
      
     @server.add_handler('joinGame') do |sessionId, gameId|
       getResult(Proc.new {
-        @db.joinGame(sessionId, gameId)
+        game = @db.joinGame(sessionId, gameId)
+        if game['server_address'] == @address
+          game
+        else
+          {
+            'status' => 'redirect',
+            'data' => game['server_address']
+          }
+        end
       })
     end
     
@@ -149,11 +158,21 @@ class Server
   def getResult(proc)
     result = {}
     begin
-      result['data'] = proc.call
-      result['status'] = :ok
+      data = proc.call
+      result['data'] = data
+      result['status'] = 'ok'
+      if data.class == Hash 
+        if data.has_key?('status') && data.has_key?('data')
+          result = data
+        end
+      end
     rescue Exception => e
-      result['status'] = :exception
-      result['data'] = e
+      result['status'] = 'exception'
+      result['data'] = {
+        'class' => String(e.class),
+        'message' => e.message,
+        'backtrace' => e.backtrace
+      }
     end
     return result
   end

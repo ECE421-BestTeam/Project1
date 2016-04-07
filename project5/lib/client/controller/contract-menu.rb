@@ -1,5 +1,6 @@
 require 'test/unit/assertions'
 
+require_relative './board'
 #require_relative '../model/client-settings'
 #require_relative '../../common/model/game-settings'
 

@@ -1,8 +1,10 @@
+require 'xmlrpc/client'
 require_relative './contract-game'
 require_relative './victory'
 
 # the model for our game
 class GameModel
+  include XMLRPC::Marshallable
   include GameContract
   
   attr_reader :settings,

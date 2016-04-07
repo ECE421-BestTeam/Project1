@@ -23,6 +23,10 @@ class MenuController
     class_invariant
   end
   
+  def close
+    
+  end
+  
   # returns a boardController initialized with a game by gameSettings
   # gameSettings should be GameSettingsModel for a new game
   # or an id String for a game, to join an existing game
@@ -36,9 +40,9 @@ class MenuController
     
     result = nil
     case gameSettings.mode
-      when :practice
+      when 'practice'
         result = BoardController.new(:boardControllerLocal, controllerSettings)
-      when :compete
+      when 'compete'
         result = BoardController.new(:boardControllerOnline, controllerSettings)
     end
 

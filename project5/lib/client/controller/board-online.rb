@@ -66,25 +66,11 @@ class BoardOnlineController
   # either starts a new game or joins an existing one
   def getGame
     if @gameSetttings.class == String
-      # we want to join a game
-      handleResponse(
-        @connection.call('joinGame', @clientSettings.sessionId, @gameSettings),
-        Proc.new do |data|
-          # we were returned the new game
-          @game = data
-          @gameId = @gameSettings
-        end
-      )
+      @gameId = @gameSettings
+      joinGame(@gameId)
     else 
-      # We want to create a new game
-      handleResponse(
-        @connection.call('newGame', @clientSettings.sessionId, @gameSettings),
-        Proc.new do |data|
-          # we were returned the new game ID
-          @gameSettings = data
-        end
-      )
-      getGame
+      newGame(@gameSettings)
+      joinGame(@gameId)
     end
     
     #register the receiver
@@ -96,22 +82,33 @@ class BoardOnlineController
     )
   end
   
+  def newGame(gameSettings)
+    # We want to create a new game
+    handleResponse(
+      @connection.call('newGame', @clientSettings.sessionId, gameSettings),
+      Proc.new do |data|
+        # we were returned the new game ID
+        @gameId = data
+      end
+    )
+  end
+  
+  def joinGame(gameId)
+    handleResponse(
+      @connection.call('joinGame', @clientSettings.sessionId, gameId),
+      Proc.new do |data|
+        # we were returned the new game
+        @game = data
+      end
+    )
+  end
+  
   #called when a player wishes to place a token
   def placeToken (col)
     handleResponse(
       @connection.call('placeToken', @clientSettings.sessionId, col)
     )
     @refresh.call @game
-  end
-  
-  def test
-    handleResponse(
-      @connection.call('test'),
-      Proc.new do |data|
-        # we were returned the new game ID
-        puts data
-      end
-    )
   end
   
 end
