@@ -1,4 +1,5 @@
 require 'test/unit/assertions'
+require_relative '../../common/model/game'
 
 module DatabaseContract
   include Test::Unit::Assertions
@@ -23,7 +24,7 @@ module DatabaseContract
 
   
   def post_registerServer(game_ids)
-    assert game_ids.class == Array && game_ids[0].class == String, "game_ids must be an Array of Strings"
+    assert game_ids.class == Array, "game_ids must be an Array"
     # implies the game_ids must be length >=1
   end
 
@@ -36,6 +37,15 @@ module DatabaseContract
     assert server_address.class == String, "return server_address must be a string"
   end
   
+  ####
+  
+  def pre_getServerGames(server_address)
+    assert server_address.class == String, "server_address must be a String"
+  end
+  
+  def post_getServerGames(gameids)
+    assert gameids.class == Array, "gameids must be an Array"
+  end
   ####
   
   def pre_createPlayer(username, password)
