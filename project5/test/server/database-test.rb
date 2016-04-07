@@ -8,7 +8,9 @@ class ServerTest < Test::Unit::TestCase
   
   # not an extensive test for validity
   # used for debugging sql queries, mostly
-  # mysql -u us -p -h 142.179.143.183 -P 3306
+  # mysql -u us -p -h 142.179.143.183 -P 3306 (with our secret password)
+  # reload empty tables using 'source load-tables.sql'
+  # then run this testfile
   def setup
     @db = Database.new
     @user = "user1"
