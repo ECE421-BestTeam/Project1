@@ -4,7 +4,7 @@ module ClientContract
   #
   
   def class_invariant
-    @implementation, "implementation must exist"
+    assert @implementation, "implementation must exist"
   end
   
   def pre_initialize(settings)

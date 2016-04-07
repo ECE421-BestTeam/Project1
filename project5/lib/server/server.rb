@@ -1,5 +1,5 @@
 require 'socket'
-require 'json'
+require 'xmlrpc/server'
 require_relative './database/database'
 require_relative '../common/model/game'
 

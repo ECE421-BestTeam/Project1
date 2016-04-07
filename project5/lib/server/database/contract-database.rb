@@ -1,9 +1,10 @@
 require 'test/unit/assertions'
 
 module DatabaseContract
+  include Test::Unit::Assertions
   
   def class_invariant
-    assert @db.class == Mysql, "db must be a Myql database"
+#    assert @db.class == Mysql2::Client, "db must be a Myql database"
   end
  
   def pre_initialize

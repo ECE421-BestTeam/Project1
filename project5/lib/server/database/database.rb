@@ -1,24 +1,27 @@
-require_relative './contract-database'
 require 'json'
 require 'mysql2'
-
+require_relative './contract-database'
 
 class Database
   include DatabaseContract
   
-  def initialize(address)
+  $dbSettingsFile = "#{File.expand_path File.dirname(__FILE__)}/db-settings.json"
+  $dbSettingsTemplate = "#{File.expand_path File.dirname(__FILE__)}/db-settings-template.json"
+  
+  def initialize
     pre_initialize
     
     begin
-#      @db = Mysql.new("mysqlsrv.ece.ualberta.ca",
-#      "placeholderusr",
-#      "placeholderpwd",
-#      "placeholderdbn",
-#      13010
-#      )
-      @db= Mysql.new("localhost", nil, nil, 'test', nil)
-    rescue Mysql::Error => e
-      puts e.error
+      dbSettings = File.read($dbSettingsFile)
+      dbSettings = JSON.parse(dbSettings)
+      
+      @db = Mysql2::Client.new(dbSettings)
+    rescue Mysql2::Error => e
+      puts e
+      puts "Please Ensure #{$dbSettingsFile} is populated correctly."
+     rescue ENOENT
+      puts "Please Ensure #{$dbSettingsFile} exists and is populated correctly."
+      puts "You can find an example at #{$dbSettingsTemplate}."
     end
     
     post_initialize
@@ -174,5 +177,3 @@ class Database
   end
     
 end
-  
-  
