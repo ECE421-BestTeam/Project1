@@ -4,7 +4,8 @@ module ClientSettingsContract
   include Test::Unit::Assertions
   
   def class_invariant
-    assert @serverAddress.class == String, "serverAddress must be a String"
+    assert @host.class == String, "host must be a String"
+    assert @port.class == Fixnum, "port must be a Fixnum"
     assert @sessionId.class == String || @sessionId.class == NilClass, "sessionId must be a String"
   end
   

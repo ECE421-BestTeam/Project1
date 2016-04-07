@@ -5,12 +5,16 @@ module OnlineHelper
   
   def connect
     close
-    @connection = XMLRPC::Client.new(@clientSettings.serverAddress)
+    @connection = XMLRPC::Client.new(@clientSettings.host, nil, @clientSettings.port)
     @clientSettings.save
   end
   
   def close
-    @connection.close
+    if @connection
+      handleResponse(
+        @connection.call('close')
+      )
+    end
   end
   
   def redirect(newAddress)
@@ -19,14 +23,14 @@ module OnlineHelper
   end
   
   def handleResponse(response, success = Proc.new {|data|}, postRedirect = Proc.new {})
-    case response.status
+    case response['status']
       when 'redirect'
-        redirect(result.data)
+        redirect(response.data)
         postRedirect.call
       when 'exception'
-        raise result.data.type, result.data.msg
+        raise response['data']
     when 'ok'
-      success.call result.data      
+      success.call response['data']
     end
   end
   

@@ -1,4 +1,5 @@
 require 'socket'
+require 'xmlrpc/client'
 require 'xmlrpc/server'
 require_relative './database/database'
 require_relative '../common/model/game'
@@ -13,15 +14,15 @@ class Server
     @port = port
     @timeout = timeout # default is an hour
     
-    @db = Database.new
+#    @db = Database.new
     
     # Hash of all current games.
 #    {
 #      :gameID1 => {
 #        :game => gameObject
 #        :players => {
-#          :sessId1 => refreshConnectionPlayer1
-#          :sessId2 => refreshConnectionPlayer2
+#          :sessId1 => client1Address
+#          :sessId2 => client2Address
 #        }
 #      }
 #    }
@@ -48,10 +49,12 @@ class Server
     @address = "#{local_ip}:#{@port}"
     puts "listening on #{address}"
     games = @db.registerServer(address)
+    
+    # Recovery if server went down
     games.each do |game|
       
     end
-
+    
     menuFunctions
     
     boardFunctions    

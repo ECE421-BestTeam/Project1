@@ -1,4 +1,5 @@
 require 'socket'
+require 'xmlrpc/server'
 require_relative './online-helper'
 require_relative '../../common/model/game'
 
@@ -13,16 +14,16 @@ class BoardOnlineController
     @clientSettings = settings[:clientSettings]
     
     # Start our reciever
-    startReciever
+#    startReciever
     
     # open the connection
     connect
     
     # get game
-    @game = getGame
+#    @game = getGame
     
     # set localPlayers based on game
-    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
+#    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
   end
 
   def startReciever
@@ -31,18 +32,20 @@ class BoardOnlineController
       begin
         @reciever = XMLRPC::Server.new(@recieverPort)
         break
-      end
-      @recieverPort += 1
-      if @recieverPort > 50550
-        raise IOError, "Can not start reciever."
+      rescue Errno::EADDRINUSE
+        @recieverPort += 1
+        if @recieverPort > 50550
+          raise IOError, "Can not start reciever."
+        end
       end
     end
     
     @reciever.add_handler('refresh') do |model|
       @resfresh.call model
     end
-    
-    @reciever.serve
+    @recieverThread = Thread.new do
+      @reciever.serve
+    end
   end
  
   # registers the refresh command so the 
@@ -57,7 +60,7 @@ class BoardOnlineController
     if @gameSetttings.class == String
       # we want to join a game
       handleResponse(
-        connection.call('joinGame', @clientSettings.sessionId, @gameSettings),
+        @connection.call('joinGame', @clientSettings.sessionId, @gameSettings),
         Proc.new do |data|
           # we were returned the new game ID
           @game = data
@@ -66,7 +69,7 @@ class BoardOnlineController
     else 
       # We want to create a new game
       handleResponse(
-        connection.call('newGame', @clientSettings.sessionId, @gameSettings),
+        @connection.call('newGame', @clientSettings.sessionId, @gameSettings),
         Proc.new do |data|
           # we were returned the new game ID
           @gameSettings = data
@@ -77,22 +80,17 @@ class BoardOnlineController
     
     #register the receiver
     handleResponse(
-      connection.call('registerReciever', @clientSettings.sessionId, "#{local_ip}:#{@recieverPort}"),
+      @connection.call('registerReciever', @clientSettings.sessionId, "#{local_ip}:#{@recieverPort}"),
       Proc.new do |data|
         break
       end
     )
   end
-    
-  def close
-    #close the connection
-    @connection.close
-  end
   
   #called when a player wishes to place a token
   def placeToken (col)
     handleResponse(
-      connection.call('placeToken', @clientSettings.sessionId, col),
+      @connection.call('placeToken', @clientSettings.sessionId, col),
       Proc.new do |data|
         # we were returned the new game ID
         @game = data
@@ -101,4 +99,33 @@ class BoardOnlineController
     @refresh.call @game
   end
   
+  def test
+    handleResponse(
+      @connection.call('test'),
+      Proc.new do |data|
+        # we were returned the new game ID
+        puts data
+      end
+    )
+  end
+  
 end
+
+require_relative '../model/client-settings'
+sett = ClientSettingsModel.new
+sett.host = 'localhost'
+sett.port = 50500
+sett.save
+
+a = {
+  :clientSettings => sett
+}
+
+b = BoardOnlineController.new(a)
+
+while true
+  b.test
+  gets
+end
+
+
