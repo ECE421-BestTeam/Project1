@@ -13,20 +13,20 @@ class ServerTest < Test::Unit::TestCase
   # then run this testfile
   def setup
     @db = Database.new
-    @user = "user1"
-    @pswd = "pswd"
-    @server = "serveraddress1"
-    @session = "session"
-    @game = GameModel.new(GameSettingsModel.new)
-    @gameId = "gameid"
-    
+#    @user = "user1"
+#    @pswd = "pswd"
+#    @server = "serveraddress1"
+#    @session = "session"
+#    @game = GameModel.new(GameSettingsModel.new)
+#    @gameId = "gameid"
+
   end
 
   def teardown
   end
   
   def test_registerServer
-    assert @db.registerServer(@server).is_a? Array
+    assert @db.registerServer("server1").is_a? Array
   end
   
   def test_getLeastActiveServer
@@ -35,11 +35,12 @@ class ServerTest < Test::Unit::TestCase
 
 
   def test_getServerGames
-    assert @db.getServerGames(@server).is_a? Array
+    @db.registerServer("server2")
+    assert @db.getServerGames("server2").is_a? Array
   end
 
   def test_createPlayer
-    assert @db.createPlayer(@user, @pswd).is_a? String
+    assert @db.createPlayer("user1", "pswd1").is_a? String
   end
   
   def test_checkLogin

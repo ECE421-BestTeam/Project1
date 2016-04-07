@@ -41,23 +41,21 @@ class Database
   end
   
   def registerServer(serverAddress)
-    # Adds serverAddress to server table and returns its game_ids
+    # Adds serverAddress to server table if new
+    # returns its game_ids
     # Returns: Array of Strings -- game_ids
     pre_registerServer(serverAddress)
     game_ids = [];
-    begin
-      @db.query("START TRANSACTION")
-      @db.query("SELECT * FROM Server \
+
+    @db.query("START TRANSACTION")
+    @db.query("SELECT * FROM Server \
                   WHERE server_address='#{serverAddress}'" )
-      if @db.affected_rows <= 0
-        @db.query("INSERT INTO Server(server_address) VALUES('#{serverAddress}')")
-      else
-        game_ids = getServerGames(serverAddress)
-      end
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
+    if @db.affected_rows <= 0
+      @db.query("INSERT INTO Server(server_address) VALUES('#{serverAddress}')")
+    else
+      game_ids = getServerGames(serverAddress)
     end
+    @db.query("COMMIT")
     post_registerServer(game_ids)
     return game_ids
   end
@@ -66,14 +64,10 @@ class Database
     # Gets the server address with the least amount of games assigned to it
     # Returns: String -- server_address
     pre_getLeastActiveServer
-    # This one is a complicated query, not guaranteed to work
-    begin
-      res = @db.query("SELECT server_address, count(game_id) AS num_games FROM server s \
+
+    res = @db.query("SELECT server_address, count(game_id) AS num_games FROM server s \
                         NATURAL LEFT JOIN game g GROUP BY server_address \
                         ORDER BY num_games limit 1" )
-    rescue Mysql2::Error => e
-      raise e
-    end
     server = res.first
     post_getLeastActiveServer(server['server_address'])
     return server['server_address']
@@ -84,15 +78,15 @@ class Database
     # Returns: Array of Strings -- game_id
     pre_getServerGames(serverAddress)
     result = []
-    begin
-      @db.query("START TRANSACTION")
-      res = @db.query("SELECT g.game_id as game_id\
+    
+    @db.query("START TRANSACTION")
+    res = @db.query("SELECT g.game_id as game_id\
                   FROM Server s, Game g \
                   WHERE s.server_address=g.server_address")
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    @db.query("COMMIT")
+    
+    
+    
     res.each {|h|
       result << h['game_id']
     }
@@ -106,16 +100,14 @@ class Database
     # Returns: String -- sess_id
     pre_createPlayer(username, password)
     sess_id = newSessionID()
-    begin
-      @db.query("START TRANSACTION")
-      @db.query("INSERT INTO Session(session_id, player_id) VALUES('#{sess_id}', '#{username}')")
-      @db.query("INSERT INTO Player(username, password, points, wins, losses, draws, current_session_id) \
+    
+    @db.query("START TRANSACTION")
+    @db.query("INSERT INTO Session(session_id, player_id) VALUES('#{sess_id}', '#{username}')")
+    @db.query("INSERT INTO Player(username, password, points, wins, losses, draws, current_session_id) \
                   VALUES ( '#{username}', '#{password}',0, 0, 0, 0, '#{sess_id}')" )
       
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    @db.query("COMMIT")
+
     post_createPlayer(sess_id)
     return sess_id
   end
@@ -126,24 +118,22 @@ class Database
     # Return Boolean -- true or false
     pre_checklogin(username, password)
     result = ""
-    begin
-      @db.query("SELECT * from Player WHERE username='#{username}' and password='#{password}'")
-      if @db.affected_rows == 1
-        sess_id = newSessionID()
-        @db.query("START TRANSACTION")
-        @db.query("DELETE FROM Session \
+    
+    @db.query("SELECT * from Player WHERE username='#{username}' and password='#{password}'")
+    if @db.affected_rows == 1
+      sess_id = newSessionID()
+      @db.query("START TRANSACTION")
+      @db.query("DELETE FROM Session \
                     WHERE player_id='#{username}'")
-        @db.query("INSERT INTO Session(session_id) VALUES('#{sess_id}')");
-        @db.query("UPDATE Player \
+      @db.query("INSERT INTO Session(session_id) VALUES('#{sess_id}')");
+      @db.query("UPDATE Player \
                   SET current_session_id='#{sess_id}' \
                   WHERE username = '#{username}'")
         
-        @db.query("COMMIT")
-        result = sess_id
-      end
-    rescue Mysql2::Error => e
-      raise e
+      @db.query("COMMIT")
+      result = sess_id
     end
+
     post_checkLogin(result)
     return result
   end
@@ -153,16 +143,13 @@ class Database
     # and Session table
     # Returns: --
     pre_logout(sessionId)
-    begin
-      @db.query("START TRANSACTION")
-      @db.query("UPDATE Player \
-                  SET current_session_id=NULL \
-                  WHERE username = '#{username}'")
-      @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    
+    @db.query("START TRANSACTION")
+    @db.query("UPDATE Player \
+                SET current_session_id=NULL \
+                WHERE username = '#{username}'")
+    @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
+    @db.query("COMMIT")
   end
   
   def getPlayerGames(sessionId)
@@ -170,17 +157,16 @@ class Database
     # Hash has keys: game_id, player1_id, player2_id, state, game_model, server_address, last_update
     # Returns: Array of Hashes -- result
     pre_getPlayerGames(sessionId)
-    begin
-      res1 = @db.query("SELECT game_id, player1_id, player2_id, state, game_model, server_address, last_update FROM games g, players p\
+    
+    res1 = @db.query("SELECT game_id, player1_id, player2_id, state, game_model, server_address, last_update FROM games g, players p\
                        WHERE p.session_id='#{sessionId} AND (g.player1_id=p.player_id OR g.player2_id=p.player_id) \
                        AND state='saved'");
-      res2 = @db.query("SELECT game_id, player1_id, player2_id, state, game_mode, server_addres, last_update FROM Game WHERE state='joinable'")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    res2 = @db.query("SELECT game_id, player1_id, player2_id, state, game_mode, server_addres, last_update FROM Game WHERE state='joinable'")
+    
+    
+    
     result = []
     res1.each { |h|
-      
       h['game_model'] = unserialize(h['game_model'])
       result << h
     }
@@ -198,15 +184,13 @@ class Database
     # Returns: String -- gameId
     pre_newGame(sessionId, game)
     gameId = newGameID()
-    begin
-      @db.query("START TRANSACTION")
-      playerId = getPlayerID(sessionId)
-      server_address = getLeastActiveServer()
-      addGame(gameId, playerId, 'NULL', state="joinable", game, server_address)
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    
+    @db.query("START TRANSACTION")
+    playerId = getPlayerID(sessionId)
+    server_address = getLeastActiveServer()
+    addGame(gameId, playerId, 'NULL', state="joinable", game, server_address)
+    @db.query("COMMIT")
+  
     post_newGame(gameId)
     return gameId
   end
@@ -227,38 +211,35 @@ class Database
     # If game is saved, reassigns the server_address to leastActiveServer
     # Return: String -- server_address
     pre_joinGame(sessionId, gameId)
-    begin
-      @db.query("START TRANSACTION")
-      playerId = getPlayerID(sessionId)
-      res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}' AND state='joinable'")
-      if @db.affected_rows == 1
-        game = res.first
-        if game['player1_id'] == nil && game['player2_id'].downcase != playerId
-          query = "UPDATE Game \
-                      SET player1_id='#{playerId}', state='active', last_update = curdate() \
-                      WHERE game_id='#{gameId}'"
-        elsif game['player2_id'] == nil && game['player1_id'].downcase != playerId
-          query = "UPDATE Game \
-                      SET player2_id='#{playerId}', state='active',last_update = curdate()\
-                      WHERE game_id='#{gameId}'"
-        else
-          query = ""
-        end
-        @db.query(query);
-        if game['server_address'].downcase =='null'
-          server_address = getLeastActiveServer()
-          @db.query("UPDATE Game \
-                      SET server_address =  \
-                      WHERE server_address='#{server_address}'")
-        else
-          server_address = game['server_address']
-        end
+    
+    @db.query("START TRANSACTION")
+    playerId = getPlayerID(sessionId)
+    res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}' AND state='joinable'")
+    if @db.affected_rows == 1
+      game = res.first
+      if game['player1_id'] == nil && game['player2_id'].downcase != playerId
+        query = "UPDATE Game \
+                    SET player1_id='#{playerId}', state='active', last_update = curdate() \
+                    WHERE game_id='#{gameId}'"
+      elsif game['player2_id'] == nil && game['player1_id'].downcase != playerId
+        query = "UPDATE Game \
+                    SET player2_id='#{playerId}', state='active',last_update = curdate()\
+                    WHERE game_id='#{gameId}'"
+      else
+        query = ""
       end
-      @db.query("COMMIT")
-      
-    rescue Mysql2::Error => e
-      raise e
+      @db.query(query);
+      if game['server_address'].downcase =='null'
+        server_address = getLeastActiveServer()
+        @db.query("UPDATE Game \
+                    SET server_address =  \
+                    WHERE server_address='#{server_address}'")
+      else
+        server_address = game['server_address']
+      end
     end
+    @db.query("COMMIT")
+
     post_joinGame(server_address)
     return server_address
   end
@@ -268,12 +249,8 @@ class Database
     # Hash has keys: game_id, player1_id, player2_id, state, game_model, server_address, last_update
     # Returns: Hash -- result
     pre_getGame(gameId)
-    begin
-      res = @db.query("SELECT * FROM Game \
-                       WHERE game_id='#{gameId}'")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    res = @db.query("SELECT * FROM Game \
+                       WHERE game_id='#{gameId}'")  
     result = res.first
     result['game_model'] = unserialize(result['game_model'])
     post_getGame(result)
@@ -284,13 +261,11 @@ class Database
     # Updates a field in the Game table with value
     # Returns: --
     pre_updateGame(gameId, field, value)
-    begin
-      @db.query("START TRANSACTION")
-      @db.query("UPDATE Game SET #{field}='saved', last_update=curdate() WHERE game_id='#{gameId}'")
-      @db.query("COMMIT")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    
+    @db.query("START TRANSACTION")
+    @db.query("UPDATE Game SET #{field}='saved', last_update=curdate() WHERE game_id='#{gameId}'")
+    @db.query("COMMIT")
+  
     post_updateGame
   end
 
@@ -300,20 +275,16 @@ class Database
     # i.e. updateState(sessionId, 'wins', 1)
     # Returns: --
     pre_updateStat(sessionId, stat, delta)
-    begin
-      playerId = getPlayerID(sessionId)
-      @db.query("START TRANSACTION");
-      @db.query("UPDATE Player \
-                  SET #{stat}=#{stat}+ #{delta} \
-                  WHERE player_id='#{playerId}'")
-      @db.query("COMMIT")
-      @db.query("UPDATE Player \
-                  Set points=3*wins+draws \
-                  WHERE player_id='#{playerId}'")
-      
-    rescue Mysql2::Error => e
-      raise e
-    end
+    
+    playerId = getPlayerID(sessionId)
+    @db.query("START TRANSACTION");
+    @db.query("UPDATE Player \
+                SET #{stat}=#{stat}+ #{delta} \
+                WHERE player_id='#{playerId}'")
+    @db.query("COMMIT")
+    @db.query("UPDATE Player \
+                Set points=3*wins+draws \
+                WHERE player_id='#{playerId}'")
     post_updateStat
   end
   
@@ -322,13 +293,11 @@ class Database
     # Hash has keys: username, points, wins, losses, draws
     # Returns: Hash -- result
     pre_getMyStats(sessionId)
-    begin
-      playerId = getPlayerID(sessionId)
-      res = @db.query("SELECT username, points, wins, losses, draws FROM Player \
-                WHERE username='#{playerId}'")
-    rescue Mysql2::Error => e
-      raise e
-    end
+    
+    playerId = getPlayerID(sessionId)
+    res = @db.query("SELECT username, points, wins, losses, draws FROM Player \
+              WHERE username='#{playerId}'")
+
     result = res.first if @db.affected_rows ==1
     post_getMyStats(result)
     return result
@@ -341,18 +310,15 @@ class Database
     # Returns: Array of Hashes -- results
     pre_getTopStats(n)
     results = []
-    begin
-      query = "SELECT username, points, wins, losses, draws \
-                        FROM Player \
-                        ORDER BY points"
-      if n>=0
-        query += " LIMIT 0,#{n}"
-      end
-      
-      res = @db.query(query)
-    rescue Mysql2::Error => e
-      raise e
+    
+    query = "SELECT username, points, wins, losses, draws \
+                      FROM Player \
+                      ORDER BY points"
+    if n>=0
+      query += " LIMIT 0,#{n}"
     end
+    res = @db.query(query)
+
     res.each {|h|
       results << h
     }
