@@ -140,15 +140,7 @@ class CmdView
           end
         })
     end
-  end
-  
-  def close
-    @bController.close if @bController
-    @controller.close
-  end
-  
-  def getCompeteOptions
-    connect
+        
     # get user to login
     @helper.getUserInput(
       "0 = Login, or 1 = Create Account", 
@@ -161,6 +153,16 @@ class CmdView
             createAccount
         end
       })
+    
+  end
+  
+  def close
+    @bController.close if @bController
+    @controller.close
+  end
+  
+  def getCompeteOptions
+    connect
     
     # Let the user choose the game to play
     games = @controller.getGames
@@ -255,8 +257,23 @@ class CmdView
   
   def showStatistics
     connect
-    stats = @controller.getTopStatistics
-    puts stats.to_s
+    topStats = @controller.getTopStatistics
+    myStats = @controller.getMyStatistics
+    puts "\n-=Top Player Stats=-"
+    topStats.each do |stat|
+      displayStat(stat)
+    end
+    puts "\n-=My Stats=-"
+    displayStat(myStats.to_s)
+    @helper.getUserInput(
+      "\nENTER to continue", 
+      [//],
+      Proc.new { |res| }
+    )
+  end
+  
+  def displayStat(stat)
+    puts stat.to_s
   end
   
 end

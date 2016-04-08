@@ -113,12 +113,28 @@ class MenuController
   
   # returns the stats for the current player
   def getMyStatistics
-    
+    result = {}
+    handleResponse(Proc.new {
+        @connection.call('getMyStatistics', @clientSettings.sessionId)
+      },
+      Proc.new do |data|
+        result = data
+      end
+    )
+    return result
   end
   
   # returns the top statistics for everyone
   def getTopStatistics
-    
+    result = {}
+    handleResponse(Proc.new {
+        @connection.call('getTopStatistics')
+      },
+      Proc.new do |data|
+        result = data
+      end
+    )
+    return result
   end
   
 end
