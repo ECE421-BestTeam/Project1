@@ -72,7 +72,7 @@ class GtkView
         @mainPanel.child = @gameBoardWidget
       end
     when :account
-      if @controller.clientSettings.sessionId.length < 1
+      if !@controller.testConnection || @controller.clientSettings.sessionId.length < 1
         @mainPanel.child = @loginWidget
         updateLoginWidget ''
       else
@@ -127,8 +127,17 @@ class GtkView
     playButton = Gtk::Button.new "Play"
     GtkHelper.applyEventHandler(playButton, :clicked) {startGame 'local'}
     @newGameWidget.pack_start playButton
+    @newGameWidget.pack_start Gtk::Label.new "Play online:"
     @serverGameListWidget = Gtk::Label.new "[server games go here]"
     @newGameWidget.pack_start @serverGameListWidget
+  end
+  
+  def updateNewGameWidget
+    if @controller.testConnection
+      @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
+    else
+      @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+    end
   end
   
   def initGameBoardWidget
@@ -173,6 +182,7 @@ class GtkView
   def initServerWidget
     @serverWidget = Gtk::VBox.new
     addressEntry = Gtk::Entry.new
+    addressEntry.text = @clientSettings.host + ":" + @clientSettings.port
     #TODO: add event handler
     @serverWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Server Address: " },
@@ -200,6 +210,15 @@ class GtkView
   end
   
   def updateStatsWidget
-    #TODO: update topPlayerStatsWidget and yourStatsWidget based on connection and account info
+    if controller.testConnection
+      @topPlayerStatsWidget.text = "TODO: top player stats"
+    else
+      @topPlayerStatsWidget.text = "Connect to a server to see top player stats."
+    end
+    if controller.testConnection && @controller.clientSettings.sessionId.length >= 1
+      @yourStatsWidget.text = "TODO: your stats"
+    else
+      @yourStatsWidget.text = "Log in or sign up to see your stats."
+    end
   end
 end
