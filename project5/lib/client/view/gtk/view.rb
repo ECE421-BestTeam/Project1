@@ -132,7 +132,20 @@ class GtkView
   end
   
   def initLoginWidget
-    @loginWidget = Gtk::Label.new "TODO: login widget"
+    @serverWidget = Gtk::VBox.new
+    usernameEntry = Gtk::Entry.new
+    @serverWidget.pack_start GtkHelper.createBox('H', 
+      [ { :type => Gtk::Label, :content => "Username: " },
+        { :widget => usernameEntry } ] )
+    passwordEntry = Gtk::Entry.new
+    @serverWidget.pack_start GtkHelper.createBox('H', 
+      [ { :type => Gtk::Label, :content => "Password: " },
+        { :widget => passwordEntry } ] )
+    loginButton = Gtk::Button.new "Login"
+    #TODO: add event handler
+    @serverWidget.pack_start loginButton
+    @loginResult = Gtk::Label.new ""
+    @serverWidget.pack_start @loginResult
   end
   
   def initLogoutWidget
@@ -146,7 +159,6 @@ class GtkView
   
   def initServerWidget
     @serverWidget = Gtk::VBox.new
-    @serverWidget.pack_start Gtk::Entry.new
     addressEntry = Gtk::Entry.new
     #TODO: add event handler
     @serverWidget.pack_start GtkHelper.createBox('H', 
