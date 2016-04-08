@@ -210,12 +210,12 @@ class GtkView
   end
   
   def updateStatsWidget
-    if controller.testConnection
+    if @controller.testConnection
       @topPlayerStatsWidget.text = "TODO: top player stats"
     else
       @topPlayerStatsWidget.text = "Connect to a server to see top player stats."
     end
-    if controller.testConnection && @controller.clientSettings.sessionId.length >= 1
+    if @controller.testConnection && @controller.clientSettings.sessionId.length >= 1
       @yourStatsWidget.text = "TODO: your stats"
     else
       @yourStatsWidget.text = "Log in or sign up to see your stats."
