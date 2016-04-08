@@ -151,7 +151,7 @@ module DatabaseContract
   
   def pre_updateGame(gameId, field, value)
     assert gameId.class == String, "gameID must be a String"
-    assert field.class == String && ['player1id', 'player2id', 'playerturn', 'gameboard', 'state'].include?(field.downcase), "must be a valid field in the games table"
+    assert ['player1_id', 'player2_id', 'state', 'game_model'].include?(field.downcase), "must be a valid field in the games table"
     # value types are protected by database
   end
   
