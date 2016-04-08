@@ -182,7 +182,7 @@ class GtkView
   def initServerWidget
     @serverWidget = Gtk::VBox.new
     addressEntry = Gtk::Entry.new
-    addressEntry.text = @controller.clientSettings.host + ":" + @controller.clientSettings.port
+    addressEntry.text = @controller.clientSettings.host + ":" + @controller.clientSettings.port.to_s
     #TODO: add event handler
     @serverWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Server Address: " },
