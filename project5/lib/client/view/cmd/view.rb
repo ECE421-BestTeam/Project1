@@ -202,8 +202,8 @@ class CmdView
         break
       rescue Exception => e
         puts "Account creation Failed.  Try again."
-        msg = e['message']
-        e['backtrace'].each do |level|
+        msg = e.message
+        e.backtrace.each do |level|
           msg += "\n\t#{level}"
         end
         puts msg
@@ -215,12 +215,16 @@ class CmdView
     result = ['', '']
     @helper.getUserInput(
       "Username:", 
-      [//],
-      Proc.new { |res| result[0] = res})
+      [/^.*$/],
+      Proc.new { |res| 
+        result[0] = res
+      })
     @helper.getUserInput(
       "Password:", 
-      [//],
-      Proc.new { |res| result[1] = res})
+      [/^.*$/],
+      Proc.new { |res| 
+        result[1] = res
+      })
     return result
   end
   
