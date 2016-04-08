@@ -45,7 +45,7 @@ class GtkView
     @mainPanel = Gtk::EventBox.new
     panels.add @mainPanel
     
-    window.add panels
+    @window.add panels
     
     initNewGameWidget
     initGameBoardWidget
@@ -62,6 +62,22 @@ class GtkView
   
   def switchContext(newContext)
     #TODO
+    return if @currentContext != nil && @currentContext == newContext
+    @mainPanel.remove @mainPanel.child
+    case newContext
+    when :game
+      if @game == nil
+        @mainPanel.child = @newGameWidget
+      else
+        @mainPanel.child = @gameBoardWidget
+      end
+    when :account
+    when :settings
+    when :stats
+    else
+    end
+    @currentContext = newContext
+    @window.show_all
   end
   
   # attempts to start game
@@ -104,6 +120,7 @@ class GtkView
   end
   
   def initGameBoardWidget
+    @gameBoardWidget == Gtk::Label.new "TODO: Game board widget"
   end
   
   def initLoginWidget
