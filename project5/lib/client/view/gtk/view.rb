@@ -25,7 +25,7 @@ class GtkView
     end
     @window.title = "Connect4.2"
     
-    menu = Gtk::VBox.new
+    panels = Gtk::VBox.new
     
     gameButton = Gtk::Button.new "Game"
     accountButton = Gtk::Button.new "Account"
@@ -40,10 +40,12 @@ class GtkView
         { :widget => accountButton },
         { :widget => serverButton },
         { :widget => statsButton } ] )
-    @window.add menu
+    panels.pack_start menu
     
     @mainPanel = Gtk::EventBox.new
-    @window.add @mainPanel
+    panels.add @mainPanel
+    
+    window.add panels
     
     initNewGameWidget
     initGameBoardWidget
