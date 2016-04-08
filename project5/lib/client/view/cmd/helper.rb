@@ -1,12 +1,17 @@
 
 class CmdHelper
   
-  def initialize(exitCallback)
+  def initialize(exitCallback, quitTrying = Proc.new {false})
     @exitCallback = exitCallback
+    @quitTrying = quitTrying
   end
 
   def logError (e)
     puts e
+  end
+  
+  def quit
+    @t.kill
   end
   
   # question - string that is printed
@@ -14,9 +19,11 @@ class CmdHelper
   # callback - called with a valid answer
   # recursive - boolean used to indicate if this is a recursive call
   def getUserInput(question, answers, callback, recursive = false)
+    @t = Thread.new {
+    return if @quitTrying.call
     puts question
     
-    ans = gets while !ans # sometimes gets gets messed up because of interrupt
+    ans = gets while !ans # sometimes gets gets messed up because of interrupt   
     ans = ans.strip
     
     # only wrap the callback on the first call
@@ -40,6 +47,8 @@ class CmdHelper
       puts "Invalid.  Should be one of: #{answers}"
       getUserInput(question, answers, callback, true)
     end
+    }
+    @t.join
   end
   
   def validAnswer(validAnswers, answer)

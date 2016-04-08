@@ -14,13 +14,17 @@ class CmdView
     @helper = CmdHelper.new(Proc.new {exitMenu})
     @mode = :options #can be :options, :startGame
         
+    setTrap
+    
+    loop
+  end
+  
+  def setTrap
     trap("SIGINT") do
       close
       puts "\nAbortted"
       exitMenu
     end
-    
-    loop
   end
   
   def exitMenu
@@ -38,14 +42,15 @@ class CmdView
 #    @mode = :playingGame
     
     # sends options and create a custom boardController
-    bController = @controller.getBoardController(@boardControllerType, @gameSettings)
+    @bController = @controller.getBoardController(@boardControllerType, @gameSettings)
     
     # start a board view
     ViewCmdBoard.new(
-      bController, 
+      @bController, 
       Proc.new do |model|
         # exit game callback
         puts "\n"
+        setTrap
       end
     )
   end
@@ -112,23 +117,27 @@ class CmdView
   end
   
   def connect
-    close
     # get server address if current one is invalid
     while !@controller.connect
       @helper.getUserInput(
         "Server at #{@controller.clientSettings.serverAddress} not responding. Enter a new serverAddress.", 
         [//],
-        Proc.new { |res| @controller.clientSettings.serverAddress = res if res.length > 0})
+        Proc.new { |res| 
+          if res.length > 0
+            @controller.clientSettings.serverAddress = res
+            @controller.clientSettings.save
+          end
+        })
     end
   end
   
   def close
+    @bController.close
     @controller.close
   end
   
   def getCompeteOptions
     connect
-    
     # get user to login
     @helper.getUserInput(
       "0 = Login, or 1 = Create Account", 
@@ -166,7 +175,6 @@ class CmdView
     end
     
     @gameSettings = selectedGame.id if selectedGame
-    close
   end
   
   def login
@@ -226,7 +234,7 @@ class CmdView
   def showStatistics
     connect
     stats = @controller.getTopStatistics
-    close
+    puts stats.to_s
   end
   
 end

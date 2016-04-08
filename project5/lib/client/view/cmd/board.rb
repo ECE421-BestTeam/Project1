@@ -17,7 +17,13 @@ class ViewCmdBoard
     @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
 
-    @helper = CmdHelper.new(Proc.new {exitGame})
+    @helper = CmdHelper.new(Proc.new {exitGame}, Proc.new {@gameover})
+    trap("SIGINT") do
+      puts "\nExitGame"
+      @helper.quit
+      exitGame
+    end
+    
     
     @gameover = false
     @controller.registerRefresh(method(:refresh))
