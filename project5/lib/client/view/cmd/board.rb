@@ -40,13 +40,13 @@ class ViewCmdBoard
     puts boardToString
     
     # Check if the game is over
-    if @game.winner != nil
+    if @game.winner != 0
       puts "--- GAME OVER ---"
-      if @game.winner == :draw
+      if @game.winner == 3
         puts "Draw!"
-      elsif @game.winner == :player1
+      elsif @game.winner == 1
         puts "Player 1 wins!"
-      elsif @game.winner == :player2
+      elsif @game.winner == 2
         puts "Player 2 wins!"
       end
         exitGame

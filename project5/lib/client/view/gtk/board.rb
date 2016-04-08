@@ -89,17 +89,17 @@ class ViewGtkBoard
     end
     
     # check for victory (if so do something like switch to end screen)
-    if game.winner == nil
+    if game.winner == 0
       refreshBoard(@controller.getNextActiveState, true) if !recursive
     else
       # else we have a winner
       message = "Draw!"
       if (@controller.settings.players == 1)
-        message = "Player wins!" if game.winner == :player1
-        message = "Computer wins!" if game.winner == :player2
+        message = "Player wins!" if game.winner == 1
+        message = "Computer wins!" if game.winner == 2
       else
-        message = "Player 1 wins!" if game.winner == :player1
-        message = "Player 2 wins!" if game.winner == :player2
+        message = "Player 1 wins!" if game.winner == 1
+        message = "Player 2 wins!" if game.winner == 2
       end
 #      @window.destroy
       GtkHelper.popUp("Game Over", message, Proc.new { @window.destroy })
