@@ -72,6 +72,11 @@ class GtkView
         @mainPanel.child = @gameBoardWidget
       end
     when :account
+      if @controller.clientSettings.sessionId.length < 1
+        @mainPanel.child = @loginWidget
+      else
+        @mainPanel.child = @logoutWidget
+      end
     when :settings
     when :stats
     else
@@ -104,9 +109,9 @@ class GtkView
     @newGameWidget.pack_start players
     
     victoryNormal = Gtk::RadioButton.new "Normal"
-    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@controller.victoryType = 'victoryNormal'}
+    GtkHelper.applyEventHandler(victoryNormal, :clicked) {@gameSettings.victoryType = 'victoryNormal'}
     victoryOtto = Gtk::RadioButton.new victoryNormal, "OTTO/TOOT"
-    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@controller.victoryType = 'victoryOtto'}
+    GtkHelper.applyEventHandler(victoryOtto, :clicked) {@gameSettings.victoryType = 'victoryOtto'}
     victory = GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Game Mode: " },
         { :widget => victoryNormal },
@@ -114,7 +119,7 @@ class GtkView
     @newGameWidget.pack_start victory
     
     playButton = Gtk::Button.new "Play"
-    GtkHelper.applyEventHandler(playButton, :clicked) {startGame}
+    GtkHelper.applyEventHandler(playButton, :clicked) {startGame 'local'}
     @newGameWidget.pack_start playButton
     @serverGameListWidget = Gtk::Label.new "[server games go here]"
     @newGameWidget.pack_start @serverGameListWidget
@@ -125,9 +130,16 @@ class GtkView
   end
   
   def initLoginWidget
+    @loginWidget = Gtk::Label.new "TODO: login widget"
   end
   
   def initLogoutWidget
+    @logoutWidget = Gtk::VBox.new
+    @loggedInMessage = Gtk::Label.new "Logged in as [username]"
+    button = Gtk::Button.new "Log out"
+    GtkHelper.applyEventHandler(button, :clicked) {@controller.logout}
+    @logoutWidget.pack_start @loggedInMessage
+    @logoutWidget.pack_start button
   end
   
   def initServerWidget
