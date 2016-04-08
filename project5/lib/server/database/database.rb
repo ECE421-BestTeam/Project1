@@ -31,7 +31,7 @@ class Database
 #      )
 #      @db= Mysql.new("localhost", 'root', nil, 'ece421grp4', nil)
 #    rescue Mysql::Error => e
-#      puts e.error
+#      s e.error
     rescue Mysql2::Error => e
       puts "Please Ensure #{$dbSettingsFile} is populated correctly."
       raise e
@@ -136,7 +136,9 @@ class Database
     @db.query("INSERT INTO Player(username, password, points, wins, losses, draws, current_session_id) \
                   VALUES ( '#{username}', '#{password}',0, 0, 0, 0, '')" )
     @db.query("COMMIT")
-    
+    if username.empty?
+      raise ArgumentError, "Username is empty"
+    end
     sess_id = assignNewSessionID(username)
 
     post_createPlayer(sess_id)
@@ -148,7 +150,9 @@ class Database
     # Updates player sessionID and Session table
     # Return Boolean -- true or false
     pre_checklogin(username, password)
-    result = ""
+    if username.empty?
+      raise ArgumentError, "username is empty"
+    end
     
     @db.query("SELECT * from Player WHERE username='#{username}' and password='#{password}'")
     if @db.affected_rows == 1

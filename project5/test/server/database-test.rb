@@ -27,17 +27,20 @@ class ServerTest < Test::Unit::TestCase
   
   def test_registerServer
     assert @db.registerServer("server1").is_a? Array
+    @db.remove("Server", "server1")
   end
   
   def test_setServerData
     @db.registerServer("setAddress")
     @db.setServerData("setAddress", Hash.new)
+    @db.remove("Server", "setAddress")
   end
   
   def test_getServerData
     @db.registerServer("setAddress2")
     @db.setServerData("setAddress2", Hash.new)
     assert @db.getServerData("setAddress2").is_a? Hash
+    @db.remove("Server", "setAddress2")
   end
   
   def test_getLeastActiveServer
@@ -48,16 +51,19 @@ class ServerTest < Test::Unit::TestCase
   def test_getServerGames
     @db.registerServer("server2")
     assert @db.getServerGames("server2").is_a? Array
+    @db.remove("Server", "server2")
   end
 
   def test_createPlayer
     assert @db.createPlayer("user1", "pswd1").is_a? String
+    @db.remove("Player", "user1")
   end
   
   def test_checkLogin
     @db.createPlayer("newUser", "newpswd")
     session = @db.checkLogin("newUser", "newpswd")
     assert session.is_a? String
+    @db.remove("Player", "newUser")
   end
 
   def test_newGame
@@ -66,6 +72,9 @@ class ServerTest < Test::Unit::TestCase
     session = @db.createPlayer("user3", "pswd3")
     gameId= @db.newGame(session, game)
     assert gameId.is_a? String
+    @db.remove("Server", "newServer")
+    @db.remove("Player", "user3")
+    @db.remove("Game", gameId)
   end
   
   def test_joinGame
@@ -77,6 +86,9 @@ class ServerTest < Test::Unit::TestCase
     j = @db.joinGame(othersession, othergameId)
     assert j.is_a? Hash
     assert j['game_model'].is_a? GameModel
+    @db.remove("Player", "joinplayer")
+    @db.remove("Player","otherplayer")
+    @db.remove("Game", othergameId)
   end
 
   def test_getGame
@@ -88,20 +100,26 @@ class ServerTest < Test::Unit::TestCase
     g = @db.getGame(gameId)
     assert g.is_a? Hash
     assert g['game_model'].is_a? GameModel
+    
+    @db.remove("Server", "server1")
+    @db.remove("Player","user4")
+    @db.remove("Game", gameId)
   end
 
   def test_updateGame
     game = GameModel.new(GameSettingsModel.new)
     session = @db.createPlayer("user5", "pswd5")
     gameId= @db.newGame(session, game)
-
   
     @db.updateGame(gameId, "state", "saved")
+    @db.remove("Player","user5")
+    @db.remove("Game", gameId)
   end
 
   def test_getMyStats
     session = @db.createPlayer("user2", "pswd2")
     assert @db.getMyStats(session).is_a? Hash
+    @db.remove("Player","user2")
   end
 
   def test_getTopStats
