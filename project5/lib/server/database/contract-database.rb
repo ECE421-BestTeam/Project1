@@ -162,7 +162,7 @@ module DatabaseContract
   
   def pre_updateStat (sessionId, stat, delta)
     assert sessionId.class == String, "sessionId must be a String"
-    assert stat.class == String && ["wins", "losses", "draws"].include?(stat), "stat must be a String and be wins losses or draws"
+    assert stat.class == String && ["wins", "losses", "draws"].include?(stat), "stat must be a String and be wins losses or draws, not #{stat}"
     assert delta.class == Fixnum, "delta must be an integer"
   end
   

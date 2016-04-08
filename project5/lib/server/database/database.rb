@@ -327,11 +327,11 @@ class Database
     @db.query("START TRANSACTION");
     @db.query("UPDATE Player \
                 SET #{stat}=#{stat}+ #{delta} \
-                WHERE player_id='#{playerId}'")
-    @db.query("COMMIT")
+                WHERE username='#{playerId}'")
     @db.query("UPDATE Player \
                 Set points=3*wins+draws \
-                WHERE player_id='#{playerId}'")
+                WHERE username='#{playerId}'")
+    @db.query("COMMIT")
     post_updateStat
   end
   

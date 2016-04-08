@@ -44,10 +44,10 @@ module VictoryContract
     assert result.class == Fixnum && [0, 1, 2, 3].include?(result), "result must be a Fixnum.  0=noWinner, 1=player1, 2=player2, 3=draw."
   end
   
-  def pre_boardEmpty(board)
+  def pre_boardFull(board)
     assert board.class == Array && board.size > 0 , "board must be an array (size greater than 0) of arrays (of equal sizes, greater than 0)."
   end
   
-  def post_boardEmpty
+  def post_boardFull
   end
 end

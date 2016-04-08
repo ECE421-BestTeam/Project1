@@ -35,7 +35,7 @@ class GameModel
   def placeToken (col)
     pre_placeToken(col)
     
-    raise GameOverError, "Game is over!" if @winner != nil
+    raise GameOverError, "Game is over!" if @winner != 0
     
     freeRow = false
     

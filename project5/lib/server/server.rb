@@ -159,7 +159,8 @@ class Server
     
     @server.add_handler('registerReciever') do |sessionId, gameId, clientAddress|
       getResult(Proc.new {
-        callRefresh(clientAddress, @games[gameId]['game'])
+        #test the connection
+        getConnection(clientAddress)
         @games[gameId][sessionId] = clientAddress
       })
     end
@@ -168,13 +169,13 @@ class Server
       getResult(Proc.new {
         game = @games[gameId]['game']
         #if it is the requester's turn
-        if sessionId == @games[gameId]["player#{(game['game'].turn % 2) +1}"]['session']
+        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
           game.placeToken(col)
           if game.winner != 0
             # do finishing stuff
             gameEnd(gameId, game.winner)
           else
-            @db.updateGame(gameId, 'game_model', gameEntry['game'])
+            @db.updateGame(gameId, 'game_model', game)
             sendRefresh(gameId)
           end
         end
@@ -185,11 +186,17 @@ class Server
   
   def gameEnd(gameId, winner)
     if winner == 3
-      @db.updateStat(@games[gameId]['player1']['session'], 'draw', 1)
-      @db.updateStat(@games[gameId]['player2']['session'], 'draw', 1)
+      sessionId = @games[gameId]['player1']['session']
+      @db.updateStat(sessionId, 'draws', 1) if sessionId
+      
+      sessionId = @games[gameId]['player2']['session']
+      @db.updateStat(sessionId, 'draws', 1) if sessionId
     else
-      @db.updateStat(@games[gameId]["player#{winner}"]['session'], 'wins', 1)
-      @db.updateStat(@games[gameId]["player#{(winner%2) + 1}"]['session'], 'losses', 1)
+      sessionId = @games[gameId]["player#{winner}"]['session']
+      @db.updateStat(sessionId, 'wins', 1) if sessionId
+
+      sessionId = @games[gameId]["player#{(winner%2) + 1}"]['session']
+      @db.updateStat(sessionId, 'losses', 1) if sessionId
     end
     @db.remove('Game', gameId)
     @games.delete(gameId)
@@ -204,7 +211,15 @@ class Server
   end
   
   def callRefresh(address, game)
-    if address.class == String
+    begin
+      getConnection(address).call('refresh', game)
+    rescue Exception => e
+      puts "Error sending refresh to #{address}"
+    end
+  end
+  
+  def getConnection(address)
+        if address.class == String
       add = address.split(':')
       host = add[0]
       port = add[1]
@@ -215,9 +230,9 @@ class Server
     host = 'localhost' if host == @host
     begin
       con = XMLRPC::Client.new(host, nil, port)
-      con.call('refresh', game)
+      return con
     rescue Exception => e
-      puts "Error sending refresh to #{address}"
+      puts "Error sending connecting to #{address}"
       puts e
     end
   end

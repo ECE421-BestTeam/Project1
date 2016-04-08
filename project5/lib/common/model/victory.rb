@@ -1,3 +1,4 @@
+require 'xmlrpc/client'
 require_relative './contract-victory'
 
 
@@ -69,10 +70,10 @@ class VictoryModel
     # p2 victory
     elsif checkArrays(board.transpose, @p2win) || checkArrays(board, @p2win) || checkArrays(diags, @p2win)
       result = 2
-    elsif boardEmpty(board)
-      result = 0
-    else
+    elsif boardFull(board)
       result = 3
+    else
+      result = 0
     end
 
     
@@ -94,17 +95,17 @@ class VictoryModel
     return false
   end
   
-  def boardEmpty(board)
-    pre_boardEmpty(board)
+  def boardFull(board)
+    pre_boardFull(board)
     board.each_index { |c|
       board[c].each_index {|r|
-        if board[c][r].nil?
-          return true
+        if board[c][r] != 0
+          return false
         end
       }
     }
-    post_boardEmpty
-    return false
+    post_boardFull
+    return true
   end
   
   def makeDiags(arrs)

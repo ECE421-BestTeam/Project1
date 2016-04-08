@@ -2,6 +2,7 @@ require 'test/unit'
 require 'socket'
 require_relative '../../lib/client/model/client-settings'
 require_relative '../../lib/common/model/game-settings'
+require_relative '../../lib/common/model/game'
 require_relative '../../lib/client/controller/menu'
 require_relative '../../lib/server/server'
 require_relative '../../lib/server/database/database'
@@ -85,12 +86,22 @@ class ServerTest < Test::Unit::TestCase
     @board2 = @client1.getBoardController('online', gameId)
     puts 'GOT CLIENT2 BOARD CONTROLLER'
     
-#    assert_equal(
-#      true, 
-#      @client1.registerRefresh( Proc.new { |data|
-#          puts data
-#      })
-#    )
+    @refresh1 = Proc.new { |data|
+        assert data.class == GameModel
+    }
+    @refresh2 = Proc.new { |data|
+        assert data.class == GameModel
+    }
+    
+    @board1.registerRefresh(@refresh1)
+    @board2.registerRefresh(@refresh2)
+    puts 'REGISTERED REFRESHES'
+    
+    @refresh1 = Proc.new { |data|
+      assert false
+    }
+    
+    @board1.placeToken(1)
     
   end
  
