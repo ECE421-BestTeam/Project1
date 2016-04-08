@@ -297,8 +297,3 @@ class Server
   end
 
 end
-
-(Server.new).start
- while true 
-   sleep 100
- end

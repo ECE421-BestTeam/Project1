@@ -362,7 +362,7 @@ class Database
     return result
   end
   
-  def getTopStats(n=0)
+  def getTopStats(n=10)
     # Retrieves the top n league stats
     # else if n==0 then display all league stats
     # Hash has keys: username, points, wins, losses, draws
