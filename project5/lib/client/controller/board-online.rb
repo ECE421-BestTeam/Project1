@@ -18,6 +18,7 @@ class BoardOnlineController
     startReciever
     
     # get game
+    @gameId = ''
     startGame settings[:gameSettings]
     
   end
@@ -27,9 +28,11 @@ class BoardOnlineController
     while true
       begin
         @reciever = XMLRPC::Server.new(@recieverPort)
+        puts "receiver listening on #{@recieverPort}"
         break
       rescue Errno::EADDRINUSE
         @recieverPort += 1
+        puts "incrementing receiver port to #{@recieverPort}"
         if @recieverPort > 50550
           raise IOError, "Can not start reciever."
         end
@@ -37,8 +40,20 @@ class BoardOnlineController
     end
     
     @reciever.add_handler('refresh') do |model|
-      @resfresh.call model
+      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+      begin
+        @refresh.call model
+      rescue Exception => e
+        puts 'Refresh Failed:'
+        msg = e['message']
+        e['backtrace'].each do |level|
+          msg += "\n\t#{level}"
+        end
+        puts msg
+      end
+      true
     end
+    
     @recieverThread = Thread.new do
       @reciever.serve
     end
@@ -56,15 +71,16 @@ class BoardOnlineController
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
-    handleResponse(
-      @connection.call('registerReciever', @clientSettings.sessionId, @gameId, local_ip)
-    )
+    handleResponse(Proc.new {
+      @connection.call('getRefresh', @clientSettings.sessionId, @gameId, @localPlayers[0])
+    })
   end
   
   # either starts a new game or joins an existing one
   def startGame(gameSettings)
     if gameSettings.class == String
-      joinGame(gameSettings)
+      @gameId = gameSettings
+      joinGame(@gameId)
     else 
       newGame(gameSettings)
     end
@@ -72,31 +88,33 @@ class BoardOnlineController
   
   def newGame(gameSettings)
     # We want to create a new game
-    handleResponse(
-      @connection.call('newGame', @clientSettings.sessionId, gameSettings),
+    handleResponse(Proc.new {
+        @connection.call('newGame', @clientSettings.sessionId, gameSettings)
+      },
       Proc.new do |data|
+        @gameId = data
         # we were returned the new game ID
-        joinGame(data)
       end
     )
+    joinGame(@gameId)
   end
   
   def joinGame(gameId)
-    handleResponse(
-      @connection.call('joinGame', @clientSettings.sessionId, gameId),
-      Proc.new do |data|
-        @gameId = gameId
+    handleResponse(Proc.new {
+        @connection.call('joinGame', @clientSettings.sessionId, gameId, {'host'=>local_ip,'port'=>@recieverPort})
+      },
+      Proc.new { |data|
         # we were returned the player Number
         @localPlayers = [data] 
-      end
+      }
     )
   end
   
   #called when a player wishes to place a token
   def placeToken (col)
-    handleResponse(
+    handleResponse(Proc.new {
       @connection.call('placeToken', @clientSettings.sessionId, @gameId, col)
-    )
+    })
   end
   
 end

@@ -54,7 +54,7 @@ class ViewCmdBoard
     end
 
     # if it is a player turn, let them take their turn!
-    playerTurn = @game.turn % 2
+    playerTurn = (@game.turn % 2) + 1
     
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn + 1}'s turn:"

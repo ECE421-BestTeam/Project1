@@ -54,7 +54,7 @@ class ServerTest < Test::Unit::TestCase
     sett.port = @port1
     @client1 = MenuController.new(sett)
     @client1.connect
-    puts 'STARTED CLIENT1'
+    puts '------------------------------------------------------STARTED CLIENT1'
       
     # start the client2 controller
     sett = ClientSettingsModel.new
@@ -62,48 +62,96 @@ class ServerTest < Test::Unit::TestCase
     sett.port = @port2
     @client2 = MenuController.new(sett)
     @client2.connect
-    puts 'STARTED CLIENT2'
+    puts '------------------------------------------------------STARTED CLIENT2'
     
     @client1.createPlayer($acc2[:username], $acc2[:password])
     @client1.createPlayer($acc1[:username], $acc1[:password])
-    puts 'CLIENT1 CREATED ACCOUNTS'
+    puts '------------------------------------------------------CLIENT1 CREATED ACCOUNTS'
 
     @client2.login($acc2[:username], $acc2[:password])
-    puts 'CLIENT2 LOGGED IN'
+    puts '------------------------------------------------------CLIENT2 LOGGED IN'
   end
   
   def test_playGame
    
     gSett = GameSettingsModel.new(2, 'victoryNormal')
     @board1 = @client1.getBoardController('online', gSett)
-    gameId = @board1.implementation.gameId
+    
+    i = 0
+    while (gameId = @board1.implementation.gameId).length == 0
+      sleep 0
+      i += 1
+      raise Exception, "could not get gameId" if i > 25
+    end
+      
     @removes.push(['Game', gameId])
-    puts 'GOT CLIENT1 BOARD CONTROLLER'
+    puts '------------------------------------------------------GOT CLIENT1 BOARD CONTROLLER'
     
     games = @client2.getGames    
-    puts 'GOT GAMES'
+    puts '------------------------------------------------------GOT GAMES'
     
-    @board2 = @client1.getBoardController('online', gameId)
-    puts 'GOT CLIENT2 BOARD CONTROLLER'
+    @board2 = @client2.getBoardController('online', gameId)
+        i = 0
+    while (gameId = @board2.implementation.gameId).length == 0
+      sleep 0
+      i += 1
+      raise Exception, "could not get gameId" if i > 25
+    end
+    puts '------------------------------------------------------GOT CLIENT2 BOARD CONTROLLER'
     
+    @turn = [0, -1, -1]
     @refresh1 = Proc.new { |data|
-        assert data.class == GameModel
+      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY1'
+      assert data.class == GameModel
+      @turn[1] += 1
+      assert data.turn == @turn[1], "failed on turn #{@turn[1]}"
     }
     @refresh2 = Proc.new { |data|
-        assert data.class == GameModel
+      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY2'
+      assert data.class == GameModel
+      @game2 = data
+      @turn[2] += 1
+      assert data.turn == @turn[2], "failed on turn #{@turn[2]}"
     }
     
     @board1.registerRefresh(@refresh1)
     @board2.registerRefresh(@refresh2)
-    puts 'REGISTERED REFRESHES'
-    
-    @refresh1 = Proc.new { |data|
-      assert false
-    }
+    puts '------------------------------------------------------REGISTERED REFRESHES'
     
     @board1.placeToken(1)
     
+    waitForTurnChange(@turn[1], 1)
+    assert_raise(ArgumentError) do
+      @board1.placeToken(1)  
+    end
+    
+    waitForTurnChange(@turn[2], 2)
+    @board2.placeToken(2)
+    waitForTurnChange(@turn[1], 1)
+    @board1.placeToken(1)
+    waitForTurnChange(@turn[2], 2)
+    @board2.placeToken(2)
+    waitForTurnChange(@turn[1], 1)
+    @board1.placeToken(1)
+    waitForTurnChange(@turn[2], 2)
+    @board2.placeToken(2)
+    waitForTurnChange(@turn[1], 1)
+    @board1.placeToken(1)
+    
+    waitForTurnChange(@turn[2], 2)
+    assert_raise(GameOverError) do
+      @board2.placeToken(2)  
+    end
   end
  
+  def waitForTurnChange(originalTurn, player)
+    i = 0
+    while true
+      sleep 0.5
+      break if @turn[player] > originalTurn
+      raise Exception, "turn did not cahnge from #{originalTurn} for player#{player}" if i > 25
+      i += 1
+    end
+  end
   
 end

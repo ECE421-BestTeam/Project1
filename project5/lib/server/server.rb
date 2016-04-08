@@ -124,14 +124,14 @@ class Server
     getPlayerNumber = Proc.new do |gameEntry, username|
       if gameEntry['player1_id'] == username
         1
-      elsif dagameEntryta['player2_id'] == username
+      elsif gameEntry['player2_id'] == username
         2
       else
         raise ArgumentError, "Player is not part of current game."
       end
     end
     
-    @server.add_handler('joinGame') do |sessionId, gameId|
+    @server.add_handler('joinGame') do |sessionId, gameId, clientAddress|
       getResult(Proc.new {
         gameEntry = @db.joinGame(sessionId, gameId)
         if gameEntry['server_address'] == @address
@@ -146,7 +146,8 @@ class Server
             }
           end
           @games[gameId]["player#{playerNumber}"]['session'] = sessionId
-          playerNumber - 1 # board-online is 0-indexed
+          @games[gameId]["player#{playerNumber}"]['address'] = clientAddress
+          playerNumber
         else
           # another server is hosting
           {
@@ -157,11 +158,10 @@ class Server
       })
     end
     
-    @server.add_handler('registerReciever') do |sessionId, gameId, clientAddress|
+    @server.add_handler('getRefresh') do |sessionId, gameId, player|
       getResult(Proc.new {
-        #test the connection
-        getConnection(clientAddress)
-        @games[gameId][sessionId] = clientAddress
+        callRefresh(@games[gameId]["player#{player}"]['address'], @games[gameId]['game'])
+        true
       })
     end
     
@@ -176,8 +176,8 @@ class Server
             gameEnd(gameId, game.winner)
           else
             @db.updateGame(gameId, 'game_model', game)
-            sendRefresh(gameId)
           end
+          sendRefresh(gameId)
         end
         true
       })
@@ -219,7 +219,7 @@ class Server
   end
   
   def getConnection(address)
-        if address.class == String
+    if address.class == String
       add = address.split(':')
       host = add[0]
       port = add[1]

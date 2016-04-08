@@ -54,8 +54,9 @@ class MenuController
   
   # on success will set the sessionID
   def createPlayer(username, password)
-    handleResponse(
-      @connection.call('createPlayer', username, password),
+    handleResponse(Proc.new {
+        @connection.call('createPlayer', username, password)
+      },
       Proc.new do |data|
         @clientSettings.sessionId = data
         @clientSettings.username = username
@@ -65,8 +66,9 @@ class MenuController
   
   # on success will set the sessionID
   def login(username, password)
-    handleResponse(
-      @connection.call('login', username, password),
+    handleResponse(Proc.new {
+        @connection.call('login', username, password)
+      },
       Proc.new do |data|
         @clientSettings.sessionId = data
         @clientSettings.username = username
@@ -76,8 +78,9 @@ class MenuController
   
   # on success no exceptions are thrown
   def logout
-    handleResponse(
-      @connection.call('logout', @clientSettings.sessionId),
+    handleResponse(Proc.new {
+        @connection.call('logout', @clientSettings.sessionId)
+      },
       Proc.new do |data|
         if data 
           @clientSettings.sessionId = ''
@@ -92,8 +95,9 @@ class MenuController
   # arrays contain gameIds
   def getGames
     result = {}
-    handleResponse(
-      @connection.call('getGames', @clientSettings.sessionId),
+    handleResponse(Proc.new {
+        @connection.call('getGames', @clientSettings.sessionId)
+      },
       Proc.new do |data|
         result = data
       end

@@ -255,8 +255,10 @@ class Database
         freePlayerSlot = nil
         if game['player2_id'] == ""
           freePlayerSlot = '2'
+          game['player2_id'] = playerId
         elsif game['player1_id'] == ""
           freePlayerSlot = '1'
+          game['player1_id'] = playerId
         end
         
         if freePlayerSlot
@@ -270,8 +272,8 @@ class Database
       
       if canJoin 
         if game['server_address'].downcase ==""
-        server_address = getLeastActiveServer()
-        @db.query("UPDATE Game \
+          server_address = getLeastActiveServer()
+          @db.query("UPDATE Game \
                     SET server_address =  \
                     WHERE server_address='#{server_address}'")
           game['server_address'] = server_address

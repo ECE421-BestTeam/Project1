@@ -1,6 +1,6 @@
 require 'test/unit'
-require_relative '../../lib/model/game'
-require_relative '../../lib/model/settings'
+require_relative '../../../lib/common/model/game'
+require_relative '../../../lib/common/model/game-settings'
 
 class GameTest < Test::Unit::TestCase
   
@@ -13,7 +13,7 @@ class GameTest < Test::Unit::TestCase
   
   def test_wait_finishes_2P
     #should finish
-    g = GameModel.new(SettingsModel.new 2)
+    g = GameModel.new(GameSettingsModel.new 2)
     # 1st player turn
     p1 = Thread.new {
       g.placeToken(0)
@@ -25,7 +25,7 @@ class GameTest < Test::Unit::TestCase
   
   def test_wait_doesnt_finish_2P
     #should not finish because 2nd player did not take turn
-    g = GameModel.new(SettingsModel.new 2)
+    g = GameModel.new(GameSettingsModel.new 2)
     # 1st player turn
     p1 = Thread.new {
       g.placeToken(0) 

@@ -21,12 +21,25 @@ module OnlineHelper
     connect
   end
   
-  def handleResponse(response, success = Proc.new {|data|}, postRedirect = Proc.new {})
+  def handleResponse(responseFn, success = Proc.new {|data|})
+    while @busy
+      sleep 0.2
+    end
+    @busy = true
+    handleResponse2(responseFn, success)
+    @busy = false
+  end
+  
+  def handleResponse2(responseFn, success, recur = 0)
+    if recur > 5
+      raise IOError, "too many redirects"
+    end
+    response = responseFn.call
     data = response['data']
     case response['status']
       when 'redirect'
         redirect(data)
-        postRedirect.call
+        handleResponse2(responseFn, success, recur + 1)
       when 'exception'
         exClass = Exception
         begin
