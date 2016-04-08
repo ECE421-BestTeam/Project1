@@ -53,7 +53,7 @@ class MenuController
   
   
   # on success will set the sessionID
-  def createPlayer(username, password)
+  def createAccount(username, password)
     handleResponse(Proc.new {
         @connection.call('createPlayer', username, password)
       },

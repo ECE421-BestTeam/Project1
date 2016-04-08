@@ -44,7 +44,7 @@ class CmdHelper
     elsif (a = validAnswer(answers, ans))[0]
       callback.call(a[1])
     else
-      puts "Invalid.  Should be one of: #{answers}"
+      puts "Invalid.  Should match one of: #{answers}"
       getUserInput(question, answers, callback, true)
     end
     }
@@ -56,7 +56,7 @@ class CmdHelper
       if validAns.class == String
         return [true, answer] if validAns == answer
       elsif validAns.class == Regexp
-        a = pattern.match(answer)
+        a = String(validAns.match(answer))
         return [true, a] if a
       elsif validAns.class == Fixnum
         begin

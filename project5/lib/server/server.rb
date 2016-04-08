@@ -72,6 +72,14 @@ class Server
     
     # attempts to create a player
     # returns the session id on success
+    @server.add_handler('testConnection') do ||
+      getResult(Proc.new {
+        true
+      })
+    end
+    
+    # attempts to create a player
+    # returns the session id on success
     @server.add_handler('createPlayer') do |username, password|
       getResult(Proc.new {
         @db.createPlayer(username, password)

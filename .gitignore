@@ -10,3 +10,4 @@ nbproject
 /project2/lib/delay/ext/Makefile
 temp
 /project5/lib/server/database/db-settings.json
+/project5/lib/client/model/clientSaveData.json

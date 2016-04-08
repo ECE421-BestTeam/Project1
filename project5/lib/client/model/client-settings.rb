@@ -7,7 +7,7 @@ class ClientSettingsModel
   
   attr_accessor :host, :port, :sessionId, :username
   
-  $saveFile = "../data/clientSaveData.json"
+  $saveFile = "#{File.expand_path File.dirname(__FILE__)}/clientSaveData.json"
   
   # loads the settings from the save file (or enters defaults
   def initialize
@@ -15,7 +15,7 @@ class ClientSettingsModel
 
     # defaults
     @host = "localhost"
-    @port = 4222
+    @port = 50500
     @sessionId = ''
     @username = ''
 

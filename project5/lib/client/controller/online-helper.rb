@@ -7,6 +7,20 @@ module OnlineHelper
     @connection = XMLRPC::Client.new(@clientSettings.host, nil, @clientSettings.port)
   end
   
+  def testConnection
+    begin
+      handleResponse(Proc.new {
+          @connection.call('testConnection')
+        },
+        Proc.new do |data|
+          return data
+        end
+      )
+    rescue 
+      return false
+    end
+  end
+  
   def redirect(newAddress)
     if newAddress.class == String
       add = newAddress.split(':')

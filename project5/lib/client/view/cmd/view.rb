@@ -118,14 +118,18 @@ class CmdView
   
   def connect
     # get server address if current one is invalid
-    while !@controller.connect
+    while !@controller.testConnection
       @helper.getUserInput(
-        "Server at #{@controller.clientSettings.serverAddress} not responding. Enter a new serverAddress.", 
-        [//],
+        "Server at #{@controller.clientSettings.host}:#{@controller.clientSettings.port} not responding. Enter a new serverAddress:", 
+        [/.*:[0-9]*$/],
         Proc.new { |res| 
           if res.length > 0
-            @controller.clientSettings.serverAddress = res
-            @controller.clientSettings.save
+            add = res.split(':')
+            host = add[0]
+            port = add[1]
+            @controller.clientSettings.host = host
+            @controller.clientSettings.port = port
+            @controller.clientSettings.save 
           end
         })
     end
@@ -143,11 +147,11 @@ class CmdView
       "0 = Login, or 1 = Create Account", 
       [0, 1],
       Proc.new { |res| 
-        case
+        case res
           when 0
             login
           when 1
-            createPlayer
+            createAccount
         end
       })
     
@@ -191,12 +195,18 @@ class CmdView
   
   def createAccount
     while true
+      puts 'Please enter a new username and password.'
       creds = getCreds
       begin
         @controller.createAccount(creds[0], creds[1])
         break
       rescue Exception => e
-        puts "Account creation Failed.  Try again. #{e}"
+        puts "Account creation Failed.  Try again."
+        msg = e['message']
+        e['backtrace'].each do |level|
+          msg += "\n\t#{level}"
+        end
+        puts msg
       end
     end
   end
