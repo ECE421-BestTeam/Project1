@@ -1,4 +1,8 @@
 require_relative './lib/server/server'
 
 # starts a server
-Server.new
+s = Server.new
+s.start
+while true
+	sleep 100000
+end
