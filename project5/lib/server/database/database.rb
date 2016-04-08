@@ -303,9 +303,12 @@ class Database
     # Updates a field in the Game table with value
     # Returns: --
     pre_updateGame(gameId, field, value)
+    if field == 'game_model'
+      value = serialize(value)
+    end
     
     @db.query("START TRANSACTION")
-    @db.query("UPDATE Game SET #{field}='saved', last_update=curdate() WHERE game_id='#{gameId}'")
+    @db.query("UPDATE Game SET #{field}='#{value}', last_update=curdate() WHERE game_id='#{gameId}'")
     @db.query("COMMIT")
   
     post_updateGame
