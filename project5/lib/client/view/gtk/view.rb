@@ -74,13 +74,17 @@ class GtkView
     when :account
       if @controller.clientSettings.sessionId.length < 1
         @mainPanel.child = @loginWidget
+        updateLoginWidget ''
       else
         @mainPanel.child = @logoutWidget
+        updateLogoutWidget
       end
     when :server
         @mainPanel.child = @serverWidget
+        updateServerWidget ''
     when :stats
         @mainPanel.child = @statsWidget
+        updateStatsWidget
     else
     end
     @currentContext = newContext
@@ -148,6 +152,10 @@ class GtkView
     @loginWidget.pack_start @loginResult
   end
   
+  def updateLoginWidget(message)
+    @loginResult.text = message
+  end
+  
   def initLogoutWidget
     @logoutWidget = Gtk::VBox.new
     @loggedInMessage = Gtk::Label.new "Logged in as [username]"
@@ -155,6 +163,11 @@ class GtkView
     GtkHelper.applyEventHandler(button, :clicked) {@controller.logout}
     @logoutWidget.pack_start @loggedInMessage
     @logoutWidget.pack_start button
+  end
+  
+  def updateLogoutWidget
+    #Called when newly logged in
+    @loggedInMessage.text = "Logged in as " + @controller.clientSettings.username
   end
   
   def initServerWidget
@@ -171,8 +184,9 @@ class GtkView
     @serverWidget.pack_start @serverConnectionResult
   end
   
-  def updateServerWidget
+  def updateServerWidget(message)
     #Update serverConnectionResult based on how the server connected
+    @serverConnectionResult.text = message
   end
   
   def initStatsWidget
@@ -186,6 +200,6 @@ class GtkView
   end
   
   def updateStatsWidget
-    #update topPlayerStatsWidget and yourStatsWidget based on connection and account info
+    #TODO: update topPlayerStatsWidget and yourStatsWidget based on connection and account info
   end
 end
