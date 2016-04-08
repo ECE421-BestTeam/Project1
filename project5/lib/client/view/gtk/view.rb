@@ -77,8 +77,10 @@ class GtkView
       else
         @mainPanel.child = @logoutWidget
       end
-    when :settings
+    when :server
+        @mainPanel.child = @serverWidget
     when :stats
+        @mainPanel.child = @statsWidget
     else
     end
     @currentContext = newContext
