@@ -7,7 +7,7 @@ require_relative '../common/model/game'
 # a server for all things connect4.2
 class Server
   
-  attr_reader :address, :db
+  attr_reader :address, :db, :port
   
   # time out is how long before a client is deemed inactive
   def initialize(port = 50500, timeout = 60 * 60)
@@ -18,30 +18,27 @@ class Server
     
     # Hash of all current games.
 #    {
-#      :gameID1 => {
-#        :game => gameObject
-#        :players => {
-#          :sessId1 => client1Address
-#          :sessId2 => client2Address
+#      'gameID1' => {
+#        'game' => gameObject,
+#        'player1' => { 'session' => 'sessId1', 'address' => client1Address},
+#        'player2' => { 'session' => 'sessId2', 'address' => client2Address}
 #        }
 #      }
 #    }
     @games = {}
     
-    startServer
-    
   end
   
   # Starts the server and registers all it's handlers
-  def startServer
-    
+  def start
+    endPort = @port + 50
     while true
       begin
         @server = XMLRPC::Server.new(@port)
         break
       rescue Errno::EADDRINUSE
         @port += 1
-        if @port > 50550
+        if @port > endPort 
           raise IOError, "Can not start Server."
         end
       end
@@ -137,16 +134,44 @@ class Server
       })
     end
     
-    @server.add_handler('placeToken') do |sessionId, col|
-       
+    @server.add_handler('placeToken') do |sessionId, gameId, col|
+      getResult(Proc.new {
+        game = @games[gameId]['game']
+        #if it is the requester's turn
+        if sessionId == @games[gameId]["player#{(game['game'].turn % 2) +1}"]['session']
+          game.placeToken(col)
+          if game.winner != 0
+            # do finishing stuff
+            gameEnd(gameId, game.winner)
+          else
+            @db.updateGame(gameId, 'game_model', gameEntry['game'])
+            sendRefresh(gameId, game)
+          end
+        end
+        true
+      })
     end
   end
   
-  def sendRefresh(gameId, sessionId, game)
+  def gameEnd(gameId, winner)
+    if winner == 3
+      @db.updateStat(@games[gameId]['player1']['session'], 'draw', 1)
+      @db.updateStat(@games[gameId]['player2']['session'], 'draw', 1)
+    else
+      @db.updateStat(@games[gameId]["player#{winner}"]['session'], 'wins', 1)
+      @db.updateStat(@games[gameId]["player#{(winner%2) + 1}"]['session'], 'losses', 1)
+    end
+    @db.remove('Game', gameId)
+    @games.delete(gameId)
+  end
+  
+  def sendRefresh(gameId, game)
     begin
-      XMLRPC::Client.new(@games[gameId][sessionId]).call('refresh', game)
+      (1..2).each do |i|
+        XMLRPC::Client.new(@games[gameId]["player#{i}"]['address']).call('refresh', game)
+      end
     rescue Exception => e
-      puts 'Error refresshing game #{gameId}, session #{sessionId}, client #{@games[gameId][sessionId]}'
+      puts "Error refresshing game #{gameId}: #{@games[gameId].to_s}"
       puts e
     end
   end

@@ -5,7 +5,7 @@ require_relative './contract-client-settings'
 class ClientSettingsModel
   include ClientSettingsContract
   
-  attr_accessor :host, :port, :sessionId
+  attr_accessor :host, :port, :sessionId, :username
   
   $saveFile = "../data/clientSaveData.json"
   
@@ -17,6 +17,7 @@ class ClientSettingsModel
     @host = "localhost"
     @port = 4222
     @sessionId = ''
+    @username = ''
 
     file = nil
     begin
@@ -25,6 +26,7 @@ class ClientSettingsModel
       @host = file['host'] || @host
       @port = file['port'] || @port
       @sessionId = file['sessionId'] || @sessionId
+      @username = file['username'] || @username
     rescue Errno::ENOENT => e
       # just leave the defaults
     end

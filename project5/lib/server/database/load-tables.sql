@@ -27,8 +27,7 @@ CREATE TABLE IF NOT EXISTS Player(
   losses Integer,
   draws Integer,
   current_session_id varchar(20),
-  PRIMARY KEY(username),
-  UNIQUE(current_session_id));
+  PRIMARY KEY(username);
 
 
 

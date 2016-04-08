@@ -101,7 +101,16 @@ class BoardOnlineController
       @connection.call('joinGame', @clientSettings.sessionId, gameId),
       Proc.new do |data|
         # we were returned the new game
-        @game = data
+        @game = data['game_model']
+        
+        if data['player1_id'] == @clientSettings.username
+          @localPlayers = [0] 
+        elsif data['player2_id'] == @clientSettings.username
+          @localPlayers = [1]
+        else
+          raise ArgumentError, "Player is not part of current game."
+        end
+        
       end
     )
   end
@@ -109,9 +118,8 @@ class BoardOnlineController
   #called when a player wishes to place a token
   def placeToken (col)
     handleResponse(
-      @connection.call('placeToken', @clientSettings.sessionId, col)
+      @connection.call('placeToken', @clientSettings.sessionId, @gameId, col)
     )
-    @refresh.call @game
   end
   
 end

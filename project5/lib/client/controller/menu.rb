@@ -58,9 +58,7 @@ class MenuController
       @connection.call('createPlayer', username, password),
       Proc.new do |data|
         @clientSettings.sessionId = data
-                puts 'CREATEEEEEEEEEEEEEEEEEEEEEEEEEE'
-        puts username
-        puts data
+        @clientSettings.username = username
       end
     )
   end
@@ -71,9 +69,7 @@ class MenuController
       @connection.call('login', username, password),
       Proc.new do |data|
         @clientSettings.sessionId = data
-        puts 'LOGINNNNNNNNNNNNNNNNNNNNNN'
-        puts username
-        puts data
+        @clientSettings.username = username
       end
     )
   end
@@ -81,7 +77,13 @@ class MenuController
   # on success no exceptions are thrown
   def logout
     handleResponse(
-      @connection.call('logout', @clientSettings.sessionId)
+      @connection.call('logout', @clientSettings.sessionId),
+      Proc.new do |data|
+        if data 
+          @clientSettings.sessionId = ''
+          @clientSettings.username = ''
+        end
+      end
     )
   end
   

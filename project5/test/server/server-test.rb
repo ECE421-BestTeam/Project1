@@ -12,13 +12,20 @@ class ServerTest < Test::Unit::TestCase
   $acc2 = {:username => 'test2', :password => 'test2pass'}
   
   def setup
-    @port = 4222
-    # start server
+    port = 50500
+    
+    @server1 = Server.new(port)
+    @port1 = @server1.port
+    
+    @server2 = Server.new(@port1 + 1)
+    @port2 = @server2.port
+    
+    # start servers
     @th1 = Thread.new {
-      @server1 = Server.new(@port)
+      @server1.start
     }
     @th2 = Thread.new {
-      @server2 = Server.new(@port+1)
+      @server2.start
     }
     
     @removes = []
@@ -48,7 +55,7 @@ class ServerTest < Test::Unit::TestCase
     #start the client1 controller
     sett = ClientSettingsModel.new
     sett.host = 'localhost'
-    sett.port = @port
+    sett.port = @port1
     @client1 = MenuController.new(sett)
     @client1.connect
     puts 'STARTED CLIENT1'
@@ -56,7 +63,7 @@ class ServerTest < Test::Unit::TestCase
     #start the client2 controller
     sett = ClientSettingsModel.new
     sett.host = 'localhost'
-    sett.port = @port+1
+    sett.port = @port2
     @client2 = MenuController.new(sett)
     @client2.connect
     puts 'STARTED CLIENT2'

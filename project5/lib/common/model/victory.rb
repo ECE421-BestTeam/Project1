@@ -3,6 +3,7 @@ require_relative './contract-victory'
 
 # produces the desired victory object
 class VictoryModel
+  include XMLRPC::Marshallable
   include VictoryContract
   
   attr_reader :winningrow

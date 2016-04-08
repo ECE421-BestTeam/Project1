@@ -148,6 +148,7 @@ class Database
                 WHERE username = '#{username}'")
     @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
     @db.query("COMMIT")
+    return true
   end
   
   def getPlayerGames(sessionId)
