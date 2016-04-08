@@ -310,9 +310,13 @@ class Database
       value = serialize(value)
     end
     
+    begin
     @db.query("START TRANSACTION")
     @db.query("UPDATE Game SET #{field}='#{value}', last_update=curdate() WHERE game_id='#{gameId}'")
     @db.query("COMMIT")
+    rescue Exception => e
+      puts 'blh'
+    end
   
     post_updateGame
   end
@@ -425,7 +429,14 @@ class Database
   end
   
   def serialize(gameBoard)
-    return Marshal.dump(gameBoard)
+    temp = Marshal.dump(gameBoard)
+    temp2 = temp.force_encoding(Encoding::ISO_8859_1)
+    begin
+      temp3 = temp2.encode(Encoding::UTF_8)
+      return temp3
+    rescue Exception => e
+      puts 'blah'
+    end
   end
   
   def unserialize(stream)

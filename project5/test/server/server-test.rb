@@ -27,6 +27,8 @@ class ServerTest < Test::Unit::TestCase
     @removes.push(['Player', $acc2[:username]])
     @removes.push(['Player', $acc1[:username]])
     doRemoval
+    @removes.push(['Server', @server1.address])
+    @removes.push(['Server', @server2.address])
     
     sleep 1 # make sure servers are running
     startClients
@@ -101,16 +103,16 @@ class ServerTest < Test::Unit::TestCase
     
     @turn = [0, -1, -1]
     @refresh1 = Proc.new { |data|
-      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY1'
       assert data.class == GameModel
       @turn[1] += 1
+      puts "Refresh1:#{@turn[1]}"
       assert data.turn == @turn[1], "failed on turn #{@turn[1]}"
     }
     @refresh2 = Proc.new { |data|
-      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY2'
       assert data.class == GameModel
       @game2 = data
       @turn[2] += 1
+      puts "Refresh2:#{@turn[2]}"
       assert data.turn == @turn[2], "failed on turn #{@turn[2]}"
     }
     
@@ -118,39 +120,28 @@ class ServerTest < Test::Unit::TestCase
     @board2.registerRefresh(@refresh2)
     puts '------------------------------------------------------REGISTERED REFRESHES'
     
+    #1
     @board1.placeToken(1)
     
-    waitForTurnChange(@turn[1], 1)
     assert_raise(ArgumentError) do
       @board1.placeToken(1)  
     end
     
-    waitForTurnChange(@turn[2], 2)
-    @board2.placeToken(2)
-    waitForTurnChange(@turn[1], 1)
-    @board1.placeToken(1)
-    waitForTurnChange(@turn[2], 2)
-    @board2.placeToken(2)
-    waitForTurnChange(@turn[1], 1)
-    @board1.placeToken(1)
-    waitForTurnChange(@turn[2], 2)
-    @board2.placeToken(2)
-    waitForTurnChange(@turn[1], 1)
-    @board1.placeToken(1)
+    #2
+    @board2.placeToken(0)
+    #3
+    @board1.placeToken(2)
+    #4
+    @board2.placeToken(0)
+    #5
+    @board1.placeToken(3)
+    #6
+    @board2.placeToken(0)
+    #7
+    @board1.placeToken(4)
     
-    waitForTurnChange(@turn[2], 2)
     assert_raise(GameOverError) do
       @board2.placeToken(2)  
-    end
-  end
- 
-  def waitForTurnChange(originalTurn, player)
-    i = 0
-    while true
-      sleep 0.5
-      break if @turn[player] > originalTurn
-      raise Exception, "turn did not cahnge from #{originalTurn} for player#{player}" if i > 25
-      i += 1
     end
   end
   

@@ -160,26 +160,31 @@ class Server
     
     @server.add_handler('getRefresh') do |sessionId, gameId, player|
       getResult(Proc.new {
-        callRefresh(@games[gameId]["player#{player}"]['address'], @games[gameId]['game'])
+          address = @games[gameId]["player#{player}"]['address']
+#          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
+        callRefresh(address, @games[gameId]['game'])
         true
       })
     end
     
     @server.add_handler('placeToken') do |sessionId, gameId, col|
       getResult(Proc.new {
+        raise GameOverError, "game does not exist" if !@games[gameId]
         game = @games[gameId]['game']
         #if it is the requester's turn
         if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
           game.placeToken(col)
+          sendRefresh(gameId)
           if game.winner != 0
             # do finishing stuff
             gameEnd(gameId, game.winner)
           else
             @db.updateGame(gameId, 'game_model', game)
           end
-          sendRefresh(gameId)
+          true
+        else
+          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
         end
-        true
       })
     end
   end
@@ -203,6 +208,7 @@ class Server
   end
   
   def sendRefresh(gameId)
+    raise GameOverError, "game does not exist" if !@games[gameId]
     game = @games[gameId]['game']
     (1..2).each do |i|
       address = @games[gameId]["player#{i}"]['address']
@@ -214,7 +220,12 @@ class Server
     begin
       getConnection(address).call('refresh', game)
     rescue Exception => e
-      puts "Error sending refresh to #{address}"
+      puts "Error sending refresh to #{address.to_s}"
+      msg = e['message']
+      e['backtrace'].each do |level|
+        msg += "\n\t#{level}"
+      end
+      puts msg
     end
   end
   

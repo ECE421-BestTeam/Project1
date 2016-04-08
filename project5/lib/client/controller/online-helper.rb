@@ -4,7 +4,6 @@ require 'xmlrpc/client'
 module OnlineHelper
   
   def connect
-    close
     @connection = XMLRPC::Client.new(@clientSettings.host, nil, @clientSettings.port)
   end
   
@@ -22,8 +21,11 @@ module OnlineHelper
   end
   
   def handleResponse(responseFn, success = Proc.new {|data|})
+    i = 0
     while @busy
       sleep 0.2
+      raise IOError, "Can't get turn for #{responseFn}" if i > 50
+      i += 1
     end
     @busy = true
     handleResponse2(responseFn, success)
@@ -52,6 +54,7 @@ module OnlineHelper
           msg += "\n\t#{level}"
         end
         ex = exClass.new msg
+        @busy = false
         raise ex
     when 'ok'
       success.call data

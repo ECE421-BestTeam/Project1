@@ -12,13 +12,15 @@ CREATE TABLE IF NOT EXISTS Game(
   server_address Text,
   last_update Date,
   UNIQUE(game_id),
-  PRIMARY KEY(game_id));
+  PRIMARY KEY(game_id))
+CHARACTER SET utf8;
 
 CREATE TABLE IF NOT EXISTS Server(
   server_address varchar(20),
   data varchar(200),
   UNIQUE(server_address),
-  PRIMARY KEY(server_address));
+  PRIMARY KEY(server_address))
+CHARACTER SET utf8;
 
 CREATE TABLE IF NOT EXISTS Player(
   username varchar(200),
@@ -28,7 +30,8 @@ CREATE TABLE IF NOT EXISTS Player(
   losses Integer,
   draws Integer,
   current_session_id varchar(20),
-  PRIMARY KEY(username));
+  PRIMARY KEY(username))
+CHARACTER SET utf8;
 
 
 

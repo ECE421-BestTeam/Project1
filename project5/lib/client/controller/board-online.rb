@@ -24,37 +24,37 @@ class BoardOnlineController
   end
 
   def startReciever
-    @recieverPort = 50500
-    while true
-      begin
-        @reciever = XMLRPC::Server.new(@recieverPort)
-        puts "receiver listening on #{@recieverPort}"
-        break
-      rescue Errno::EADDRINUSE
-        @recieverPort += 1
-        puts "incrementing receiver port to #{@recieverPort}"
-        if @recieverPort > 50550
-          raise IOError, "Can not start reciever."
-        end
-      end
-    end
-    
-    @reciever.add_handler('refresh') do |model|
-      puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
-      begin
-        @refresh.call model
-      rescue Exception => e
-        puts 'Refresh Failed:'
-        msg = e['message']
-        e['backtrace'].each do |level|
-          msg += "\n\t#{level}"
-        end
-        puts msg
-      end
-      true
-    end
-    
     @recieverThread = Thread.new do
+      @recieverPort = 50500
+      while true
+        begin
+          @reciever = XMLRPC::Server.new(@recieverPort)
+          puts "receiver listening on #{@recieverPort}"
+          break
+        rescue Errno::EADDRINUSE
+          @recieverPort += 1
+          puts "incrementing receiver port to #{@recieverPort}"
+          if @recieverPort > 50550
+            raise IOError, "Can not start reciever."
+          end
+        end
+      end
+      @recieverStarted = true
+      @reciever.add_handler('refresh') do |model|
+#        puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+        begin
+          @refresh.call model
+        rescue Exception => e
+          puts 'Refresh Failed:'
+          msg = e['message']
+          e['backtrace'].each do |level|
+            msg += "\n\t#{level}"
+          end
+          puts msg
+        end
+        true
+      end
+    
       @reciever.serve
     end
   end
@@ -78,6 +78,12 @@ class BoardOnlineController
   
   # either starts a new game or joins an existing one
   def startGame(gameSettings)
+    i = 0
+    while !@recieverStarted
+      sleep 0.2
+      raise IOError, "Can't get turn for #{responseFn}" if i > 35
+      i += 1
+    end
     if gameSettings.class == String
       @gameId = gameSettings
       joinGame(@gameId)
