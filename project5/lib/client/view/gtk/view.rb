@@ -132,20 +132,20 @@ class GtkView
   end
   
   def initLoginWidget
-    @serverWidget = Gtk::VBox.new
+    @loginWidget = Gtk::VBox.new
     usernameEntry = Gtk::Entry.new
-    @serverWidget.pack_start GtkHelper.createBox('H', 
+    @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Username: " },
         { :widget => usernameEntry } ] )
     passwordEntry = Gtk::Entry.new
-    @serverWidget.pack_start GtkHelper.createBox('H', 
+    @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Password: " },
         { :widget => passwordEntry } ] )
     loginButton = Gtk::Button.new "Login"
     #TODO: add event handler
-    @serverWidget.pack_start loginButton
+    @loginWidget.pack_start loginButton
     @loginResult = Gtk::Label.new ""
-    @serverWidget.pack_start @loginResult
+    @loginWidget.pack_start @loginResult
   end
   
   def initLogoutWidget
