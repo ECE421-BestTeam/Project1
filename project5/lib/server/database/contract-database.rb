@@ -31,6 +31,25 @@ module DatabaseContract
   end
 
   ####
+  
+  def pre_setServerData(serverAddress, data)
+    assert serverAddress.class ==  String, "serverAddress must be a string"
+    assert data.class==  Hash, "data must be a Hash type"
+  end
+  
+  def post_setServerData
+    
+  end
+  ####
+  
+  def pre_getServerData(serverAddress)
+    assert serverAddress.class == String, "serverAddress must be a string"
+  end
+  
+  def post_getServerData(result)
+    assert result.class ==  Hash, "returned data must be a hash"
+  end
+  ###
 
   def pre_getLeastActiveServer
   end

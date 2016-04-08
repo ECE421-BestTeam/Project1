@@ -29,6 +29,17 @@ class ServerTest < Test::Unit::TestCase
     assert @db.registerServer("server1").is_a? Array
   end
   
+  def test_setServerData
+    @db.registerServer("setAddress")
+    @db.setServerData("setAddress", Hash.new)
+  end
+  
+  def test_getServerData
+    @db.registerServer("setAddress2")
+    @db.setServerData("setAddress2", Hash.new)
+    assert @db.getServerData("setAddress2").is_a? Hash
+  end
+  
   def test_getLeastActiveServer
     assert @db.getLeastActiveServer.is_a? String
   end

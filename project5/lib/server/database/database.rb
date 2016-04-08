@@ -56,13 +56,40 @@ class Database
     @db.query("SELECT * FROM Server \
                   WHERE server_address='#{serverAddress}'" )
     if @db.affected_rows <= 0
-      @db.query("INSERT INTO Server(server_address) VALUES('#{serverAddress}')")
+      @db.query("INSERT INTO Server(server_address, data) VALUES('#{serverAddress}','')")
     else
       game_ids = getServerGames(serverAddress)
     end
     @db.query("COMMIT")
     post_registerServer(game_ids)
     return game_ids
+  end
+  
+  def setServerData(serverAddress, data)
+    #TODO: Contract
+    pre_setServerData(serverAddress, data)
+    d = serialize(data)
+    puts d
+    @db.query("START TRANSACTION")
+    @db.query("UPDATE Server \
+                SET data='#{d}' \
+                WHERE server_address='#{serverAddress}'")
+    @db.query("COMMIT")
+    post_setServerData
+  end
+  
+  def getServerData(serverAddress)
+    #TODO: Contract
+    pre_getServerData(serverAddress)
+    res = @db.query("SELECT * FROM Server WHERE server_address='#{serverAddress}'")
+    if @db.affected_rows >=1
+      result = res.first
+      data = unserialize(result['data'])
+    else
+      raise ArgumentError, "Provided server address does not exist"
+    end
+    post_getServerData(data)
+    return data
   end
   
   def getLeastActiveServer
