@@ -63,7 +63,7 @@ class GtkView
   def switchContext(newContext)
     #TODO
     return if @currentContext != nil && @currentContext == newContext
-    @mainPanel.remove @mainPanel.child
+    @mainPanel.remove @mainPanel.child if @mainPanel.child != nil
     case newContext
     when :game
       if @game == nil
@@ -77,6 +77,7 @@ class GtkView
     else
     end
     @currentContext = newContext
+    @window.resize(1,1) #Window resizes to smallest possible w/ all components shown
     @window.show_all
   end
   
@@ -120,7 +121,7 @@ class GtkView
   end
   
   def initGameBoardWidget
-    @gameBoardWidget == Gtk::Label.new "TODO: Game board widget"
+    @gameBoardWidget = Gtk::Label.new "TODO: Game board widget"
   end
   
   def initLoginWidget
