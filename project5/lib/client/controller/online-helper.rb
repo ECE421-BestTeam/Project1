@@ -9,30 +9,38 @@ module OnlineHelper
   end
   
   def redirect(newAddress)
-    @clientSettings.serverAddress = newAddress
+    if newAddress.class == String
+      add = newAddress.split(':')
+      @clientSettings.host = add[0]
+      @clientSettings.port = add[1]
+    else
+      @clientSettings.host = newAddress['host']
+      @clientSettings.port = newAddress['port']
+    end
     connect
   end
   
   def handleResponse(response, success = Proc.new {|data|}, postRedirect = Proc.new {})
+    data = response['data']
     case response['status']
       when 'redirect'
-        redirect(response.data)
+        redirect(data)
         postRedirect.call
       when 'exception'
         exClass = Exception
         begin
-          exClass = Object.const_get(response['data']['class'])
+          exClass = Object.const_get(data['class'])
         rescue
           # can't get the exception class for some reason
         end
-        msg = response['data']['message']
-        response['data']['backtrace'].each do |level|
+        msg = data['message']
+        data['backtrace'].each do |level|
           msg += "\n\t#{level}"
         end
         ex = exClass.new msg
         raise ex
     when 'ok'
-      success.call response['data']
+      success.call data
     end
   end
   

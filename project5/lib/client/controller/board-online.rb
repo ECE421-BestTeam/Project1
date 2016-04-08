@@ -13,11 +13,12 @@ class BoardOnlineController
     @gameSettings = settings[:gameSettings]
     @clientSettings = settings[:clientSettings]
     
+    # open the connection
+    connect
+    
     # Start our receiver
     startReciever
     
-    # open the connection
-    connect
     
     # get game
     @game = getGame
@@ -49,9 +50,11 @@ class BoardOnlineController
   end
  
   def close
-    @reciever.shutdown
-    @recieverThread.kill
-    @recieverThread.join
+    if @recieverThread && @reciever
+      @reciever.shutdown
+      @recieverThread.kill
+      @recieverThread.join
+    end
   end
   
   # registers the refresh command so the 
