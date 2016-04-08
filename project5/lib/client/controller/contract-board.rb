@@ -31,7 +31,7 @@ module BoardControllerContract
   end
   
   def post_settings(result)
-    assert result.class == GameSettingsModel, "settings must be of class GameSettingsModel"
+    assert [GameSettingsModel, String].include?result.class, "gameSettings must be a GameSettingsModel or game ID String, not #{settings.class}"
   end
   
   def pre_localPlayers

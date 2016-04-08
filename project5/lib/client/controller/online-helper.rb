@@ -52,12 +52,14 @@ module OnlineHelper
   
   def handleResponse2(responseFn, success, recur = 0)
     if recur > 5
+      @busy = false
       raise IOError, "too many redirects"
     end
     begin
       response = responseFn.call
     rescue Exception => e
       @busy = false
+      puts 'custom'
       raise e
     end
     
@@ -80,9 +82,13 @@ module OnlineHelper
         ex = exClass.new msg
         @busy = false
         raise ex
-    when 'ok'
-      success.call data
+      when 'ok'
+        success.call data
+      else
+        @busy = false
+        raise ArgumentError, "Unexpected status (#{response['status']}) received.  data = #{rsponse['data']}"
     end
+    
   end
   
   def local_ip

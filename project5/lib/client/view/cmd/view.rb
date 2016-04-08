@@ -12,10 +12,10 @@ class CmdView
     @controller = MenuController.new
     
     @helper = CmdHelper.new(Proc.new {exitMenu})
-    @mode = :options #can be :options, :startGame
         
     setTrap
     
+    @mode = :options #can be :options, :startGame, :inGame
     loop
   end
   
@@ -33,14 +33,20 @@ class CmdView
   
   def loop
     while true
-      getOptions
+      case @mode
+        when :options
+          getOptions
+        when :startGame
+          startGame
+        when :inGame #let other stuff do stuff
+          sleep 0.5
+      end
     end
   end
   
   # attempts to start game
   def startGame
-#    @mode = :playingGame
-    
+    @mode = :inGame
     # sends options and create a custom boardController
     @bController = @controller.getBoardController(@boardControllerType, @gameSettings)
     
@@ -49,8 +55,9 @@ class CmdView
       @bController, 
       Proc.new do |model|
         # exit game callback
-        puts "\n"
+        puts "\nFinished Game!"
         setTrap
+        @mode = :options
       end
     )
   end
@@ -84,9 +91,9 @@ class CmdView
       Proc.new do |res| 
         case res
           when 0
-            startGame
+            @mode = :startGame
           when 1
-            return
+            # do nothing, let options loop
         end
 
       end
@@ -163,11 +170,10 @@ class CmdView
         "0 = New Game, 1 = Active Games(#{games['active'].size}), 2 = Saved Games(#{games['saved'].size}), 3 = Join Game(#{games['joinable'].size})", 
         [0, 1, 2, 3],
         Proc.new { |res| 
-          case
+          case res
             when 0
               getVictoryType
-              selectedGame = nil
-              break
+              selectedGame = @gameSettings
             when 1
               selectedGame = showGameList("Active Games", games['active'])
             when 2
@@ -178,7 +184,7 @@ class CmdView
         })
     end
     
-    @gameSettings = selectedGame.id if selectedGame
+    @gameSettings = selectedGame
   end
   
   def login
@@ -188,7 +194,8 @@ class CmdView
         @controller.login(creds[0], creds[1])
         break
       rescue Exception => e
-        puts "Login Failed.  Try again. #{e}"
+        puts "Login Failed.  Try again."
+        puts e 
       end
     end
   end
@@ -231,8 +238,9 @@ class CmdView
   def showGameList(title, games)
     text = "--- #{title} ---\n"
     answers = ['back']
-    games.each_with_index do |game, i|
-      text += "#{i} = #{game.victoryType} Turn: #{game.turn}\n"
+    games.each_with_index do |gameEntry, i|
+      game = gameEntry['game_model']
+      text += "#{i} = Victory Mode: #{game.victory.name}, Turn: #{game.turn}\n"
       answers.push(i)
     end
     text += "Please select a game, or enter 'back' to return."
@@ -241,7 +249,7 @@ class CmdView
     @helper.getUserInput(
       text, 
       answers,
-      Proc.new { |res| result = games[res] if res != 'back' })
+      Proc.new { |res| result = games[res]['game_id'] if res != 'back' })
     return result
   end
   

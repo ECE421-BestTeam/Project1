@@ -39,11 +39,17 @@ class MenuController
     }
     
     result = nil
+#    case type
+#      when 'local'
+#        result = BoardController.new(:boardControllerLocal, controllerSettings)
+#      when 'online'
+#        result = BoardController.new(:boardControllerOnline, controllerSettings)
+#    end
     case type
       when 'local'
-        result = BoardController.new(:boardControllerLocal, controllerSettings)
+        result = BoardLocalController.new controllerSettings
       when 'online'
-        result = BoardController.new(:boardControllerOnline, controllerSettings)
+        result = BoardOnlineController.new controllerSettings
     end
 
     post_getBoardController(result)

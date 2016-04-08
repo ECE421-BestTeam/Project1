@@ -10,6 +10,7 @@ class BoardOnlineController
   
   def initialize (settings)
     @clientSettings = settings[:clientSettings]
+    @settings = settings[:gameSettings]
     
     # open the connection
     connect
@@ -19,7 +20,7 @@ class BoardOnlineController
     
     # get game
     @gameId = ''
-    startGame settings[:gameSettings]
+    startGame @settings
     
   end
 
@@ -41,18 +42,21 @@ class BoardOnlineController
       end
       @recieverStarted = true
       @reciever.add_handler('refresh') do |model|
-#        puts 'HIIIYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+        result = false
         begin
-          @refresh.call model
+          Thread.new {
+            @refresh.call model
+          }
+          true
         rescue Exception => e
           puts 'Refresh Failed:'
-          msg = e['message']
-          e['backtrace'].each do |level|
+          msg = e.message
+          e.backtrace.each do |level|
             msg += "\n\t#{level}"
           end
           puts msg
         end
-        true
+        result
       end
     
       @reciever.serve
@@ -62,8 +66,9 @@ class BoardOnlineController
   def close
     if @recieverThread && @reciever
       @reciever.shutdown
-      @recieverThread.kill
+#      @recieverThread.kill
       @recieverThread.join
+      @recieverStarted = false
     end
   end
   

@@ -186,7 +186,7 @@ class Database
     player_id = getPlayerID(sessionId)
     
     # get all games a player can play
-    res = @db.query("SELECT game_id, state, game_model FROM Game \
+    res = @db.query("SELECT game_id, state, player1_id, player2_id, game_model FROM Game \
         WHERE state='joinable' OR player1_id='#{player_id}' OR player2_id='#{player_id}'")
     
     # sort the results
@@ -196,6 +196,9 @@ class Database
       'joinable' => []
     }
     res.each { |h|
+      # change state for return if we are already part of the game
+      h['state'] = 'active' if [h['player1_id'], h['player2_id']].include?player_id
+      
       h['game_model'] = unserialize(h['game_model'])
       state = h.delete('state')
       result[state].push(h)

@@ -170,7 +170,7 @@ class Server
     @server.add_handler('getRefresh') do |sessionId, gameId, player|
       getResult(Proc.new {
           address = @games[gameId]["player#{player}"]['address']
-#          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
+          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
         callRefresh(address, @games[gameId]['game'])
         true
       })
@@ -226,16 +226,18 @@ class Server
   end
   
   def callRefresh(address, game)
-    begin
-      getConnection(address).call('refresh', game)
-    rescue Exception => e
-      puts "Error sending refresh to #{address.to_s}"
-      msg = e['message']
-      e['backtrace'].each do |level|
-        msg += "\n\t#{level}"
+    Thread.new {
+      begin
+        getConnection(address).call('refresh', game)
+      rescue Exception => e
+        puts "Error sending refresh to #{address.to_s}"
+        msg = e.message
+        e.backtrace.each do |level|
+          msg += "\n\t#{level}"
+        end
+        puts msg
       end
-      puts msg
-    end
+    }
   end
   
   def getConnection(address)
@@ -252,8 +254,8 @@ class Server
       con = XMLRPC::Client.new(host, nil, port)
       return con
     rescue Exception => e
-      puts "Error sending connecting to #{address}"
-      puts e
+      puts "Error connecting to #{address}"
+      raise e
     end
   end
   
@@ -295,8 +297,3 @@ class Server
   end
 
 end
-
-(Server.new).start
- while true 
-   sleep 100
- end

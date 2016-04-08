@@ -8,13 +8,10 @@ class ViewCmdBoard
   #controller - a BoardController
   def initialize (controller, exitCallback)
     pre_initialize(controller, exitCallback)
-    
     @exitCallback = exitCallback
     @controller = controller
-    
+
     # pull settings we will use frequently, they are constant
-    @rows = @controller.settings.rows
-    @cols = @controller.settings.cols
     @localPlayers = @controller.localPlayers
 
     @helper = CmdHelper.new(Proc.new {exitGame}, Proc.new {@gameover})
@@ -23,7 +20,6 @@ class ViewCmdBoard
       @helper.quit
       exitGame
     end
-    
     
     @gameover = false
     @controller.registerRefresh(method(:refresh))
@@ -55,7 +51,7 @@ class ViewCmdBoard
       elsif @game.winner == 2
         puts "Player 2 wins!"
       end
-        exitGame
+      exitGame
       return
     end
 
@@ -65,8 +61,8 @@ class ViewCmdBoard
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn}'s turn:"
       @helper.getUserInput(
-        "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@cols})", 
-        (1..@cols), 
+        "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols})", 
+        (1..@game.settings.cols), 
         Proc.new do |col|
           @controller.placeToken(col - 1)
         end
@@ -78,8 +74,9 @@ class ViewCmdBoard
   end
   
   def boardToString
+    cols = @game.settings.cols
     result = ""
-    (1..@cols).each {|n| result += "=#{n}"}
+    (1..cols).each {|n| result += "=#{n}"}
     result += "=\n"
     @game.board.each do |row|
       result += "|"
@@ -88,7 +85,7 @@ class ViewCmdBoard
       end
       result += "\n"
     end
-    (1..@cols).each {result += "=="}
+    (1..cols).each {result += "=="}
     result += "=\n"
   end
   

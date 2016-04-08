@@ -1,9 +1,5 @@
 require 'test/unit/assertions'
 
-require_relative './board'
-#require_relative '../model/client-settings'
-#require_relative '../../common/model/game-settings'
-
 module MenuControllerContract
   include Test::Unit::Assertions
   
@@ -24,7 +20,7 @@ module MenuControllerContract
   end
   
   def post_getBoardController(result)
-    assert result.class == BoardController, "boardController type must be a BoardController"
+    assert result != nil, "boardController exist"
   end
     
 end

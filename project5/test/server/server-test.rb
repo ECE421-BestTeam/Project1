@@ -82,7 +82,7 @@ class ServerTest < Test::Unit::TestCase
     @board1 = @client1.getBoardController('online', gSett)
     
     i = 0
-    while (gameId = @board1.implementation.gameId).length == 0
+    while (gameId = @board1.gameId).length == 0
       sleep 0
       i += 1
       raise Exception, "could not get gameId" if i > 25
@@ -91,39 +91,43 @@ class ServerTest < Test::Unit::TestCase
     @removes.push(['Game', gameId])
     puts '------------------------------------------------------GOT CLIENT1 BOARD CONTROLLER'
     
+    #1
+    @board1.placeToken(1)
+    puts '------------------------------------------------------CLIENT1 MADE EARLY MOVE'
+    
     games = @client2.getGames    
     puts '------------------------------------------------------GOT GAMES'
     
     @board2 = @client2.getBoardController('online', gameId)
         i = 0
-    while (gameId = @board2.implementation.gameId).length == 0
+    while (gameId = @board2.gameId).length == 0
       sleep 0
       i += 1
       raise Exception, "could not get gameId" if i > 25
     end
     puts '------------------------------------------------------GOT CLIENT2 BOARD CONTROLLER'
     
-    @turn = [0, -1, -1]
+    
+    @turn = [0, 0, 0]
     @refresh1 = Proc.new { |data|
       assert data.class == GameModel
       @turn[1] += 1
       puts "Refresh1:#{@turn[1]}"
-      assert data.turn == @turn[1], "failed on turn #{@turn[1]}"
+      assert data.turn == @turn[1], "failed on turn #{data.turn}==#{@turn[1]}"
     }
     @refresh2 = Proc.new { |data|
       assert data.class == GameModel
       @game2 = data
       @turn[2] += 1
       puts "Refresh2:#{@turn[2]}"
-      assert data.turn == @turn[2], "failed on turn #{@turn[2]}"
+      assert data.turn == @turn[2], "failed on turn #{data.turn}==#{@turn[2]}"
     }
     
     @board1.registerRefresh(@refresh1)
     @board2.registerRefresh(@refresh2)
     puts '------------------------------------------------------REGISTERED REFRESHES'
     
-    #1
-    @board1.placeToken(1)
+    
     
     assert_raise(ArgumentError) do
       @board1.placeToken(1)  
