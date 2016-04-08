@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS Server;
 DROP TABLE IF EXISTS Player;
 
 CREATE TABLE IF NOT EXISTS Game(
-  game_id varchar(200),
+  game_id varchar(10),
   player1_id Text,
   player2_id Text,
   state Text,
@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS Game(
   PRIMARY KEY(game_id));
 
 CREATE TABLE IF NOT EXISTS Server(
-  server_address varchar(200),
+  server_address varchar(20),
+  data varchar(200),
   UNIQUE(server_address),
   PRIMARY KEY(server_address));
 
