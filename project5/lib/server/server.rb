@@ -170,7 +170,7 @@ class Server
     @server.add_handler('getRefresh') do |sessionId, gameId, player|
       getResult(Proc.new {
           address = @games[gameId]["player#{player}"]['address']
-          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
+#          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
         callRefresh(address, @games[gameId]['game'])
         true
       })
@@ -297,3 +297,8 @@ class Server
   end
 
 end
+
+(Server.new).start
+ while true 
+   sleep 100
+ end

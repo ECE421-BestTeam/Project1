@@ -36,7 +36,8 @@ class ViewCmdBoard
     # don't let additional calls go through if game is over
     return if @gameover
     
-    @game = game
+    return if !(!@game || game.turn >= @game.turn)
+    @game = game 
     
     # re-display the board
     puts boardToString

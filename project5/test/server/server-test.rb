@@ -126,28 +126,43 @@ class ServerTest < Test::Unit::TestCase
     @board1.registerRefresh(@refresh1)
     @board2.registerRefresh(@refresh2)
     puts '------------------------------------------------------REGISTERED REFRESHES'
-    
-    
-    
+        
     assert_raise(ArgumentError) do
       @board1.placeToken(1)  
     end
     
     #2
+    waitForTurnChange(@turn[2], 2)
     @board2.placeToken(0)
     #3
+    waitForTurnChange(@turn[1], 1)
     @board1.placeToken(2)
     #4
+    waitForTurnChange(@turn[2], 2)
     @board2.placeToken(0)
     #5
+    waitForTurnChange(@turn[1], 1)
     @board1.placeToken(3)
     #6
+    waitForTurnChange(@turn[2], 2)
     @board2.placeToken(0)
     #7
+    waitForTurnChange(@turn[1], 1)
     @board1.placeToken(4)
     
+    waitForTurnChange(@turn[2], 2)
     assert_raise(GameOverError) do
       @board2.placeToken(2)  
+    end
+  end
+  
+  def waitForTurnChange(originalTurn, player)
+    i = 0
+    while true
+      sleep 0.5
+      break if @turn[player] > originalTurn
+      raise Exception, "turn did not change from #{originalTurn} for player#{player}" if i > 60
+      i += 1
     end
   end
   
