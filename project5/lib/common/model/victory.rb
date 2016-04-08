@@ -99,7 +99,7 @@ class VictoryModel
     pre_boardFull(board)
     board.each_index { |c|
       board[c].each_index {|r|
-        if board[c][r] != 0
+        if board[c][r] == 0
           return false
         end
       }

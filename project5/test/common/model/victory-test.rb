@@ -51,35 +51,35 @@ class VictoryModelTest < Test::Unit::TestCase
               [0,0,0,0,0,0],
               [0,0,0,0,0,0],
               [0,0,0,0,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 1, v.checkVictory(board)
     
     board = [ [0,0,2,0,0,0],
               [1,1,2,1,0,0],
               [0,0,2,0,0,0],
               [0,0,2,0,0,0],
               [0,0,0,0,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 2, v.checkVictory(board)
     
-    board = [ [0,0, 0 ,0,0,0],
+    board = [ [0,0,0,0,0,0],
               [1,1,2,1,0,0],
               [0,0,2,0,1,0],
-              [0,0,2,0,0, 1 ],
+              [0,0,2,0,0,1],
               [1,1,1,1,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 1, v.checkVictory(board)
     
     board = [ [0,0,0,0,0,0,0],
               [2,0,2,0,0,0,0],
               [2,2,1,0,1,0,0],
-              [1,1,2,0,2,2, 2 ],
-              [2,1,1,1,1,2, 2 ]]
-    assert_equal2, v.checkVictory(board)
+              [1,1,2,0,2,2,2],
+              [2,1,1,1,1,2,2]]
+    assert_equal 1, v.checkVictory(board)
     
-    board = [ [2,0,0,1,2,2, 2 ],
+    board = [ [2,0,0,1,2,2,2],
               [2,2,2,1,0,0,0],
               [2,2,2,1,1,0,0],
-              [1,1,1,2,1,2, 2 ],
-              [2,1,1,2,1,1, 2 ]]
-    assert_equal2, v.checkVictory(board)
+              [1,1,1,2,1,2,2],
+              [2,1,1,2,1,1,2]]
+    assert_equal 2, v.checkVictory(board)
     
     board = [ [0,0,2,0,1,0],
               [1,1,2,0,0,0],
@@ -88,11 +88,11 @@ class VictoryModelTest < Test::Unit::TestCase
               [1,0,0,0,0,0]]
     assert_equal 0, v.checkVictory(board)
     
-    board = [ [2,1,2,1,2, 1 ],
-              [2,1,2,1,2, 1 ],
-              [1,2,1,2,1, 2 ],
-              [1,2,1,2,1, 2 ],
-              [2,1,2,1,2, 1 ]]
+    board = [ [2,1,2,1,2,1],
+              [2,1,2,1,2,1],
+              [1,2,1,2,1,2],
+              [1,2,1,2,1,2],
+              [2,1,2,1,2,1]]
     assert_equal 3, v.checkVictory(board)
   end
   
@@ -110,27 +110,27 @@ class VictoryModelTest < Test::Unit::TestCase
               [0,0,0,0,0,0],
               [0,0,0,0,0,0],
               [0,0,0,0,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 1, v.checkVictory(board)
     
     board = [ [0,0,2,0,0,0],
               [2,1,1,1,0,0],
               [0,0,1,0,0,0],
               [0,0,2,0,0,0],
               [0,0,0,0,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 2, v.checkVictory(board)
     
     board = [ [0,0,2,0,0,0],
               [1,2,1,1,0,0],
               [0,0,2,0,1,0],
-              [0,0,2,0,0, 2 ],
+              [0,0,2,0,0,2],
               [0,0,0,0,0,0]]
-    assert_equal2, v.checkVictory(board)
+    assert_equal 2, v.checkVictory(board)
     
-    board = [ [2,2,2,2,2, 2 ],
-              [2,2,2,2,2, 2 ],
-              [2,2,2,2,2, 2 ],
-              [2,2,2,2,2, 2 ],
-              [2,2,2,2,2, 2 ]]
+    board = [ [2,2,2,2,2,2],
+              [2,2,2,2,2,2],
+              [2,2,2,2,2,2],
+              [2,2,2,2,2,2],
+              [2,2,2,2,2,2]]
     assert_equal 3, v.checkVictory(board)
   end
   
