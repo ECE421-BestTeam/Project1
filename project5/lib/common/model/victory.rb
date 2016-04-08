@@ -15,10 +15,10 @@ class VictoryModel
     case victoryType
       when 'victoryNormal'
         #@implementation = VictoryNormal.new
-        init("Normal", ['O', 'X'], [0,0,0,0],[1,1,1,1])
+        init("Normal", ['O', 'X'], [1,1,1,1], [2,2,2,2])
       when 'victoryOtto'
         #@implementation = VictoryOtto.new
-        init("OTTO", ['O', 'T'], [0,1,1,0],[1,0,0,1])
+        init("OTTO", ['O', 'T'], [1,2,2,1],[2,1,1,2])
       else
         raise "Not a valid game mode"
     end

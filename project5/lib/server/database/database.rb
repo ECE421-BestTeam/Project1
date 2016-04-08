@@ -184,21 +184,22 @@ class Database
     # Returns: Array of Hashes -- result
     pre_getPlayerGames(sessionId)
     
-    res1 = @db.query("SELECT game_id, player1_id, player2_id, state, game_model, server_address, last_update FROM games g, players p\
-                       WHERE p.session_id='#{sessionId} AND (g.player1_id=p.player_id OR g.player2_id=p.player_id) \
-                       AND state='saved'");
-    res2 = @db.query("SELECT game_id, player1_id, player2_id, state, game_mode, server_addres, last_update FROM Game WHERE state='joinable'")
+    player_id = getPlayerID(sessionID)
     
+    # get all games a player can play
+    res = @db.query("SELECT game_id, state, game_model FROM Game \
+        WHERE state='joinable' OR player1_id='#{player_id}' OR player2_id='#{player_id}'")
     
-    
-    result = []
-    res1.each { |h|
-      h['game_model'] = unserialize(h['game_model'])
-      result << h
+    # sort the results
+    result = {
+      'active' => [],
+      'saved' => [],
+      'joinable' => []
     }
-    res2.each { |h|
+    res.each { |h|
       h['game_model'] = unserialize(h['game_model'])
-      result << h
+      state = h.delete('state')
+      result[state].push(h)
     }
     post_getPlayerGames(result)
     return result

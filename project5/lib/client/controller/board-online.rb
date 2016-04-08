@@ -19,12 +19,9 @@ class BoardOnlineController
     # Start our receiver
     startReciever
     
-    
     # get game
-    @game = getGame
+    startGame
     
-    # set localPlayers based on game
-    @localPlayers = @game #match with @clientSettings.sesionId  or .username?
   end
 
   def startReciever
@@ -42,6 +39,7 @@ class BoardOnlineController
     end
     
     @reciever.add_handler('refresh') do |model|
+      puts 'HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII'
       @resfresh.call model
     end
     @recieverThread = Thread.new do
@@ -67,22 +65,13 @@ class BoardOnlineController
   end
   
   # either starts a new game or joins an existing one
-  def getGame
+  def startGame
     if @gameSetttings.class == String
       @gameId = @gameSettings
       joinGame(@gameId)
     else 
       newGame(@gameSettings)
-      joinGame(@gameId)
     end
-    
-    #register the receiver
-    handleResponse(
-      @connection.call('registerReciever', @clientSettings.sessionId, "#{local_ip}:#{@recieverPort}"),
-      Proc.new do |data|
-        break
-      end
-    )
   end
   
   def newGame(gameSettings)
@@ -92,6 +81,7 @@ class BoardOnlineController
       Proc.new do |data|
         # we were returned the new game ID
         @gameId = data
+        joinGame(@gameId)
       end
     )
   end
@@ -100,17 +90,8 @@ class BoardOnlineController
     handleResponse(
       @connection.call('joinGame', @clientSettings.sessionId, gameId),
       Proc.new do |data|
-        # we were returned the new game
-        @game = data['game_model']
-        
-        if data['player1_id'] == @clientSettings.username
-          @localPlayers = [0] 
-        elsif data['player2_id'] == @clientSettings.username
-          @localPlayers = [1]
-        else
-          raise ArgumentError, "Player is not part of current game."
-        end
-        
+        # we were returned the player Number
+        @localPlayers = [data] 
       end
     )
   end

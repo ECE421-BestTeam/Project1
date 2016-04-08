@@ -23,8 +23,8 @@ class GameModel
     @victory = VictoryModel.new @settings.victoryType
     @turn = 0
     
-    # board slots are either nil (empty), 0 (player 1), or 1 (player 2)
-    @board = Array.new(@settings.rows) { Array.new(@settings.cols) {nil} }
+    # board slots are either 0 (empty), 1 (player 1), or 2 (player 2)
+    @board = Array.new(@settings.rows) { Array.new(@settings.cols) {0} }
     
     post_initialize
     class_invariant
@@ -43,7 +43,7 @@ class GameModel
     (0..(@settings.rows - 1)).each do |rowNum|
       row = @settings.rows - 1 - rowNum
       currentToken = @board[row][col]
-      if currentToken == nil
+      if currentToken == 0
         freeRow = row
         break
       end
@@ -52,7 +52,7 @@ class GameModel
     raise ArgumentError, "Column is full!" if !freeRow
     
     # set playerToken in the lowest available column slot
-    @board[freeRow][col] = @turn % 2
+    @board[freeRow][col] = (@turn % 2) + 1
     # increment the turn
     @turn += 1
     # checkVictory
@@ -86,7 +86,7 @@ class GameModel
   # returns false - no winner, true - winner exists
   def checkVictory
     pre_checkVictory
-    if @winner == nil
+    if @winner == 0
       @winner = @victory.checkVictory @board
     end
     result = @winner

@@ -17,6 +17,7 @@ module OnlineHelper
       @clientSettings.host = newAddress['host']
       @clientSettings.port = newAddress['port']
     end
+    @clientSettings.host = 'localhost' if @clientSettings.host == local_ip
     connect
   end
   

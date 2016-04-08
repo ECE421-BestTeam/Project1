@@ -16,32 +16,27 @@ class ServerTest < Test::Unit::TestCase
     
     @server1 = Server.new(port)
     @port1 = @server1.port
+    @server1.start
     
     @server2 = Server.new(@port1 + 1)
     @port2 = @server2.port
-    
-    # start servers
-    @th1 = Thread.new {
-      @server1.start
-    }
-    @th2 = Thread.new {
-      @server2.start
-    }
+    @server2.start
     
     @removes = []
     @removes.push(['Player', $acc2[:username]])
     @removes.push(['Player', $acc1[:username]])
     doRemoval
     
+    sleep 1 # make sure servers are running
     startClients
   end
 
   def teardown
     doRemoval
-    @th1.kill # kills the server thread
-    @th2.kill # kills the server thread
-    @th1.join
-    @th2.join
+    @server1.close
+    @server2.close
+    @client1.close
+    @client2.close
   end
   
   def doRemoval
@@ -60,7 +55,7 @@ class ServerTest < Test::Unit::TestCase
     @client1.connect
     puts 'STARTED CLIENT1'
       
-    #start the client2 controller
+    # start the client2 controller
     sett = ClientSettingsModel.new
     sett.host = 'localhost'
     sett.port = @port2
@@ -103,9 +98,6 @@ class ServerTest < Test::Unit::TestCase
 #      })
 #    )
     
-    
-    @client1.close
-#    @client2.close
   end
  
   

@@ -7,7 +7,7 @@ require_relative '../common/model/game'
 # a server for all things connect4.2
 class Server
   
-  attr_reader :address, :db, :port
+  attr_reader :address, :db, :port, :host
   
   # time out is how long before a client is deemed inactive
   def initialize(port = 50500, timeout = 60 * 60)
@@ -44,7 +44,8 @@ class Server
       end
     end
     
-    @address = "#{local_ip}:#{@port}"
+    @host = local_ip
+    @address = "#{@host}:#{@port}"
     puts "listening on #{address}"
     games = @db.registerServer(address)
     
@@ -57,7 +58,14 @@ class Server
     
     boardFunctions    
 
-    @server.serve
+    @thread = Thread.new {
+      @server.serve
+    }
+  end
+  
+  def close
+    @server.shutdown
+    @thread.join
   end
   
   def menuFunctions
@@ -113,15 +121,37 @@ class Server
       })
     end
      
+    getPlayerNumber = Proc.new do |gameEntry, username|
+      if gameEntry['player1_id'] == username
+        1
+      elsif dagameEntryta['player2_id'] == username
+        2
+      else
+        raise ArgumentError, "Player is not part of current game."
+      end
+    end
+    
     @server.add_handler('joinGame') do |sessionId, gameId|
       getResult(Proc.new {
-        game = @db.joinGame(sessionId, gameId)
-        if game['server_address'] == @address
-          game
+        gameEntry = @db.joinGame(sessionId, gameId)
+        if gameEntry['server_address'] == @address
+          # we are hosting
+          username = @db.getPlayerID(sessionId)
+          playerNumber = getPlayerNumber.call gameEntry, username
+          if !@games[gameId]
+            @games[gameId] = {
+              'game' => gameEntry['game_model'],
+              'player1' => {},
+              'player2' => {}
+            }
+          end
+          @games[gameId]["player#{playerNumber}"]['session'] = sessionId
+          playerNumber - 1 # board-online is 0-indexed
         else
+          # another server is hosting
           {
             'status' => 'redirect',
-            'data' => game['server_address']
+            'data' => gameEntry['server_address']
           }
         end
       })
@@ -129,8 +159,8 @@ class Server
     
     @server.add_handler('registerReciever') do |sessionId, gameId, clientAddress|
       getResult(Proc.new {
+        callRefresh(clientAddress, @games[gameId]['game'])
         @games[gameId][sessionId] = clientAddress
-        true
       })
     end
     
@@ -145,7 +175,7 @@ class Server
             gameEnd(gameId, game.winner)
           else
             @db.updateGame(gameId, 'game_model', gameEntry['game'])
-            sendRefresh(gameId, game)
+            sendRefresh(gameId)
           end
         end
         true
@@ -165,13 +195,29 @@ class Server
     @games.delete(gameId)
   end
   
-  def sendRefresh(gameId, game)
+  def sendRefresh(gameId)
+    game = @games[gameId]['game']
+    (1..2).each do |i|
+      address = @games[gameId]["player#{i}"]['address']
+      callRefresh(address, game) if address
+    end
+  end
+  
+  def callRefresh(address, game)
+    if address.class == String
+      add = address.split(':')
+      host = add[0]
+      port = add[1]
+    else
+      host = address['host']
+      port = address['port']
+    end
+    host = 'localhost' if host == @host
     begin
-      (1..2).each do |i|
-        XMLRPC::Client.new(@games[gameId]["player#{i}"]['address']).call('refresh', game)
-      end
+      con = XMLRPC::Client.new(host, nil, port)
+      con.call('refresh', game)
     rescue Exception => e
-      puts "Error refresshing game #{gameId}: #{@games[gameId].to_s}"
+      puts "Error sending refresh to #{address}"
       puts e
     end
   end

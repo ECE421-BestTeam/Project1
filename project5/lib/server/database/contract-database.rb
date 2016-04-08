@@ -105,10 +105,13 @@ module DatabaseContract
   end
   
   def post_getPlayerGames(result)
-    assert result.class == Array, "getPlayerGames must return an array"
-    if !result.empty?
-      assert result[0].class == Hash, "result array must contain Hash types"
-    end
+    assert(
+      result.class == Hash && 
+        result.has_key?('active') && 
+        result.has_key?('saved') && 
+        result.has_key?('joinable'),
+      "getPlayerGames must return a Hash"
+    )
   end
   
   ####
