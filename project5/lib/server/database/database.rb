@@ -69,7 +69,6 @@ class Database
     #TODO: Contract
     pre_setServerData(serverAddress, data)
     d = serialize(data)
-    puts d
     @db.query("START TRANSACTION")
     @db.query("UPDATE Server \
                 SET data='#{d}' \
