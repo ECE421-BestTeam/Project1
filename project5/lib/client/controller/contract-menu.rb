@@ -18,8 +18,9 @@ module MenuControllerContract
   def post_initialize
   end
   
-  def pre_getBoardController(settings)
-    assert settings.class == GameSettingsModel || settings.class == String, "settings must be a GameSettingsModel or game ID String"
+  def pre_getBoardController(type, settings)
+    assert ['local', 'online'].include?(type), "boardController type must be in ['local', 'online']"
+    assert settings.class == GameSettingsModel || settings.class == String, "gameSettings must be a GameSettingsModel or game ID String, not #{settings.class}"
   end
   
   def post_getBoardController(result)

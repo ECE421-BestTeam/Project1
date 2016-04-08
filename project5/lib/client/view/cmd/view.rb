@@ -38,7 +38,7 @@ class CmdView
 #    @mode = :playingGame
     
     # sends options and create a custom boardController
-    bController = @controller.getBoardController(@gameSettings)
+    bController = @controller.getBoardController(@boardControllerType, @gameSettings)
     
     # start a board view
     ViewCmdBoard.new(
@@ -63,10 +63,10 @@ class CmdView
       Proc.new { |res| temp = res })
     case temp
       when 0
-        @gameSettings.mode = :practice
+        @boardControllerType = 'local'
         getPracticeOptions
       when 1
-        @gameSettings.mode = :compete
+        @boardControllerType = 'online'
         getCompeteOptions
       when 2
         showStatistics

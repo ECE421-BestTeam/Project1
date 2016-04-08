@@ -73,22 +73,16 @@ class ServerTest < Test::Unit::TestCase
   
   def test_playGame
    
-    gSett = GameSettingsModel.new(2, 'victoryNormal', 'compete')
-    @client1.getBoardController(gSett)
-    
+    gSett = GameSettingsModel.new(2, 'victoryNormal')
+    @board1 = @client1.getBoardController('online', gSett)
+    gameId = @board1.implementation.gameId
+    @removes.push(['Game', gameId])
     puts 'GOT CLIENT1 BOARD CONTROLLER'
     
-    games = @client2.getGames
-    assert games.class = Hash
-    assert 0, games['saved'].length
-    assert 0, games['active'].length
-    assert 1, games['joinable'].length
-    
+    games = @client2.getGames    
     puts 'GOT GAMES'
     
-    @removes.push(['Game', games['joinable'].id])
-    @client1.getBoardController(games['joinable'].id)
-    
+    @board2 = @client1.getBoardController('online', gameId)
     puts 'GOT CLIENT2 BOARD CONTROLLER'
     
 #    assert_equal(

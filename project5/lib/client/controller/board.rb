@@ -6,6 +6,8 @@ require_relative './board-online'
 class BoardController
   include BoardControllerContract
   
+  attr_reader :implementation
+  
   #initializes the selected board controller
   def initialize (type, settings)
     pre_initialize(type, settings)

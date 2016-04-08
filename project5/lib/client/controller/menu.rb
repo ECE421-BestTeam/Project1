@@ -30,8 +30,8 @@ class MenuController
   # returns a boardController initialized with a game by gameSettings
   # gameSettings should be GameSettingsModel for a new game
   # or an id String for a game, to join an existing game
-  def getBoardController(gameSettings)
-    pre_getBoardController(gameSettings)
+  def getBoardController(type, gameSettings)
+    pre_getBoardController(type, gameSettings)
     
     controllerSettings = {
       :gameSettings => gameSettings,
@@ -39,10 +39,10 @@ class MenuController
     }
     
     result = nil
-    case gameSettings.mode
-      when 'practice'
+    case type
+      when 'local'
         result = BoardController.new(:boardControllerLocal, controllerSettings)
-      when 'compete'
+      when 'online'
         result = BoardController.new(:boardControllerOnline, controllerSettings)
     end
 

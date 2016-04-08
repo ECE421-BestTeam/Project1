@@ -184,7 +184,7 @@ class Database
     # Returns: Array of Hashes -- result
     pre_getPlayerGames(sessionId)
     
-    player_id = getPlayerID(sessionID)
+    player_id = getPlayerID(sessionId)
     
     # get all games a player can play
     res = @db.query("SELECT game_id, state, game_model FROM Game \

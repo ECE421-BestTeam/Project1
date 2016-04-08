@@ -7,11 +7,10 @@ class GameSettingsModel
   include GameSettingsContract
   
   # initializes the settings
-  def initialize(players = 2, victoryType = 'victoryNormal', mode = 'practice', rows = 6, cols = 7)
+  def initialize(players = 2, victoryType = 'victoryNormal', rows = 6, cols = 7)
     
     @players = players
     @victoryType = victoryType
-    @mode = mode
     @rows = rows
     @cols = cols
     
@@ -20,7 +19,6 @@ class GameSettingsModel
   $attributes = [
     :players, # players - number of players
     :victoryType, # victoryType - number: 0 = normal, 1 = OTTO
-    :mode, # :practice or :compete
     :rows, # rows - number of rows in board
     :cols # cols - number of cols in board
   ]  

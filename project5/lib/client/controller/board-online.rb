@@ -1,16 +1,14 @@
 require 'socket'
 require 'xmlrpc/server'
 require_relative './online-helper'
-require_relative '../../common/model/game'
 
 # local implementation of board controller
 class BoardOnlineController
   include OnlineHelper
   
-  attr_reader :settings, :localPlayers
+  attr_reader :settings, :localPlayers, :gameId
   
   def initialize (settings)
-    @gameSettings = settings[:gameSettings]
     @clientSettings = settings[:clientSettings]
     
     # open the connection
@@ -20,7 +18,7 @@ class BoardOnlineController
     startReciever
     
     # get game
-    startGame
+    startGame settings[:gameSettings]
     
   end
 
@@ -39,7 +37,6 @@ class BoardOnlineController
     end
     
     @reciever.add_handler('refresh') do |model|
-      puts 'HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII'
       @resfresh.call model
     end
     @recieverThread = Thread.new do
@@ -65,12 +62,11 @@ class BoardOnlineController
   end
   
   # either starts a new game or joins an existing one
-  def startGame
-    if @gameSetttings.class == String
-      @gameId = @gameSettings
-      joinGame(@gameId)
+  def startGame(gameSettings)
+    if gameSettings.class == String
+      joinGame(gameSettings)
     else 
-      newGame(@gameSettings)
+      newGame(gameSettings)
     end
   end
   
@@ -80,8 +76,7 @@ class BoardOnlineController
       @connection.call('newGame', @clientSettings.sessionId, gameSettings),
       Proc.new do |data|
         # we were returned the new game ID
-        @gameId = data
-        joinGame(@gameId)
+        joinGame(data)
       end
     )
   end
@@ -90,6 +85,7 @@ class BoardOnlineController
     handleResponse(
       @connection.call('joinGame', @clientSettings.sessionId, gameId),
       Proc.new do |data|
+        @gameId = gameId
         # we were returned the player Number
         @localPlayers = [data] 
       end
