@@ -63,7 +63,9 @@ class ServerTest < Test::Unit::TestCase
     session = @db.createPlayer("joinplayer", "joinpswd")
     othergameId = @db.newGame(session, game)
     othersession = @db.createPlayer("otherplayer", "otherpswd")
-    assert @db.joinGame(othersession, othergameId).is_a? Hash
+    j = @db.joinGame(othersession, othergameId)
+    assert j.is_a? Hash
+    assert j['game_model'].is_a? GameModel
   end
 
   def test_getGame
@@ -72,7 +74,9 @@ class ServerTest < Test::Unit::TestCase
     session = @db.createPlayer("user4", "pswd4")
     gameId= @db.newGame(session, game)
 
-    assert @db.getGame(gameId).is_a? Hash
+    g = @db.getGame(gameId)
+    assert g.is_a? Hash
+    assert g['game_model'].is_a? GameModel
   end
 
   def test_updateGame

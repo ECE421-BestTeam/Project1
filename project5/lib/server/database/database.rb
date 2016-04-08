@@ -217,7 +217,7 @@ class Database
     res = @db.query("SELECT * FROM Game WHERE game_id='#{gameId}'")
     if @db.affected_rows == 1
       game = res.first
-      
+      game['game_model'] = unserialize(game['game_model'])
       # Is player already part of game?
       if [game['player1_id'], game['player2_id']].include? playerId
         canJoin = true
