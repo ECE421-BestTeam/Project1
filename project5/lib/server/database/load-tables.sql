@@ -2,7 +2,6 @@ USE ece421grp4;
 DROP TABLE IF EXISTS Game;
 DROP TABLE IF EXISTS Server;
 DROP TABLE IF EXISTS Player;
-DROP TABLE IF EXISTS Session;
 
 CREATE TABLE IF NOT EXISTS Game(
   game_id varchar(200),
@@ -27,10 +26,9 @@ CREATE TABLE IF NOT EXISTS Player(
   wins Integer,
   losses Integer,
   draws Integer,
-  current_session_id varchar(200),
-  UNIQUE(username),
+  current_session_id varchar(20),
   PRIMARY KEY(username),
-  UNIQUE(current_session_id);
+  UNIQUE(current_session_id));
 
 
 

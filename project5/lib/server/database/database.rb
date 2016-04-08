@@ -108,7 +108,7 @@ class Database
     
     @db.query("START TRANSACTION")
     @db.query("INSERT INTO Player(username, password, points, wins, losses, draws, current_session_id) \
-                  VALUES ( '#{username}', '#{password}',0, 0, 0, 0, 'null')" )
+                  VALUES ( '#{username}', '#{password}',0, 0, 0, 0, '')" )
     @db.query("COMMIT")
     
     sess_id = assignNewSessionID(username)
@@ -144,7 +144,7 @@ class Database
     
     @db.query("START TRANSACTION")
     @db.query("UPDATE Player \
-                SET current_session_id=NULL \
+                SET current_session_id=''\
                 WHERE username = '#{username}'")
     @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
     @db.query("COMMIT")
@@ -186,21 +186,21 @@ class Database
     @db.query("START TRANSACTION")
     playerId = getPlayerID(sessionId)
     server_address = getLeastActiveServer()
-    addGame(gameId, playerId, 'NULL', "joinable", game, server_address)
+    addGame(gameId, playerId, "", "joinable", game, server_address)
     @db.query("COMMIT")
   
     post_newGame(gameId)
     return gameId
   end
   
-  def addGame(gameID, player1ID, player2ID="NULL", state, gameModel, server_address)
+  def addGame(gameID, player1ID, player2ID="", state, gameModel, server_address)
     # newGame mysql helper function
     # Propagates mysql error
     s_gameModel = serialize(gameModel)
 
     @db.query("START TRANSACTION")
     @db.query("INSERT INTO Game (game_id, player1_id, player2_id, state, game_model, server_address, last_update) \
-                  VALUES ( '#{gameID}', '#{player1ID}', #{player2ID}, '#{state}', '#{s_gameModel}', '#{server_address}', curdate())" )
+                  VALUES ( '#{gameID}', '#{player1ID}', '#{player2ID}', '#{state}', '#{s_gameModel}', '#{server_address}', curdate())" )
     @db.query("COMMIT")
   end
   
@@ -225,9 +225,9 @@ class Database
       elsif game['state'] == 'joinable'
         # they can also join the game! (probably!)
         freePlayerSlot = nil
-        if game['player2_id'] == nil
+        if game['player2_id'] == ""
           freePlayerSlot = '2'
-        elsif game['player1_id'] == nil
+        elsif game['player1_id'] == ""
           freePlayerSlot = '1'
         end
         
@@ -241,7 +241,7 @@ class Database
       end
       
       if canJoin 
-        if game['server_address'].downcase =='null'
+        if game['server_address'].downcase ==""
         server_address = getLeastActiveServer()
         @db.query("UPDATE Game \
                     SET server_address =  \
