@@ -55,7 +55,9 @@ class ServerTest < Test::Unit::TestCase
     sett.host = 'localhost'
     sett.port = @port1
     @client1 = MenuController.new(sett)
+    assert @client1.testConnection
     @client1.connect
+    
     puts '------------------------------------------------------STARTED CLIENT1'
       
     # start the client2 controller
@@ -66,8 +68,8 @@ class ServerTest < Test::Unit::TestCase
     @client2.connect
     puts '------------------------------------------------------STARTED CLIENT2'
     
-    @client1.createPlayer($acc2[:username], $acc2[:password])
-    @client1.createPlayer($acc1[:username], $acc1[:password])
+    @client1.createAccount($acc2[:username], $acc2[:password])
+    @client1.createAccount($acc1[:username], $acc1[:password])
     puts '------------------------------------------------------CLIENT1 CREATED ACCOUNTS'
 
     @client2.login($acc2[:username], $acc2[:password])

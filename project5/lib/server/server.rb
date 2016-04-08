@@ -73,6 +73,7 @@ class Server
     # attempts to create a player
     # returns the session id on success
     @server.add_handler('testConnection') do ||
+        puts 'testing conection'
       getResult(Proc.new {
         true
       })
@@ -296,3 +297,6 @@ class Server
 end
 
 (Server.new).start
+ while true 
+   sleep 100
+ end

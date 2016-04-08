@@ -8,17 +8,21 @@ module OnlineHelper
   end
   
   def testConnection
+    connect
     begin
       handleResponse(Proc.new {
           @connection.call('testConnection')
         },
         Proc.new do |data|
-          return data
+          puts 'Success!'
         end
       )
-    rescue 
+    rescue Exception => e
+      puts e
       return false
     end
+    
+    return true
   end
   
   def redirect(newAddress)
@@ -50,7 +54,13 @@ module OnlineHelper
     if recur > 5
       raise IOError, "too many redirects"
     end
-    response = responseFn.call
+    begin
+      response = responseFn.call
+    rescue Exception => e
+      @busy = false
+      raise e
+    end
+    
     data = response['data']
     case response['status']
       when 'redirect'

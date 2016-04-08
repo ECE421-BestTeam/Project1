@@ -128,7 +128,7 @@ class CmdView
             host = add[0]
             port = add[1]
             @controller.clientSettings.host = host
-            @controller.clientSettings.port = port
+            @controller.clientSettings.port = Integer(port)
             @controller.clientSettings.save 
           end
         })
@@ -136,7 +136,7 @@ class CmdView
   end
   
   def close
-    @bController.close
+    @bController.close if @bController
     @controller.close
   end
   
