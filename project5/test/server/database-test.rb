@@ -63,7 +63,7 @@ class ServerTest < Test::Unit::TestCase
     session = @db.createPlayer("joinplayer", "joinpswd")
     othergameId = @db.newGame(session, game)
     othersession = @db.createPlayer("otherplayer", "otherpswd")
-    assert @db.joinGame(othersession, othergameId).is_a? String
+    assert @db.joinGame(othersession, othergameId).is_a? Hash
   end
 
   def test_getGame
