@@ -286,3 +286,5 @@ class Server
   end
 
 end
+
+(Server.new).start

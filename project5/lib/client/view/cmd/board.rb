@@ -55,9 +55,9 @@ class ViewCmdBoard
 
     # if it is a player turn, let them take their turn!
     playerTurn = (@game.turn % 2) + 1
-    
+
     if @localPlayers.include?playerTurn #it is a local player's turn
-      puts "Player #{playerTurn + 1}'s turn:"
+      puts "Player #{playerTurn}'s turn:"
       @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@cols})", 
         (1..@cols), 
@@ -90,8 +90,8 @@ class ViewCmdBoard
   # col - 0 indexed from the left
   # row - 0 indexed from the bottom up
   # token - the token to place: nil = empty token, 
-  def getToken (val)
-    if val == nil
+  def getToken(val)
+    if val == 0
       return " "
     else
       begin

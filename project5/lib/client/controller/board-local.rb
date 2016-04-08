@@ -9,9 +9,9 @@ class BoardLocalController
     
     @settings = settings[:gameSettings]
     if @settings.players == 2
-      @localPlayers = [0, 1]
+      @localPlayers = [1, 2]
     else
-      @localPlayers = [0]
+      @localPlayers = [1]
     end
     @game = GameModel.new @settings
   end

@@ -5,7 +5,7 @@ module VictoryContract
   
   def class_invariant
     assert @name.class == String, "name must be a String"
-    assert @playerTokens.class == Array && @playerTokens.size == 2, "playerTokens must be an Array of 2 Strings"
+    assert @playerTokens.class == Array, "playerTokens must be an Array"
     assert @p1win.class == Array && @p1win.size > 0, "p1sequence must be an Array of size >1"
     assert @p2win.class == Array && @p2win.size > 0, "p2sequence must be an Array of size >1"
   end
@@ -25,11 +25,11 @@ module VictoryContract
   end
   
   def pre_playerToken(player)
-    assert player.class == Fixnum && player.between?(0,1), "player must be a Fixnum in range 0-1"
+    assert player.class == Fixnum && player.between?(0,@playerTokens.size), "player must be a Fixnum in range 0-#{@playerTokens.size}"
   end
   
   def post_playerToken(result)
-    assert result.class == String, "result must be a string"
+    assert result.class == String, "result must be a string, not #{result}"
   end
   
   def pre_checkVictory(board)

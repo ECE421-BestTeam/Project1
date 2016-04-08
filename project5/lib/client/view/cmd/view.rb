@@ -95,9 +95,9 @@ class CmdView
       Proc.new { |res| 
         case res
           when 0
-            res = :victoryNormal
+            res = 'victoryNormal'
           when 1
-            res = :victoryOtto
+            res = 'victoryOtto'
         end
         @gameSettings.victoryType = res
       })
