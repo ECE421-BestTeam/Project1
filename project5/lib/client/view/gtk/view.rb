@@ -104,7 +104,7 @@ class GtkView
   def startGame(boardControllerType)
     # sends options and create a custom boardController
     @bController = @controller.getBoardController(boardControllerType, @gameSettings)
-    #TODO: start board
+    ViewGtkBoard.new(@window, @mainPanel, @bController)
   end
   
   def initNewGameWidget
