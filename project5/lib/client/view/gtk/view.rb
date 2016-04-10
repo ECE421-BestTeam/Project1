@@ -151,10 +151,10 @@ class GtkView
       displayServerGames(vbox, "Saved Games", games['saved'])
       displayServerGames(vbox, "Joinable Games", games['joinable'])
       scrollWindow.add_with_viewport vbox
-      scrollWindow.set_size_request(400,400)
+      scrollWindow.set_size_request(400,200)
       @serverGameListWidget.child = scrollWindow
     rescue
-      @serverGameListWidget.child = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+      @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
     end
     @window.show_all
   end
@@ -277,7 +277,7 @@ class GtkView
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
-    @statsWidget.set_size_request(400,400)
+    @statsWidget.set_size_request(400,200)
   end
   
   def updateStatsWidget
