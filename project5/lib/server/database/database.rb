@@ -200,11 +200,13 @@ class Database
       'joinable' => []
     }
     res.each { |h|
+      state = h.delete('state')
       # change state for return if we are already part of the game
-      h['state'] = 'active' if [h['player1_id'], h['player2_id']].include?player_id && h['state'] != 'saved'
+      if ([h['player1_id'], h['player2_id']].include?player_id) && (h['state'] != 'saved')
+        state = 'active'
+      end
 
       h['game_model'] = unserialize(h['game_model'])
-      state = h.delete('state')
       result[state].push(h)
     }
 #    puts "#{result['active']}, #{result['active'].size}, #{result['saved']}, #{result['saved'].size}, #{result['joinable']}, #{result['joinable'].size}"
