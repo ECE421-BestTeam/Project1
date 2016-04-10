@@ -163,4 +163,5 @@ class ViewGtkBoard
         end
       end
     end
+  end
 end
