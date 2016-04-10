@@ -67,7 +67,7 @@ class ViewGtkBoard
     # don't let additional calls go through if game is over
     return if @gameover
     
-    extrasVbox.children.each do |widget|
+    @extrasVbox.children.each do |widget|
       widget.destroy
     end
     
@@ -82,14 +82,14 @@ class ViewGtkBoard
         declineButton = Gtk::Button.new "Decline"
         GtkHelper.applyEventHandler(acceptButton, :clicked) {
           @controller.sendSaveResponse(true)
-          extrasVbox.children.each do |widget|
+          @extrasVbox.children.each do |widget|
             widget.destroy
           end
           exitGame
         }
         GtkHelper.applyEventHandler(declineButton, :clicked) {
           @controller.sendSaveResponse(false)
-          extrasVbox.children.each do |widget|
+          @extrasVbox.children.each do |widget|
             widget.destroy
           end
         }
@@ -102,7 +102,7 @@ class ViewGtkBoard
           @extrasVbox.pack_start Gtk::Label.new "Opponent has agreed to save."
           okButton = Gtk::Button.new "OK"
           GtkHelper.applyEventHandler(okButton, :clicked) {
-            extrasVbox.children.each do |widget|
+            @extrasVbox.children.each do |widget|
               widget.destroy
             end
             exitGame
@@ -113,7 +113,7 @@ class ViewGtkBoard
           @extrasVbox.pack_start Gtk::Label.new "Opponent has not agreed to save."
           okButton = Gtk::Button.new "OK"
           GtkHelper.applyEventHandler(okButton, :clicked) {
-            extrasVbox.children.each do |widget|
+            @extrasVbox.children.each do |widget|
               widget.destroy
             end
           }
