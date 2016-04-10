@@ -72,15 +72,19 @@ class GtkView
         @mainPanel.child = @gameBoardWidget
       end
     when :account
-      if @controller.clientSettings.sessionId.length < 1
+      if !@controller.testConnection || @controller.clientSettings.sessionId.length < 1
         @mainPanel.child = @loginWidget
+        updateLoginWidget ''
       else
         @mainPanel.child = @logoutWidget
+        updateLogoutWidget
       end
     when :server
         @mainPanel.child = @serverWidget
+        updateServerWidget ''
     when :stats
         @mainPanel.child = @statsWidget
+        updateStatsWidget
     else
     end
     @currentContext = newContext
@@ -123,8 +127,17 @@ class GtkView
     playButton = Gtk::Button.new "Play"
     GtkHelper.applyEventHandler(playButton, :clicked) {startGame 'local'}
     @newGameWidget.pack_start playButton
+    @newGameWidget.pack_start Gtk::Label.new "Play online:"
     @serverGameListWidget = Gtk::Label.new "[server games go here]"
     @newGameWidget.pack_start @serverGameListWidget
+  end
+  
+  def updateNewGameWidget
+    if @controller.testConnection
+      @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
+    else
+      @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+    end
   end
   
   def initGameBoardWidget
@@ -132,7 +145,24 @@ class GtkView
   end
   
   def initLoginWidget
-    @loginWidget = Gtk::Label.new "TODO: login widget"
+    @loginWidget = Gtk::VBox.new
+    usernameEntry = Gtk::Entry.new
+    @loginWidget.pack_start GtkHelper.createBox('H', 
+      [ { :type => Gtk::Label, :content => "Username: " },
+        { :widget => usernameEntry } ] )
+    passwordEntry = Gtk::Entry.new
+    @loginWidget.pack_start GtkHelper.createBox('H', 
+      [ { :type => Gtk::Label, :content => "Password: " },
+        { :widget => passwordEntry } ] )
+    loginButton = Gtk::Button.new "Login"
+    #TODO: add event handler
+    @loginWidget.pack_start loginButton
+    @loginResult = Gtk::Label.new ""
+    @loginWidget.pack_start @loginResult
+  end
+  
+  def updateLoginWidget(message)
+    @loginResult.text = message
   end
   
   def initLogoutWidget
@@ -144,10 +174,15 @@ class GtkView
     @logoutWidget.pack_start button
   end
   
+  def updateLogoutWidget
+    #Called when newly logged in
+    @loggedInMessage.text = "Logged in as " + @controller.clientSettings.username
+  end
+  
   def initServerWidget
     @serverWidget = Gtk::VBox.new
-    @serverWidget.pack_start Gtk::Entry.new
     addressEntry = Gtk::Entry.new
+    addressEntry.text = @controller.clientSettings.host + ":" + @controller.clientSettings.port.to_s
     #TODO: add event handler
     @serverWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Server Address: " },
@@ -159,8 +194,9 @@ class GtkView
     @serverWidget.pack_start @serverConnectionResult
   end
   
-  def updateServerWidget
+  def updateServerWidget(message)
     #Update serverConnectionResult based on how the server connected
+    @serverConnectionResult.text = message
   end
   
   def initStatsWidget
@@ -174,6 +210,15 @@ class GtkView
   end
   
   def updateStatsWidget
-    #update topPlayerStatsWidget and yourStatsWidget based on connection and account info
+    if @controller.testConnection
+      @topPlayerStatsWidget.text = "TODO: top player stats"
+    else
+      @topPlayerStatsWidget.text = "Connect to a server to see top player stats."
+    end
+    if @controller.testConnection && @controller.clientSettings.sessionId.length >= 1
+      @yourStatsWidget.text = "TODO: your stats"
+    else
+      @yourStatsWidget.text = "Log in or sign up to see your stats."
+    end
   end
 end
