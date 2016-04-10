@@ -56,7 +56,6 @@ class GtkView
     @window.add panels
     
     initNewGameWidget
-    initGameBoardWidget
     initLoginWidget
     initLogoutWidget
     initServerWidget
