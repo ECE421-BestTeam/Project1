@@ -164,13 +164,19 @@ class GtkView
   
   def displayServerGames(widget, title, games)
     widget.pack_start Gtk::Label.new "#{title}: #{games.size}"
-    games.each do |game|
-      widget.pack_start Gtk::Button.new "TODO: Button functions"
+    games.each_with_index do |gameEntry, i|
+      game = gameEntry['game_model']
+      button = Gtk::Button.new "Victory Mode: #{game.victory.name}, Turn: #{game.turn}"
+      GtkHelper.applyEventHandler(button, :clicked) {
+        @gameSettings = games[i]['game_id']
+        @gameSettings.players = 2
+        startGame 'online'
+      }
+      widget.pack_start button
     end
-  end
-  
-  def initGameBoardWidget
-    @gameBoardWidget = Gtk::Label.new "TODO: Game board widget"
+    
+    result = nil
+    return result
   end
   
   def initLoginWidget
