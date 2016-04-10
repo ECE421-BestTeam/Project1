@@ -142,9 +142,23 @@ class GtkView
   
   def updateNewGameWidget
     begin
+      games = @controller.getGames
       @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
+      @serverGameListWidget = Gtk::ScrolledWindow.new
+      vbox = Gtk::VBox.new
+      displayServerGames(vbox, "Active Games", games['active'])
+      displayServerGames(vbox, "Saved Games", games['saved'])
+      displayServerGames(vbox, "Joinable Games", games['joinable'])
+      @serverGameListWidget.set_size_request(400,400)
     rescue
       @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+    end
+  end
+  
+  def displayServerGames(widget, title, games)
+    widget.pack_start Gtk::Label.new "#{title}: #{games.size}"
+    games.each do |game|
+      widget.pack_start Gtk::Button.new "TODO: Button functions"
     end
   end
   
@@ -259,7 +273,7 @@ class GtkView
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
-    @statsWidget.set_size_request(400,100)
+    @statsWidget.set_size_request(400,400)
   end
   
   def updateStatsWidget
