@@ -143,7 +143,6 @@ class GtkView
   def updateNewGameWidget
     begin
       games = @controller.getGames
-      @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
       @serverGameListWidget = Gtk::ScrolledWindow.new
       vbox = Gtk::VBox.new
       displayServerGames(vbox, "Active Games", games['active'])
