@@ -147,6 +147,9 @@ class GtkView
       games = @controller.getGames
       scrollWindow = Gtk::ScrolledWindow.new
       vbox = Gtk::VBox.new
+      newGameButton = Gtk::Button.new "New Game"
+      GtkHelper.applyEventHandler(newGameButton, :clicked) {startGame 'online'}
+      vbox.pack_start newGameButton
       displayServerGames(vbox, "Active Games", games['active'])
       displayServerGames(vbox, "Saved Games", games['saved'])
       displayServerGames(vbox, "Joinable Games", games['joinable'])
