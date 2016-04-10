@@ -32,20 +32,16 @@ class GtkView
     serverButton = Gtk::Button.new "Server"
     statsButton = Gtk::Button.new "Stats"
     GtkHelper.applyEventHandler(gameButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :game
-      switchContext :game
+      switchContext :game if @currentContext != :game
     }
     GtkHelper.applyEventHandler(accountButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :account
-      switchContext :account
+      switchContext :account if @currentContext != :account
     }
     GtkHelper.applyEventHandler(serverButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :server
-      switchContext :server
+      switchContext :server if @currentContext != :server
     }
     GtkHelper.applyEventHandler(statsButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :stats
-      switchContext :stats
+      switchContext :stats if @currentContext != :stats
     }
     menu = GtkHelper.createBox('H',
       [ { :widget => gameButton },
