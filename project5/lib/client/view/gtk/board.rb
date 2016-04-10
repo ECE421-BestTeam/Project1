@@ -44,12 +44,12 @@ class ViewGtkBoard
     @emptytoken = "#{@currentLocation}/image/empty.png"
     
     #build the board
-    board = Gtk::Table.new(@rows, @cols)
+    board = Gtk::Table.new(@game.settings.rows, @game.settings.cols)
 
     @cells = Array.new(@rows) { Array.new(@cols) {nil} }
 
-    (0..(@cols-1)).each do |col|
-      (0..(@rows-1)).each do |row|
+    (0..(@game.settings.cols-1)).each do |col|
+      (0..(@game.settings.rows-1)).each do |row|
         cell = Gtk::EventBox.new
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
@@ -103,7 +103,7 @@ class ViewGtkBoard
     @game = game 
     
     # re-display the board
-    puts boardToString
+    updateBoard
 
     # Check if the game is over
     if @game.winner != 0
@@ -147,13 +147,13 @@ class ViewGtkBoard
    end
   
   # refreshes board to reflect the current model
-  def updateBoard(game, recursive = false)
-    @game = game
-
+  def updateBoard
+    setUpBoard if @board == nil
+    
     # update tokens
     (0..(@cols-1)).each do |col|
       (0..(@rows-1)).each do |row|
-        case game.board[row][col]
+        case @game.board[row][col]
         when 0
           @cells[row][col].children[0].set_file(@player1token)
         when 1
@@ -163,24 +163,4 @@ class ViewGtkBoard
         end
       end
     end
-    
-    # check for victory (if so do something like switch to end screen)
-    if game.winner == 0
-      refreshBoard(@controller.getNextActiveState, true) if !recursive
-    else
-      # else we have a winner
-      message = "Draw!"
-      if (@controller.settings.players == 1)
-        message = "Player wins!" if game.winner == 1
-        message = "Computer wins!" if game.winner == 2
-      else
-        message = "Player 1 wins!" if game.winner == 1
-        message = "Player 2 wins!" if game.winner == 2
-      end
-#      @window.destroy
-      GtkHelper.popUp("Game Over", message, Proc.new { @window.destroy })
-    end
-    
-  end
-  
 end
