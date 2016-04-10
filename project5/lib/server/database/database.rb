@@ -202,7 +202,7 @@ class Database
     res.each { |h|
       state = h.delete('state')
       # change state for return if we are already part of the game
-      if ([h['player1_id'], h['player2_id']].include?player_id) && (h['state'] != 'saved')
+      if ([h['player1_id'], h['player2_id']].include?player_id) && (state != 'saved')
         state = 'active'
       end
 
