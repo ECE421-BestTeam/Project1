@@ -154,6 +154,7 @@ class GtkView
     rescue
       @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
     end
+    @window.show_all
   end
   
   def displayServerGames(widget, title, games)
