@@ -85,7 +85,7 @@ class MenuController
   # on success no exceptions are thrown
   def logout
     handleResponse(Proc.new {
-        @connection.call('logout', @clientSettings.sessionId)
+        @connection.call('logout', @clientSettings.sessionId, @clientSettings.username)
       },
       Proc.new do |data|
         if data 

@@ -166,7 +166,7 @@ class Database
     return result
   end
   
-  def logout(sessionId)
+  def logout(sessionId, username)
     # Remove sessionID from Player record
     # and Session table
     # Returns: --
