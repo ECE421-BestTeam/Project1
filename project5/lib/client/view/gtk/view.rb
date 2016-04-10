@@ -136,22 +136,25 @@ class GtkView
     GtkHelper.applyEventHandler(playButton, :clicked) {startGame 'local'}
     @newGameWidget.pack_start playButton
     @newGameWidget.pack_start Gtk::Label.new "Play online:"
-    @serverGameListWidget = Gtk::Label.new "[server games go here]"
+    @serverGameListWidget = Gtk::EventBox.new
+    @serverGameListWidget.child = Gtk::Label.new "[server games go here]"
     @newGameWidget.pack_start @serverGameListWidget
   end
   
   def updateNewGameWidget
+    @serverGameListWidget.remove @serverGameListWidget.child if @serverGameListWidget.child != nil
     begin
       games = @controller.getGames
-      @serverGameListWidget = Gtk::ScrolledWindow.new
+      scrollWindow = Gtk::ScrolledWindow.new
       vbox = Gtk::VBox.new
       displayServerGames(vbox, "Active Games", games['active'])
       displayServerGames(vbox, "Saved Games", games['saved'])
       displayServerGames(vbox, "Joinable Games", games['joinable'])
-      @serverGameListWidget.add_with_viewport vbox
-      @serverGameListWidget.set_size_request(400,400)
+      scrollWindow.add_with_viewport vbox
+      scrollWindow.set_size_request(400,400)
+      @serverGameListWidget.child = scrollWindow
     rescue
-      @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+      @serverGameListWidget.child = Gtk::Label.new "Connect to a server to play Connect4.2 online."
     end
     @window.show_all
   end
