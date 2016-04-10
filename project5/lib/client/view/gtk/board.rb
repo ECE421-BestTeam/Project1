@@ -21,7 +21,6 @@ class ViewGtkBoard
     @boardVbox = Gtk::VBox.new
     @widget.remove @widget.child if @widget.child != nil
     @widget.child = @boardVbox
-    @boardVbox.pack_start @board
     @window.show_all
     
     @gameover = false
@@ -58,7 +57,8 @@ class ViewGtkBoard
     end
     
     @board = board
-
+    @boardVbox.pack_start @board
+    @window.show_all
   end
   
   def refresh(content)
