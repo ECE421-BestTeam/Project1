@@ -65,6 +65,15 @@ class GameModel
     return result
   end
   
+  def setWinner(winner)
+    @winner=winner
+    checkVictory
+  end
+  
+  def advanceTurn
+    @turn += 1
+  end
+  
   def computerTurn
     pre_computerTurn
     begin

@@ -276,4 +276,8 @@ class CmdView
     puts stat.to_s
   end
   
+  def handleSaveRequest
+    puts "save in view"
+  end
+  
 end

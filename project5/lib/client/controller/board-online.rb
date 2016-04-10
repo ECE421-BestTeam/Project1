@@ -58,7 +58,28 @@ class BoardOnlineController
         end
         result
       end
-    
+      
+      # client uses this to receive the "saveRequest" to ask the player if they want to save
+      @reciever.add_handler('saveRequest') do |model|
+        begin
+          Thread.new {
+            puts "server returned saveRequest"
+            #@refresh.call refers to the board.rb's refresh method that refreshes the board
+            # the 'true' that is passed in triggers an if-statement to prompt the user if they agree
+            # to save
+            @refresh.call(model, true)
+          }
+          true
+        rescue Exception => e
+          puts 'ask saveAgree Failed:'
+          msg = e.message
+          e.backtrace.each do |level|
+            msg += "\n\t#{level}"
+          end
+          puts msg
+        end
+      end
+
       @reciever.serve
     end
   end
@@ -128,4 +149,22 @@ class BoardOnlineController
     })
   end
   
+  def sendSaveRequest
+    handleResponse(Proc.new {
+      @connection.call('requestSave', @clientSettings.sessionId, @gameId)
+    })
+  end
+  
+  def sendSaveAgree
+    handleResponse(Proc.new {
+      @connection.call('agreeSave', @clientSettings.sessionId, @gameId)
+    })
+  end
+  
+  def sendForfeit
+    handleResponse(Proc.new {
+      @connection.call('forfeitGame', @clientSettings.sessionId, @gameId)
+    })
+  end
+
 end

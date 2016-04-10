@@ -32,7 +32,22 @@ class ViewCmdBoard
     @exitCallback.call @controller.close
   end
   
-  def refresh(game)
+  def handleSaveAgree
+    #intended to send a saveAgree request from the agreeing playing to the server
+    #@controller is board-online.rb
+    @controller.sendSaveAgree
+    exitGame
+  end
+  
+  def handleSaveGame
+    @controller.sendSaveRequest
+    #this line exits the game after saving for the requesting player
+    #commented out because we need agreement from the other player first
+        #@controller is board-online.rb
+    #exitGame
+  end
+  
+  def refresh(game, save=false)
     # don't let additional calls go through if game is over
     return if @gameover
     
@@ -42,6 +57,9 @@ class ViewCmdBoard
     # re-display the board
     puts boardToString
     
+    
+    
+
     # Check if the game is over
     if @game.winner != 0
       puts "--- GAME OVER ---"
@@ -61,11 +79,34 @@ class ViewCmdBoard
 
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn}'s turn:"
+      
+      # handles sending back to the server a saveAgree request
+      # currently not working as intended
+      if save==true
+        @helper.getUserInput(
+          "Opponent has requested to save. 'y' to agree, 'n' to disagree and forfeit match",
+          ['y','n'],
+          Proc.new do |ans|
+            if ans == 'y'
+              handleSaveAgree
+            elsif ans == 'n'
+              @controller.sendForfeit
+              exitGame
+            end
+          end
+        )
+      end
+      
       @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols})", 
-        (1..@game.settings.cols), 
+        (1..@game.settings.cols).to_a.push("save"),
         Proc.new do |col|
-          @controller.placeToken(col - 1)
+          if col == "save"
+            #sends a requestSave request
+            handleSaveGame
+          else
+            @controller.placeToken(col - 1)
+          end
         end
       )
     else

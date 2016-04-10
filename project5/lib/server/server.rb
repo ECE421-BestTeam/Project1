@@ -196,6 +196,61 @@ class Server
         end
       })
     end
+    
+    @server.add_handler('requestSave') do |sessionId, gameId|
+      ## server receives a request from the player to save the game
+      getResult(Proc.new {
+        game = @games[gameId]['game']
+        raise GameOverError, "game does not exist" if !@games[gameId]
+        #if it is the requester's turn
+        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
+          # the following lines save the game without prompting the second user
+          #@db.updateGame(gameId, 'state', 'saved')
+          #puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
+          
+          # here I try to send a prompt to the second player, but this is not working
+          address = @games[gameId]["player#{(game.turn % 2) +1}"]['address']
+          # send saveAgree request to other player address
+          game.advanceTurn
+          sendRefresh(gameId)
+          callSaveAgree(address, gameId)
+          
+        else
+          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
+        end
+        
+      })
+    end
+    
+    @server.add_handler('agreeSave') do |sessionId, gameId|
+      getResult(Proc.new {
+        raise GameOverError, "game does not exist" if !@games[gameId]
+        #if it is the agreer's turn
+        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
+          @db.updateGame(gameId, 'state', 'saved')
+          puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
+        else
+          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
+        end
+      })
+    end
+    
+    @server.add_handler('forfeitGame') do |sessionId, gameId|
+      getResult(Proc.new {
+        raise GameOverError, "game does not exist" if !@games[gameId]
+        game = @games[gameId]['game']
+        #if it is the forfeiter's turn
+        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
+          game.setwinner("#{game.turn%2}")
+          @db.remove('game', gameId)
+        else
+          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
+        end
+      })
+    end
+    
+    
+    
   end
   
   def gameEnd(gameId, winner)
@@ -214,6 +269,22 @@ class Server
     end
     @db.remove('Game', gameId)
     @games.delete(gameId)
+  end
+  
+  def callSaveAgree(address, gameId)
+    # this function sends the 'saveRequest' request to the client to ask for agreement to save
+    Thread.new {
+      begin
+        getConnection(address).call('saveRequest', game)
+      rescue Exception => e
+        puts "Error sending saveRequest to #{address.to_s}"
+        msg = e.message
+        e.backtrace.each do |level|
+          msg += "\n\t#{level}"
+        end
+        puts msg
+      end
+    }
   end
   
   def sendRefresh(gameId)

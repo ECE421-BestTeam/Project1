@@ -201,12 +201,13 @@ class Database
     }
     res.each { |h|
       # change state for return if we are already part of the game
-      h['state'] = 'active' if [h['player1_id'], h['player2_id']].include?player_id
-      
+      h['state'] = 'active' if [h['player1_id'], h['player2_id']].include?player_id && h['state'] != 'saved'
+
       h['game_model'] = unserialize(h['game_model'])
       state = h.delete('state')
       result[state].push(h)
     }
+#    puts "#{result['active']}, #{result['active'].size}, #{result['saved']}, #{result['saved'].size}, #{result['joinable']}, #{result['joinable'].size}"
     post_getPlayerGames(result)
     return result
   end
