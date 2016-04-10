@@ -149,6 +149,7 @@ class GtkView
       displayServerGames(vbox, "Active Games", games['active'])
       displayServerGames(vbox, "Saved Games", games['saved'])
       displayServerGames(vbox, "Joinable Games", games['joinable'])
+      @serverGameListWidget.add_with_viewport vbox
       @serverGameListWidget.set_size_request(400,400)
     rescue
       @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
