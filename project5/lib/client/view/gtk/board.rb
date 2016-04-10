@@ -18,14 +18,6 @@ class ViewGtkBoard
     # for displaying issues
     @currentLocation = File.expand_path File.dirname(__FILE__)
 
-    # set up the window
-    @window = Gtk::Window.new
-    GtkHelper.applyEventHandler(@window, "destroy") do
-      exitGame
-    end
-    @window.title = "Connect4.2 Game"
-#    window.border_width = 10
-
   # set up the board
     setUpBoard
     refreshBoard @controller.startGame, true
