@@ -31,10 +31,22 @@ class GtkView
     accountButton = Gtk::Button.new "Account"
     serverButton = Gtk::Button.new "Server"
     statsButton = Gtk::Button.new "Stats"
-    GtkHelper.applyEventHandler(gameButton, :clicked) {switchContext :game}
-    GtkHelper.applyEventHandler(accountButton, :clicked) {switchContext :account}
-    GtkHelper.applyEventHandler(serverButton, :clicked) {switchContext :server}
-    GtkHelper.applyEventHandler(statsButton, :clicked) {switchContext :stats}
+    GtkHelper.applyEventHandler(gameButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :game
+      switchContext :game
+    }
+    GtkHelper.applyEventHandler(accountButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :account
+      switchContext :account
+    }
+    GtkHelper.applyEventHandler(serverButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :server
+      switchContext :server
+    }
+    GtkHelper.applyEventHandler(statsButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :stats
+      switchContext :stats
+    }
     menu = GtkHelper.createBox('H',
       [ { :widget => gameButton },
         { :widget => accountButton },
@@ -61,15 +73,15 @@ class GtkView
   end
   
   def switchContext(newContext)
-    #TODO
-    return if @currentContext != nil && @currentContext == newContext
     @mainPanel.remove @mainPanel.child if @mainPanel.child != nil
     case newContext
     when :game
       if @game == nil
         @mainPanel.child = @newGameWidget
+        updateNewGameWidget
       else
         @mainPanel.child = @gameBoardWidget
+        updateGameBoardWidget
       end
     when :account
       if !@controller.testConnection || @controller.clientSettings.sessionId.length < 1
@@ -144,19 +156,45 @@ class GtkView
     @gameBoardWidget = Gtk::Label.new "TODO: Game board widget"
   end
   
+  def updateGameBoardWidget
+    #Called with context switch or move made, game start/end
+    #Just meant to update the pieces displayed
+    #TODO
+  end
+  
   def initLoginWidget
     @loginWidget = Gtk::VBox.new
-    usernameEntry = Gtk::Entry.new
+    @usernameEntry = Gtk::Entry.new
     @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Username: " },
-        { :widget => usernameEntry } ] )
-    passwordEntry = Gtk::Entry.new
+        { :widget => @usernameEntry } ] )
+    @passwordEntry = Gtk::Entry.new
     @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Password: " },
-        { :widget => passwordEntry } ] )
+        { :widget => @passwordEntry } ] )
     loginButton = Gtk::Button.new "Login"
-    #TODO: add event handler
-    @loginWidget.pack_start loginButton
+    GtkHelper.applyEventHandler(loginButton, :clicked) {
+      begin
+        @controller.login(@usernameEntry.text, @passwordEntry.text)
+        switchContext :account
+      rescue Exception => e
+        updateLoginWidget "Login Failed"
+        @window.show_all
+      end
+    }
+    createAccountButton = Gtk::Button.new "Create Account"
+    GtkHelper.applyEventHandler(createAccountButton, :clicked) {
+      begin
+        @controller.createAccount(@usernameEntry.text, @passwordEntry.text)
+        switchContext :account
+      rescue Exception => e
+        updateLoginWidget "Account Creation Failed"
+        @window.show_all
+      end
+    }
+    @loginWidget.pack_start GtkHelper.createBox('H', 
+      [ { :widget => loginButton },
+        { :widget => createAccountButton } ] )
     @loginResult = Gtk::Label.new ""
     @loginWidget.pack_start @loginResult
   end
@@ -181,14 +219,30 @@ class GtkView
   
   def initServerWidget
     @serverWidget = Gtk::VBox.new
-    addressEntry = Gtk::Entry.new
-    addressEntry.text = @controller.clientSettings.host + ":" + @controller.clientSettings.port.to_s
-    #TODO: add event handler
+    @addressEntry = Gtk::Entry.new
+    @addressEntry.text = @controller.clientSettings.host + ":" + @controller.clientSettings.port.to_s
     @serverWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Server Address: " },
-        { :widget => addressEntry } ] )
+        { :widget => @addressEntry } ] )
     connectButton = Gtk::Button.new "Connect"
-    #TODO: add event handler
+    GtkHelper.applyEventHandler(connectButton, :clicked) {
+      if @addressEntry.text.length > 0
+        add = @addressEntry.text.split(':')
+        if add.size > 1
+          host = add[0]
+          port = add[1]
+          @controller.clientSettings.host = host
+          @controller.clientSettings.port = Integer(port)
+          @controller.clientSettings.save 
+        end
+      end
+      if @controller.testConnection
+        updateServerWidget "Connection successful"
+      else
+        updateServerWidget "Connection failed"
+      end
+      @window.show_all
+    }
     @serverWidget.pack_start connectButton
     @serverConnectionResult = Gtk::Label.new ""
     @serverWidget.pack_start @serverConnectionResult
@@ -200,23 +254,29 @@ class GtkView
   end
   
   def initStatsWidget
-    @statsWidget = Gtk::VBox.new
-    @statsWidget.pack_start Gtk::Label.new "Top Player Stats:"
+    @statsWidget = Gtk::ScrolledWindow.new
+    vbox = Gtk::VBox.new
+    vbox.pack_start Gtk::Label.new "Top Player Stats:"
     @topPlayerStatsWidget = Gtk::Label.new "[database stats go here]"
-    @statsWidget.pack_start @topPlayerStatsWidget
-    @statsWidget.pack_start Gtk::Label.new "Your Stats:"
+    vbox.pack_start @topPlayerStatsWidget
+    vbox.pack_start Gtk::Label.new "Your Stats:"
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
-    @statsWidget.pack_start @yourStatsWidget
+    vbox.pack_start @yourStatsWidget
+    @statsWidget.add_with_viewport vbox
+    @statsWidget.set_size_request(200,50)
   end
   
   def updateStatsWidget
     if @controller.testConnection
-      @topPlayerStatsWidget.text = "TODO: top player stats"
+      @topPlayerStatsWidget.text = ""
+      @controller.getTopStatistics.each do |stat|
+        @topPlayerStatsWidget.text += stat.to_s + "\n"
+      end
     else
       @topPlayerStatsWidget.text = "Connect to a server to see top player stats."
     end
     if @controller.testConnection && @controller.clientSettings.sessionId.length >= 1
-      @yourStatsWidget.text = "TODO: your stats"
+      @yourStatsWidget.text = @controller.getMyStatistics.to_s
     else
       @yourStatsWidget.text = "Log in or sign up to see your stats."
     end
