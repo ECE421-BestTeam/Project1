@@ -251,7 +251,7 @@ class GtkView
     vbox.pack_start Gtk::Label.new "Your Stats:"
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
-    @statsWidget.add vbox
+    @statsWidget.add_with_viewport vbox
   end
   
   def updateStatsWidget
