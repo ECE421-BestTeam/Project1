@@ -130,7 +130,7 @@ class ViewGtkBoard
             #sends a requestSave request
             @controller.sendSaveRequest
             puts '...'
-          elsif col == 'forfeit'
+          elsif ans == 'forfeit'
             @controller.sendForfeit
             exitGame
           else
