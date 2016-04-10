@@ -39,8 +39,8 @@ class ViewGtkBoard
   # Builds the base game board
   def setUpBoard
     # get the tokens
-    @player1token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
-    @player2token = @controller.settings.victoryType == :victoryNormal ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
+    @player1token = @game.victory.playerToken(2) == 'X' ? "#{@currentLocation}/image/token0.png" : "#{@currentLocation}/image/tokenO.png"
+    @player2token = @game.victory.playerToken(2) == 'X' ? "#{@currentLocation}/image/token1.png" : "#{@currentLocation}/image/tokenT.png"
     @emptytoken = "#{@currentLocation}/image/empty.png"
     
     #build the board
