@@ -42,14 +42,14 @@ class ViewGtkBoard
     #build the board
     board = Gtk::Table.new(@game.settings.rows, @game.settings.cols)
 
-    @cells = Array.new(@game.settingsrows) { Array.new(@game.settings.cols) {nil} }
+    @cells = Array.new(@game.settings.rows) { Array.new(@game.settings.cols) {nil} }
 
     (0..(@game.settings.cols-1)).each do |col|
       (0..(@game.settings.rows-1)).each do |row|
         cell = Gtk::EventBox.new
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
-          refresh(@controller.placeToken(col))
+          @controller.placeToken(col)
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
