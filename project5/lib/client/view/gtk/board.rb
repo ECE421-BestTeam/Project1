@@ -19,6 +19,7 @@ class ViewGtkBoard
     @currentLocation = File.expand_path File.dirname(__FILE__)
     
     @boardVbox = Gtk::VBox.new
+    @extrasVbox = Gtk::VBox.new
     @widget.remove @widget.child if @widget.child != nil
     @widget.child = @boardVbox
     @window.show_all
@@ -58,6 +59,7 @@ class ViewGtkBoard
     
     @board = board
     @boardVbox.pack_start @board
+    @boardVbox.pack_start @extrasVbox
     @window.show_all
   end
   
@@ -65,31 +67,58 @@ class ViewGtkBoard
     # don't let additional calls go through if game is over
     return if @gameover
     
+    extrasVbox.children.each do |widget|
+      widget.destroy
+    end
+    
     data = content['data']
     case content['type']
       when 'game'
         updateGame(data)
       when 'saveRequest'
         # handles sending back to the server a saveAgree request
-        @helper.getUserInput(
-          "Opponent has requested to save. 'y' to agree, 'n' to disagree and forfeit match",
-          ['y','n'],
-          Proc.new do |ans|
-            if ans == 'y'
-              puts 'Saved game'
-              @controller.sendSaveResponse(true)
-              exitGame
-            else
-              @controller.sendSaveResponse(false)
-            end
+        @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
+        acceptButton = Gtk::Button.new "Accept"
+        declineButton = Gtk::Button.new "Decline"
+        GtkHelper.applyEventHandler(acceptButton, :clicked) {
+          @controller.sendSaveResponse(true)
+          extrasVbox.children.each do |widget|
+            widget.destroy
           end
-        )
+          exitGame
+        }
+        GtkHelper.applyEventHandler(declineButton, :clicked) {
+          @controller.sendSaveResponse(false)
+          extrasVbox.children.each do |widget|
+            widget.destroy
+          end
+        }
+        @extrasVbox.pack_start GtkHelper.createBox('H', 
+          [ { :widget => acceptButton },
+            { :widget => declineButton } ] )
+        @window.show_all
       when 'saveResponse'
         if data
-          puts 'Oppenent agreed to save'
-          exitGame
+          @extrasVbox.pack_start Gtk::Label.new "Opponent has agreed to save."
+          okButton = Gtk::Button.new "OK"
+          GtkHelper.applyEventHandler(okButton, :clicked) {
+            extrasVbox.children.each do |widget|
+              widget.destroy
+            end
+            exitGame
+          }
+          @extrasVbox.pack_start okButton
+          @window.show_all
         else
-          puts 'Oppenent did no agree to save'
+          @extrasVbox.pack_start Gtk::Label.new "Opponent has not agreed to save."
+          okButton = Gtk::Button.new "OK"
+          GtkHelper.applyEventHandler(okButton, :clicked) {
+            extrasVbox.children.each do |widget|
+              widget.destroy
+            end
+          }
+          @extrasVbox.pack_start okButton
+          @window.show_all
         end
         updateGame(@game)
     end

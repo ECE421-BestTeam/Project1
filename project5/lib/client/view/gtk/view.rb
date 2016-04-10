@@ -173,12 +173,6 @@ class GtkView
     @gameBoardWidget = Gtk::Label.new "TODO: Game board widget"
   end
   
-  def updateGameBoardWidget
-    #Called with context switch or move made, game start/end
-    #Just meant to update the pieces displayed
-    #TODO
-  end
-  
   def initLoginWidget
     @loginWidget = Gtk::VBox.new
     @usernameEntry = Gtk::Entry.new
