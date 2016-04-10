@@ -156,11 +156,11 @@ class GtkView
     @usernameEntry = Gtk::Entry.new
     @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Username: " },
-        { :widget => usernameEntry } ] )
+        { :widget => @usernameEntry } ] )
     @passwordEntry = Gtk::Entry.new
     @loginWidget.pack_start GtkHelper.createBox('H', 
       [ { :type => Gtk::Label, :content => "Password: " },
-        { :widget => passwordEntry } ] )
+        { :widget => @passwordEntry } ] )
     loginButton = Gtk::Button.new "Login"
     GtkHelper.applyEventHandler(loginButton, :clicked) {
       begin
