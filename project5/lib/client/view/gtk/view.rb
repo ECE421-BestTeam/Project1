@@ -31,10 +31,22 @@ class GtkView
     accountButton = Gtk::Button.new "Account"
     serverButton = Gtk::Button.new "Server"
     statsButton = Gtk::Button.new "Stats"
-    GtkHelper.applyEventHandler(gameButton, :clicked) {switchContext :game}
-    GtkHelper.applyEventHandler(accountButton, :clicked) {switchContext :account}
-    GtkHelper.applyEventHandler(serverButton, :clicked) {switchContext :server}
-    GtkHelper.applyEventHandler(statsButton, :clicked) {switchContext :stats}
+    GtkHelper.applyEventHandler(gameButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :game
+      switchContext :game
+    }
+    GtkHelper.applyEventHandler(accountButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :account
+      switchContext :account
+    }
+    GtkHelper.applyEventHandler(serverButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :server
+      switchContext :server
+    }
+    GtkHelper.applyEventHandler(statsButton, :clicked) {
+      return if @currentContext != nil && @currentContext == :stats
+      switchContext :stats
+    }
     menu = GtkHelper.createBox('H',
       [ { :widget => gameButton },
         { :widget => accountButton },
@@ -61,7 +73,6 @@ class GtkView
   end
   
   def switchContext(newContext)
-    return if @currentContext != nil && @currentContext == newContext
     @mainPanel.remove @mainPanel.child if @mainPanel.child != nil
     case newContext
     when :game
@@ -252,6 +263,7 @@ class GtkView
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
+    @statsWidget.set_size_request(200,50)
   end
   
   def updateStatsWidget
