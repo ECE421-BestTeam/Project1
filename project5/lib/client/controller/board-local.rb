@@ -20,7 +20,7 @@ class BoardLocalController
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
-    @refresh.call @game
+    @refresh.call Hash.new { 'type' => 'game'; 'data' => @game }
   end
     
   def close
