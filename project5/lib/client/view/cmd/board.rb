@@ -32,33 +32,46 @@ class ViewCmdBoard
     @exitCallback.call @controller.close
   end
   
-  def handleSaveAgree
-    #intended to send a saveAgree request from the agreeing playing to the server
-    #@controller is board-online.rb
-    @controller.sendSaveAgree
-    exitGame
-  end
-  
-  def handleSaveGame
-    @controller.sendSaveRequest
-    #this line exits the game after saving for the requesting player
-    #commented out because we need agreement from the other player first
-        #@controller is board-online.rb
-    #exitGame
-  end
-  
-  def refresh(game, save=false)
+  def refresh(content)
     # don't let additional calls go through if game is over
     return if @gameover
     
+    data = content['data']
+    case content['type']
+      when 'game'
+        updateGame(data)
+      when 'saveRequest'
+        # handles sending back to the server a saveAgree request
+        @helper.getUserInput(
+          "Opponent has requested to save. 'y' to agree, 'n' to disagree and forfeit match",
+          ['y','n'],
+          Proc.new do |ans|
+            if ans == 'y'
+              puts 'Saved game'
+              @controller.sendSaveResponse(true)
+              exitGame
+            else
+              @controller.sendSaveResponse(false)
+            end
+          end
+        )
+      when 'saveResponse'
+        if data
+          puts 'Oppenent agreed to save'
+          exitGame
+        else
+          puts 'Oppenent did no agree to save'
+        end
+        updateGame(@game)
+    end
+  end
+  
+  def updateGame(game)
     return if !(!@game || game.turn >= @game.turn)
     @game = game 
     
     # re-display the board
     puts boardToString
-    
-    
-    
 
     # Check if the game is over
     if @game.winner != 0
@@ -80,30 +93,17 @@ class ViewCmdBoard
     if @localPlayers.include?playerTurn #it is a local player's turn
       puts "Player #{playerTurn}'s turn:"
       
-      # handles sending back to the server a saveAgree request
-      # currently not working as intended
-      if save==true
-        @helper.getUserInput(
-          "Opponent has requested to save. 'y' to agree, 'n' to disagree and forfeit match",
-          ['y','n'],
-          Proc.new do |ans|
-            if ans == 'y'
-              handleSaveAgree
-            elsif ans == 'n'
-              @controller.sendForfeit
-              exitGame
-            end
-          end
-        )
-      end
-      
       @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols})", 
-        (1..@game.settings.cols).to_a.push("save"),
+        (1..@game.settings.cols).to_a.push("save").push('forfeit'),
         Proc.new do |col|
           if col == "save"
             #sends a requestSave request
-            handleSaveGame
+            @controller.sendSaveRequest
+            puts '...'
+          elsif ans == 'forfeit'
+            @controller.sendForfeit
+            exitGame
           else
             @controller.placeToken(col - 1)
           end

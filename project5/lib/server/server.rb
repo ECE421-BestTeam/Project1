@@ -171,7 +171,7 @@ class Server
       getResult(Proc.new {
           address = @games[gameId]["player#{player}"]['address']
 #          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
-        callRefresh(address, @games[gameId]['game'])
+        callRefresh(address, {'type' => 'game', 'data' => @games[gameId]['game']})
         true
       })
     end
@@ -183,7 +183,7 @@ class Server
         #if it is the requester's turn
         if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
           game.placeToken(col)
-          sendRefresh(gameId)
+          sendRefresh(gameId, 'game', game)
           if game.winner != 0
             # do finishing stuff
             gameEnd(gameId, game.winner)
@@ -202,35 +202,38 @@ class Server
       getResult(Proc.new {
         game = @games[gameId]['game']
         raise GameOverError, "game does not exist" if !@games[gameId]
-        #if it is the requester's turn
-        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
-          # the following lines save the game without prompting the second user
-          #@db.updateGame(gameId, 'state', 'saved')
-          #puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
-          
-          # here I try to send a prompt to the second player, but this is not working
-          address = @games[gameId]["player#{(game.turn % 2) +1}"]['address']
-          # send saveAgree request to other player address
-          game.advanceTurn
-          sendRefresh(gameId)
-          callSaveAgree(address, gameId)
-          
+        
+        # Get opponent's address 
+        if sessionId == @games[gameId]["player1"]['session']
+          address = @games[gameId]["player2"]['address']
+          respondingPlayer = @games[gameId]["player2"]['session']
         else
-          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
+          address = @games[gameId]["player1"]['address']
+          respondingPlayer = @games[gameId]["player1"]['session']
+        end
+          
+        if address
+          # send saveAgree request to other player address
+          @games[gameId]['info'] = {'type' => 'pendingSave', 'data' => respondingPlayer }
+          callRefresh(address, {'type' => 'saveRequest'}) 
+        else
+          raise ArgumentError, "Other player does not have an address (probably hasn't joined), can not send save request."
         end
         
       })
     end
     
-    @server.add_handler('agreeSave') do |sessionId, gameId|
+    @server.add_handler('saveResponse') do |sessionId, gameId, response|
       getResult(Proc.new {
         raise GameOverError, "game does not exist" if !@games[gameId]
-        #if it is the agreer's turn
-        if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
+        raise ArgumentErrot, "Can't save game before request to save" if @games[gameId]['info']['type'] != 'pendingSave'
+        respondingPlayer = @games[gameId]['info']['data']
+        
+        if sessionId == respondingPlayer
           @db.updateGame(gameId, 'state', 'saved')
           puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
         else
-          raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"
+          raise ArgumentError, "You can not respond to this save request."
         end
       })
     end
@@ -271,37 +274,23 @@ class Server
     @games.delete(gameId)
   end
   
-  def callSaveAgree(address, gameId)
-    # this function sends the 'saveRequest' request to the client to ask for agreement to save
-    Thread.new {
-      begin
-        getConnection(address).call('saveRequest', game)
-      rescue Exception => e
-        puts "Error sending saveRequest to #{address.to_s}"
-        msg = e.message
-        e.backtrace.each do |level|
-          msg += "\n\t#{level}"
-        end
-        puts msg
-      end
+  def sendRefresh(gameId, type, data)
+    response = {
+      'type' => type,
+      'data' => data
     }
-  end
-  
-  def sendRefresh(gameId)
-    raise GameOverError, "game does not exist" if !@games[gameId]
-    game = @games[gameId]['game']
     (1..2).each do |i|
       address = @games[gameId]["player#{i}"]['address']
-      callRefresh(address, game) if address
+      callRefresh(address, response) if address
     end
   end
   
-  def callRefresh(address, game)
+  def callRefresh(address, data)
     Thread.new {
       begin
-        getConnection(address).call('refresh', game)
+        getConnection(address).call('refresh', data)
       rescue Exception => e
-        puts "Error sending refresh to #{address.to_s}"
+        puts "Error sending refresh to #{address.to_s} for #{data.to_s}"
         msg = e.message
         e.backtrace.each do |level|
           msg += "\n\t#{level}"
@@ -367,4 +356,11 @@ class Server
       Socket.do_not_reverse_lookup = orig
   end
 
+end
+
+
+s = Server.new
+s.start
+while true
+	sleep 100000
 end
