@@ -94,7 +94,7 @@ class ViewCmdBoard
       puts "Player #{playerTurn}'s turn:"
       
       @helper.getUserInput(
-        "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols})", 
+        "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols}).  Or enter 'save' to send a save request.  Or 'forfeit' to forfeit.", 
         (1..@game.settings.cols).to_a.push("save").push('forfeit'),
         Proc.new do |col|
           if col == "save"

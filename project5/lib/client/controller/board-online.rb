@@ -42,7 +42,6 @@ class BoardOnlineController
       end
       @recieverStarted = true
       @reciever.add_handler('refresh') do |model|
-        puts "got refresh with #{model.to_s}"
         result = false
         begin
           Thread.new {
@@ -112,7 +111,6 @@ class BoardOnlineController
   end
   
   def joinGame(gameId)
-    puts "JOIN: #{@clientSettings.sessionId}, #{gameId}, #{{'host'=>local_ip,'port'=>@recieverPort}.to_s}"
     handleResponse(Proc.new {
         @connection.call('joinGame', @clientSettings.sessionId, gameId, {'host'=>local_ip,'port'=>@recieverPort})
       },

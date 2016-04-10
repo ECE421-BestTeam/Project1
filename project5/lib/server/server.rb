@@ -172,7 +172,6 @@ class Server
           address = @games[gameId]["player#{player}"]['address']
 #          puts "!!!!!!!!!!!!!!!!!!#{address.to_s}, #{gameId}, #{player}, #{@games[gameId]["player#{player}"]['session']}"
         callRefresh(address, {'type' => 'game', 'data' => @games[gameId]['game']})
-        true
       })
     end
     
@@ -215,7 +214,7 @@ class Server
         if address
           # send saveAgree request to other player address
           @games[gameId]['info'] = {'type' => 'pendingSave', 'data' => respondingPlayer }
-          callRefresh(address, {'type' => 'saveRequest'}) 
+          callRefresh(address, {'type' => 'saveRequest'})
         else
           raise ArgumentError, "Other player does not have an address (probably hasn't joined), can not send save request."
         end
@@ -230,8 +229,12 @@ class Server
         respondingPlayer = @games[gameId]['info']['data']
         
         if sessionId == respondingPlayer
-          @db.updateGame(gameId, 'state', 'saved')
-          puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
+          if response
+            @db.updateGame(gameId, 'state', 'saved')
+            puts "!!!!!!!! GAME #{gameId} IS SAAAAVED"
+          end
+          
+          callRefresh(getAddressBySession(gameId, sessionId), {'type' => 'saveResponse', 'data' => response})
         else
           raise ArgumentError, "You can not respond to this save request."
         end
@@ -298,6 +301,7 @@ class Server
         puts msg
       end
     }
+    true
   end
   
   def getConnection(address)
@@ -343,6 +347,14 @@ class Server
       }
     end
     return result
+  end
+  
+  def getAddressBySession(gameId, sessionId)
+    if sessionId == @games[gameId]["player1"]['session']
+      @games[gameId]["player2"]['address']
+    else
+      @games[gameId]["player1"]['address']
+    end
   end
 
   def local_ip
