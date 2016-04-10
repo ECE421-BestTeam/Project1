@@ -167,7 +167,7 @@ class GtkView
       game = gameEntry['game_model']
       button = Gtk::Button.new "Victory Mode: #{game.victory.name}, Turn: #{game.turn}"
       GtkHelper.applyEventHandler(button, :clicked) {
-        @gameSettings = game
+        @gameSettings = games[i]['game_id']
         startGame 'online'
       }
       widget.pack_start button
