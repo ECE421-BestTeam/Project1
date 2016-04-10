@@ -17,9 +17,6 @@ class ViewGtkBoard
     
     # for displaying issues
     @currentLocation = File.expand_path File.dirname(__FILE__)
-
-  # set up the board
-    setUpBoard
     
     @boardVbox = Gtk::VBox.new
     @widget.remove @widget.child if @widget.child != nil
