@@ -96,9 +96,9 @@ class Server
     end
     
     # attempts to logout a client
-    @server.add_handler('logout') do |sessionId|
+    @server.add_handler('logout') do |sessionId, username|
       getResult(Proc.new {
-        @db.logout(sessionId)
+        @db.logout(sessionId, username)
       })
     end
     
