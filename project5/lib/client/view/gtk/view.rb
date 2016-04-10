@@ -84,7 +84,7 @@ class GtkView
         updateGameBoardWidget
       end
     when :account
-      if !@controller.testConnection || @controller.clientSettings.sessionId.length < 1
+      if @controller.clientSettings.sessionId.length < 1
         @mainPanel.child = @loginWidget
         updateLoginWidget ''
       else
@@ -145,9 +145,9 @@ class GtkView
   end
   
   def updateNewGameWidget
-    if @controller.testConnection
+    begin
       @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
-    else
+    rescue
       @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
     end
   end
@@ -263,21 +263,20 @@ class GtkView
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
-    @statsWidget.set_size_request(200,50)
+    @statsWidget.set_size_request(400,100)
   end
   
   def updateStatsWidget
-    if @controller.testConnection
+    begin
       @topPlayerStatsWidget.text = ""
       @controller.getTopStatistics.each do |stat|
         @topPlayerStatsWidget.text += stat.to_s + "\n"
       end
-    else
+      if @controller.clientSettings.sessionId.length >= 1
+        @yourStatsWidget.text = @controller.getMyStatistics.to_s
+      end
+    rescue
       @topPlayerStatsWidget.text = "Connect to a server to see top player stats."
-    end
-    if @controller.testConnection && @controller.clientSettings.sessionId.length >= 1
-      @yourStatsWidget.text = @controller.getMyStatistics.to_s
-    else
       @yourStatsWidget.text = "Log in or sign up to see your stats."
     end
   end
