@@ -165,6 +165,9 @@ class ViewGtkBoard
   end
   
   def setDefaultButtons
+    @extrasVbox.children.each do |widget|
+      widget.destroy
+    end
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
     GtkHelper.applyEventHandler(saveButton, :clicked) {
