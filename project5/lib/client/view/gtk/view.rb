@@ -152,7 +152,7 @@ class GtkView
     @serverGameListWidget.remove @serverGameListWidget.child if @serverGameListWidget.child != nil
     begin
       if @controller.clientSettings.sessionId.length < 1
-        @serverGameListWidget.child = Gtk::Label.new "Log in/create an account to play Connect4.2 online."
+        @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
       else
         games = @controller.getGames
         scrollWindow = Gtk::ScrolledWindow.new
@@ -168,7 +168,7 @@ class GtkView
         @serverGameListWidget.child = scrollWindow
       end
     rescue
-      @serverGameListWidget.child = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+      @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
     end
     @window.show_all
   end
