@@ -18,10 +18,7 @@ class ViewGtkBoard
     # for displaying issues
     @currentLocation = File.expand_path File.dirname(__FILE__)
     
-    @boardVbox = Gtk::VBox.new
     @extrasVbox = Gtk::VBox.new
-    @widget.remove @widget.child if @widget.child != nil
-    @widget.child = @boardVbox
     @window.show_all
     
     @gameover = false
@@ -58,8 +55,8 @@ class ViewGtkBoard
     end
     
     @board = board
-    @boardVbox.pack_start @board
-    @boardVbox.pack_start @extrasVbox
+    @widget.pack_start @board
+    @widget.pack_start @extrasVbox
     @window.show_all
   end
   
