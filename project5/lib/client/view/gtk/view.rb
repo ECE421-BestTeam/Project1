@@ -144,7 +144,7 @@ class GtkView
     @newGameWidget.pack_start playButton
     @newGameWidget.pack_start Gtk::Label.new "Play online:"
     @serverGameListWidget = Gtk::EventBox.new
-    @serverGameListWidget.child = Gtk::Label.new "[server games go here]"
+    @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
     @newGameWidget.pack_start @serverGameListWidget
   end
   
@@ -228,7 +228,7 @@ class GtkView
   
   def initLogoutWidget
     @logoutWidget = Gtk::VBox.new
-    @loggedInMessage = Gtk::Label.new "Logged in as [username]"
+    @loggedInMessage = Gtk::Label.new "Logged in as..."
     button = Gtk::Button.new "Log out"
     GtkHelper.applyEventHandler(button, :clicked) {@controller.logout}
     @logoutWidget.pack_start @loggedInMessage
@@ -280,10 +280,10 @@ class GtkView
     @statsWidget = Gtk::ScrolledWindow.new
     vbox = Gtk::VBox.new
     vbox.pack_start Gtk::Label.new "Top Player Stats:"
-    @topPlayerStatsWidget = Gtk::Label.new "[database stats go here]"
+    @topPlayerStatsWidget = Gtk::Label.new "Connect to a server to see top player stats."
     vbox.pack_start @topPlayerStatsWidget
     vbox.pack_start Gtk::Label.new "Your Stats:"
-    @yourStatsWidget = Gtk::Label.new "[player stats go here]"
+    @yourStatsWidget = Gtk::Label.new "Log in or sign up to see your stats."
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
     @statsWidget.set_size_request(400,200)
