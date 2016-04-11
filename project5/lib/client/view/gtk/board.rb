@@ -48,7 +48,7 @@ class ViewGtkBoard
         cell = Gtk::EventBox.new
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
-          @controller.placeToken(col) if @localPlayers.include?((@game.turn % 2) + 1) && !gameover #it is a local player's turn
+          @controller.placeToken(col) if @localPlayers.include?((@game.turn % 2) + 1) && !@gameover #it is a local player's turn
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -133,6 +133,7 @@ class ViewGtkBoard
     updateBoard
     # Check if the game is over
     if @game.winner != 0
+      @gameover = true
       @extrasVbox.children.each do |widget|
         widget.destroy
       end
@@ -187,8 +188,8 @@ class ViewGtkBoard
     return if @controller.instance_of? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
-    saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1) && !gameover
-    forfeitButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1) && !gameover
+    saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1) && !@gameover
+    forfeitButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1) && !@gameover
     GtkHelper.applyEventHandler(saveButton, :clicked) {
       @controller.sendSaveRequest
     }
