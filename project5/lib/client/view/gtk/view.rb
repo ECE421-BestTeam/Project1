@@ -105,7 +105,7 @@ class GtkView
   def startGame(boardControllerType)
     # sends options and create a custom boardController
     @bController = @controller.getBoardController(boardControllerType, @gameSettings)
-    @gameBoardWidget == VBox.new
+    @gameBoardWidget == Gtk::VBox.new
     ViewGtkBoard.new(@window, @gameBoardWidget, @bController)
     @isGameInProgress = true
     switchContext :game
