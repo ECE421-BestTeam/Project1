@@ -72,57 +72,57 @@ class ViewGtkBoard
     
     data = content['data']
     case content['type']
-      when 'game'
-        updateGame(data)
-        setDefaultButtons
-        @window.show_all
-      when 'saveRequest'
-        # handles sending back to the server a saveAgree request
-        @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
-        acceptButton = Gtk::Button.new "Accept"
-        declineButton = Gtk::Button.new "Decline"
-        GtkHelper.applyEventHandler(acceptButton, :clicked) {
-          @controller.sendSaveResponse(true)
+    when 'game'
+      updateGame(data)
+      setDefaultButtons
+      @window.show_all
+    when 'saveRequest'
+      # handles sending back to the server a saveAgree request
+      @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
+      acceptButton = Gtk::Button.new "Accept"
+      declineButton = Gtk::Button.new "Decline"
+      GtkHelper.applyEventHandler(acceptButton, :clicked) {
+        @controller.sendSaveResponse(true)
+        @extrasVbox.children.each do |widget|
+          widget.destroy
+        end
+        exitGame
+      }
+      GtkHelper.applyEventHandler(declineButton, :clicked) {
+        @controller.sendSaveResponse(false)
+        @extrasVbox.children.each do |widget|
+          widget.destroy
+        end
+      }
+      @extrasVbox.pack_start GtkHelper.createBox('H', 
+        [ { :widget => acceptButton },
+          { :widget => declineButton } ] )
+      @window.show_all
+    when 'saveResponse'
+      if data
+        @extrasVbox.pack_start Gtk::Label.new "Opponent has agreed to save."
+        okButton = Gtk::Button.new "OK"
+        GtkHelper.applyEventHandler(okButton, :clicked) {
           @extrasVbox.children.each do |widget|
             widget.destroy
           end
           exitGame
         }
-        GtkHelper.applyEventHandler(declineButton, :clicked) {
-          @controller.sendSaveResponse(false)
+        @extrasVbox.pack_start okButton
+        @window.show_all
+      else
+        @extrasVbox.pack_start Gtk::Label.new "Opponent has not agreed to save."
+        okButton = Gtk::Button.new "OK"
+        GtkHelper.applyEventHandler(okButton, :clicked) {
           @extrasVbox.children.each do |widget|
             widget.destroy
           end
         }
-        @extrasVbox.pack_start GtkHelper.createBox('H', 
-          [ { :widget => acceptButton },
-            { :widget => declineButton } ] )
+        @extrasVbox.pack_start okButton
         @window.show_all
-      when 'saveResponse'
-        if data
-          @extrasVbox.pack_start Gtk::Label.new "Opponent has agreed to save."
-          okButton = Gtk::Button.new "OK"
-          GtkHelper.applyEventHandler(okButton, :clicked) {
-            @extrasVbox.children.each do |widget|
-              widget.destroy
-            end
-            exitGame
-          }
-          @extrasVbox.pack_start okButton
-          @window.show_all
-        else
-          @extrasVbox.pack_start Gtk::Label.new "Opponent has not agreed to save."
-          okButton = Gtk::Button.new "OK"
-          GtkHelper.applyEventHandler(okButton, :clicked) {
-            @extrasVbox.children.each do |widget|
-              widget.destroy
-            end
-          }
-          @extrasVbox.pack_start okButton
-          @window.show_all
-        end
-        updateGame(@game)
+      end
     end
+    updateGame(@game)
   end
   
   def updateGame(game)
@@ -185,6 +185,7 @@ class ViewGtkBoard
     @extrasVbox.children.each do |widget|
       widget.destroy
     end
+    
     return if @controller.instance_of? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
