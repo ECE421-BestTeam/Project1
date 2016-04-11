@@ -57,6 +57,7 @@ class ViewGtkBoard
     @board = board
     @widget.pack_start @board
     @widget.pack_start @extrasVbox
+    setDefaultButtons
     @window.show_all
   end
   
@@ -72,18 +73,7 @@ class ViewGtkBoard
     case content['type']
       when 'game'
         updateGame(data)
-        saveButton = Gtk::Button.new "Request Save"
-        forfeitButton = Gtk::Button.new "Forfeit"
-        GtkHelper.applyEventHandler(saveButton, :clicked) {
-          @controller.sendSaveRequest
-        }
-        GtkHelper.applyEventHandler(forfeitButton, :clicked) {
-          @controller.sendForfeit
-          @extrasVbox.children.each do |widget|
-            widget.destroy
-          end
-          exitGame
-        }
+        setDefaultButtons
         @extrasVbox.pack_start GtkHelper.createBox('H', 
           [ { :widget => saveButton },
             { :widget => forfeitButton } ] )
@@ -163,7 +153,6 @@ class ViewGtkBoard
     setUpBoard if @board == nil
     
     # update tokens
-    puts @game.board
     (0..(@game.settings.cols-1)).each do |col|
       (0..(@game.settings.rows-1)).each do |row|
         case @game.board[row][col]
@@ -176,5 +165,20 @@ class ViewGtkBoard
         end
       end
     end
+  end
+  
+  def setDefaultButtons
+    saveButton = Gtk::Button.new "Request Save"
+      forfeitButton = Gtk::Button.new "Forfeit"
+      GtkHelper.applyEventHandler(saveButton, :clicked) {
+        @controller.sendSaveRequest
+      }
+      GtkHelper.applyEventHandler(forfeitButton, :clicked) {
+        @controller.sendForfeit
+        @extrasVbox.children.each do |widget|
+          widget.destroy
+        end
+        exitGame
+      }
   end
 end
