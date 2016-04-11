@@ -151,20 +151,24 @@ class GtkView
   def updateNewGameWidget
     @serverGameListWidget.remove @serverGameListWidget.child if @serverGameListWidget.child != nil
     begin
-      games = @controller.getGames
-      scrollWindow = Gtk::ScrolledWindow.new
-      vbox = Gtk::VBox.new
-      newGameButton = Gtk::Button.new "New Game"
-      GtkHelper.applyEventHandler(newGameButton, :clicked) {startGame 'online'}
-      vbox.pack_start newGameButton
-      displayServerGames(vbox, "Active Games", games['active'])
-      displayServerGames(vbox, "Saved Games", games['saved'])
-      displayServerGames(vbox, "Joinable Games", games['joinable'])
-      scrollWindow.add_with_viewport vbox
-      scrollWindow.set_size_request(400,200)
-      @serverGameListWidget.child = scrollWindow
+      if @controller.clientSettings.sessionId.length < 1
+        @serverGameListWidget.child = Gtk::Label.new "Log in/create an account to play Connect4.2 online."
+      else
+        games = @controller.getGames
+        scrollWindow = Gtk::ScrolledWindow.new
+        vbox = Gtk::VBox.new
+        newGameButton = Gtk::Button.new "New Game"
+        GtkHelper.applyEventHandler(newGameButton, :clicked) {startGame 'online'}
+        vbox.pack_start newGameButton
+        displayServerGames(vbox, "Active Games", games['active'])
+        displayServerGames(vbox, "Saved Games", games['saved'])
+        displayServerGames(vbox, "Joinable Games", games['joinable'])
+        scrollWindow.add_with_viewport vbox
+        scrollWindow.set_size_request(400,200)
+        @serverGameListWidget.child = scrollWindow
+      end
     rescue
-      @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
+      @serverGameListWidget.child = Gtk::Label.new "Connect to a server to play Connect4.2 online."
     end
     @window.show_all
   end
