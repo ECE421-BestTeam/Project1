@@ -47,7 +47,7 @@ class ViewGtkBoard
         cell = Gtk::EventBox.new
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
-          @controller.placeToken(col) if @localPlayers.include?(@game.turn % 2) + 1 #it is a local player's turn
+          @controller.placeToken(col) if @localPlayers.include?((@game.turn % 2) + 1) #it is a local player's turn
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -163,6 +163,7 @@ class ViewGtkBoard
     setUpBoard if @board == nil
     
     # update tokens
+    puts @game.board
     (0..(@game.settings.cols-1)).each do |col|
       (0..(@game.settings.rows-1)).each do |row|
         case @game.board[row][col]
