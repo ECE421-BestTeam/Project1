@@ -247,7 +247,7 @@ class Server
         game = @games[gameId]['game']
         #if it is the forfeiter's turn
         if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
-          game.setwinner("#{game.turn%2}")
+          game.setWinner("#{game.turn%2}")
           @db.remove('game', gameId)
         else
           raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"

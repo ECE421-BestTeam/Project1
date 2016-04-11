@@ -175,7 +175,7 @@ class ViewGtkBoard
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
     saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
-    forfeit.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
+    forfeitButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
     GtkHelper.applyEventHandler(saveButton, :clicked) {
       @controller.sendSaveRequest
     }
