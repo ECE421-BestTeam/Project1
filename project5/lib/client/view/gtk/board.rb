@@ -167,9 +167,9 @@ class ViewGtkBoard
     (0..(@game.settings.cols-1)).each do |col|
       (0..(@game.settings.rows-1)).each do |row|
         case @game.board[row][col]
-        when 0
-          @cells[row][col].children[0].set_file(@player1token)
         when 1
+          @cells[row][col].children[0].set_file(@player1token)
+        when 2
           @cells[row][col].children[0].set_file(@player2token)
         else
           @cells[row][col].children[0].set_file(@emptytoken)
