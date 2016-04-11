@@ -12,6 +12,9 @@ class GtkView
     @controller = MenuController.new
     @gameSettings = GameSettingsModel.new
     @gameSettings.players = 1;
+    
+    @isGameInProgress = false
+    
     setupWindow
   end
   
@@ -71,12 +74,11 @@ class GtkView
     @mainPanel.remove @mainPanel.child if @mainPanel.child != nil
     case newContext
     when :game
-      if @game == nil
+      if @isGameInProgress
+        @mainPanel.child = @gameBoardWidget
+      else
         @mainPanel.child = @newGameWidget
         updateNewGameWidget
-      else
-        @mainPanel.child = @gameBoardWidget
-        updateGameBoardWidget
       end
     when :account
       if @controller.clientSettings.sessionId.length < 1
@@ -103,7 +105,9 @@ class GtkView
   def startGame(boardControllerType)
     # sends options and create a custom boardController
     @bController = @controller.getBoardController(boardControllerType, @gameSettings)
-    ViewGtkBoard.new(@window, @mainPanel, @bController)
+    ViewGtkBoard.new(@window, @gameBoardWidget, @bController)
+    @isGameInProgress = true
+    switchContext :game
   end
   
   def initNewGameWidget
