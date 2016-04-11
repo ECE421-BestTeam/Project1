@@ -47,7 +47,7 @@ class ViewGtkBoard
         cell = Gtk::EventBox.new
         cell.add(Gtk::Image.new("#{@currentLocation}/image/empty.png"))
         GtkHelper.applyEventHandler(cell, "button_press_event") {
-          @controller.placeToken(col)
+          @controller.placeToken(col) if @localPlayers.include?(@game.turn % 2) + 1 #it is a local player's turn
         }
         board.attach(cell,col,col+1,row,row+1,Gtk::FILL,Gtk::FILL)
         @cells[row][col] = cell
@@ -72,6 +72,21 @@ class ViewGtkBoard
     case content['type']
       when 'game'
         updateGame(data)
+        saveButton = Gtk::Button.new "Request Save"
+        forfeitButton = Gtk::Button.new "Forfeit"
+        GtkHelper.applyEventHandler(saveButton, :clicked) {
+          @controller.sendSaveRequest
+        }
+        GtkHelper.applyEventHandler(forfeitButton, :clicked) {
+          @controller.sendForfeit
+          @extrasVbox.children.each do |widget|
+            widget.destroy
+          end
+          exitGame
+        }
+        @extrasVbox.pack_start GtkHelper.createBox('H', 
+          [ { :widget => saveButton },
+            { :widget => forfeitButton } ] )
       when 'saveRequest'
         # handles sending back to the server a saveAgree request
         @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
@@ -141,33 +156,7 @@ class ViewGtkBoard
       exitGame
       return
     end
-
-    # if it is a player turn, let them take their turn!
-    playerTurn = (@game.turn % 2) + 1
-
-    if @localPlayers.include?playerTurn #it is a local player's turn
-      puts "Player #{playerTurn}'s turn:"
-      
-      @helper.getUserInput(
-        "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols}).  Or enter 'save' to send a save request.  Or 'forfeit' to forfeit.", 
-        (1..@game.settings.cols).to_a.push("save").push('forfeit'),
-        Proc.new do |col|
-          if col == "save"
-            #sends a requestSave request
-            @controller.sendSaveRequest
-            puts '...'
-          elsif ans == 'forfeit'
-            @controller.sendForfeit
-            exitGame
-          else
-            @controller.placeToken(col - 1)
-          end
-        end
-      )
-    else
-      puts "Opponent's Turn..."
-    end
-   end
+  end
   
   # refreshes board to reflect the current model
   def updateBoard

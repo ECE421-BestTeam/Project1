@@ -101,7 +101,7 @@ class ViewCmdBoard
             #sends a requestSave request
             @controller.sendSaveRequest
             puts '...'
-          elsif ans == 'forfeit'
+          elsif col == 'forfeit'
             @controller.sendForfeit
             exitGame
           else
