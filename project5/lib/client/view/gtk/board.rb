@@ -75,6 +75,7 @@ class ViewGtkBoard
       when 'game'
         updateGame(data)
         setDefaultButtons
+        @window.show_all
       when 'saveRequest'
         # handles sending back to the server a saveAgree request
         @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
@@ -172,6 +173,8 @@ class ViewGtkBoard
     return if @controller.is_a? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
+    saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
+    forfeit.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
     GtkHelper.applyEventHandler(saveButton, :clicked) {
       @controller.sendSaveRequest
     }
