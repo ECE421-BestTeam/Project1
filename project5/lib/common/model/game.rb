@@ -67,7 +67,6 @@ class GameModel
   
   def setWinner(winner)
     @winner=winner
-    checkVictory
   end
   
   def advanceTurn

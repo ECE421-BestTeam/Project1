@@ -20,7 +20,7 @@ class BoardLocalController
   # controller can call it when needed
   def registerRefresh(refresh)
     @refresh = refresh
-    @refresh.call @game
+    @refresh.call({'type' => 'game', 'data' => @game})
   end
     
   def close
@@ -35,6 +35,18 @@ class BoardLocalController
       # let the model take the computer's turn
       @refresh.call @game.computerTurn
     end
+  end
+  
+  def sendSaveRequest
+    raise ArgumentError, "saveRequest not supported in practice mode."
+  end
+  
+  def sendSaveResponse(response)
+    raise ArgumentError, "saveRequest not supported in practice mode."
+  end
+  
+  def sendForfeit
+    raise ArgumentError, "forfeit not supported in practice mode."
   end
   
 end

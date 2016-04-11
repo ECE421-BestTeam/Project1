@@ -96,16 +96,16 @@ class ViewCmdBoard
       @helper.getUserInput(
         "Choose a column to place your token ('#{getToken(playerTurn)}') in. (1 to #{@game.settings.cols}).  Or enter 'save' to send a save request.  Or 'forfeit' to forfeit.", 
         (1..@game.settings.cols).to_a.push("save").push('forfeit'),
-        Proc.new do |col|
-          if col == "save"
+        Proc.new do |res|
+          if res == "save"
             #sends a requestSave request
             @controller.sendSaveRequest
             puts '...'
-          elsif ans == 'forfeit'
+          elsif res == 'forfeit'
             @controller.sendForfeit
             exitGame
           else
-            @controller.placeToken(col - 1)
+            @controller.placeToken(res - 1)
           end
         end
       )
