@@ -131,19 +131,32 @@ class ViewGtkBoard
     
     # re-display the board
     updateBoard
-
     # Check if the game is over
     if @game.winner != 0
-      puts "--- GAME OVER ---"
-      if @game.winner == 3
-        puts "Draw!"
-      elsif @game.winner == 1
-        puts "Player 1 wins!"
-      elsif @game.winner == 2
-        puts "Player 2 wins!"
+      @extrasVbox.children.each do |widget|
+        widget.destroy
       end
-      exitGame
-      return
+      
+      winnerLabel = Gtk::Label.new
+      okButton = Gtk::Button.new "OK"
+      GtkHelper.applyEventHandler(okButton, :clicked) {
+        @extrasVbox.children.each do |widget|
+          widget.destroy
+        end
+        exitGame
+      }
+      @extrasVbox.pack_start winnerLabel
+      @extrasVbox.pack_start okButton
+      
+      if @game.winner == 3
+        winnerLabel.text = "Draw!"
+      elsif @game.winner == 1
+        winnerLabel.text = "Player 1 wins!"
+      elsif @game.winner == 2
+        winnerLabel.text = "Player 2 wins!"
+      end
+      
+      window.show_all
     end
   end
   
