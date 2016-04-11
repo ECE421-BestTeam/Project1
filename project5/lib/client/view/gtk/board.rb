@@ -169,7 +169,7 @@ class ViewGtkBoard
     @extrasVbox.children.each do |widget|
       widget.destroy
     end
-    if @controller.is_a? BoardLocalController
+    return if @controller.is_a? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
     GtkHelper.applyEventHandler(saveButton, :clicked) {
