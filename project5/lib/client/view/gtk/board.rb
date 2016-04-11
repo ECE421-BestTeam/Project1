@@ -74,9 +74,6 @@ class ViewGtkBoard
       when 'game'
         updateGame(data)
         setDefaultButtons
-        @extrasVbox.pack_start GtkHelper.createBox('H', 
-          [ { :widget => saveButton },
-            { :widget => forfeitButton } ] )
       when 'saveRequest'
         # handles sending back to the server a saveAgree request
         @extrasVbox.pack_start Gtk::Label.new "Opponent has requested to save."
@@ -169,16 +166,19 @@ class ViewGtkBoard
   
   def setDefaultButtons
     saveButton = Gtk::Button.new "Request Save"
-      forfeitButton = Gtk::Button.new "Forfeit"
-      GtkHelper.applyEventHandler(saveButton, :clicked) {
-        @controller.sendSaveRequest
-      }
-      GtkHelper.applyEventHandler(forfeitButton, :clicked) {
-        @controller.sendForfeit
-        @extrasVbox.children.each do |widget|
-          widget.destroy
-        end
-        exitGame
-      }
+    forfeitButton = Gtk::Button.new "Forfeit"
+    GtkHelper.applyEventHandler(saveButton, :clicked) {
+      @controller.sendSaveRequest
+    }
+    GtkHelper.applyEventHandler(forfeitButton, :clicked) {
+      @controller.sendForfeit
+      @extrasVbox.children.each do |widget|
+        widget.destroy
+      end
+      exitGame
+    }
+    @extrasVbox.pack_start GtkHelper.createBox('H', 
+      [ { :widget => saveButton },
+        { :widget => forfeitButton } ] )
   end
 end
