@@ -369,10 +369,3 @@ class Server
   end
 
 end
-
-
-s = Server.new
-s.start
-while true
-	sleep 100000
-end
