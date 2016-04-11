@@ -230,7 +230,10 @@ class GtkView
     @logoutWidget = Gtk::VBox.new
     @loggedInMessage = Gtk::Label.new "Logged in as..."
     button = Gtk::Button.new "Log out"
-    GtkHelper.applyEventHandler(button, :clicked) {@controller.logout}
+    GtkHelper.applyEventHandler(button, :clicked) {
+      @controller.logout
+      switchContext :account
+    }
     @logoutWidget.pack_start @loggedInMessage
     @logoutWidget.pack_start button
   end
