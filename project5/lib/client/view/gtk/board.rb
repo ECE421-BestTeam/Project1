@@ -164,13 +164,14 @@ class ViewGtkBoard
         end
       end
     end
+    @window.show_all
   end
   
   def setDefaultButtons
     @extrasVbox.children.each do |widget|
       widget.destroy
     end
-    return if @controller.instance_of? BoardLocalController
+    return if @controller.implementation.instance_of? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
     saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
