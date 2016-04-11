@@ -166,7 +166,7 @@ class Database
     return result
   end
   
-  def logout(sessionId)
+  def logout(sessionId, username)
     # Remove sessionID from Player record
     # and Session table
     # Returns: --
@@ -176,7 +176,6 @@ class Database
     @db.query("UPDATE Player \
                 SET current_session_id=''\
                 WHERE username = '#{username}'")
-    @db.query("DELETE FROM Session WHERE session_id='#{sessionId}'")
     @db.query("COMMIT")
     return true
   end

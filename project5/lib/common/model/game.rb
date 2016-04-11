@@ -36,7 +36,7 @@ class GameModel
     pre_placeToken(col)
     
     raise GameOverError, "Game is over!" if @winner != 0
-    
+
     freeRow = false
     
     # look through the col, starting from the bottom
@@ -48,16 +48,17 @@ class GameModel
         break
       end
     end
-    
+
     raise ArgumentError, "Column is full!" if !freeRow
-    
+
     # set playerToken in the lowest available column slot
     @board[freeRow][col] = (@turn % 2) + 1
     # increment the turn
     @turn += 1
+
     # checkVictory
     checkVictory
-    
+
     result = self
     
     post_placeToken(result)

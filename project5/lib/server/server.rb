@@ -96,9 +96,9 @@ class Server
     end
     
     # attempts to logout a client
-    @server.add_handler('logout') do |sessionId|
+    @server.add_handler('logout') do |sessionId, username|
       getResult(Proc.new {
-        @db.logout(sessionId)
+        @db.logout(sessionId, username)
       })
     end
     
@@ -247,7 +247,7 @@ class Server
         game = @games[gameId]['game']
         #if it is the forfeiter's turn
         if sessionId == @games[gameId]["player#{(game.turn % 2) +1}"]['session']
-          game.setwinner("#{game.turn%2}")
+          game.setWinner("#{game.turn%2}")
           @db.remove('game', gameId)
         else
           raise ArgumentError, "Not player#{(game.turn % 2)}'s turn (#{sessionId}"

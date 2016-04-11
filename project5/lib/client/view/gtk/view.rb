@@ -12,6 +12,9 @@ class GtkView
     @controller = MenuController.new
     @gameSettings = GameSettingsModel.new
     @gameSettings.players = 1;
+    
+    @isGameInProgress = false
+    
     setupWindow
   end
   
@@ -32,20 +35,16 @@ class GtkView
     serverButton = Gtk::Button.new "Server"
     statsButton = Gtk::Button.new "Stats"
     GtkHelper.applyEventHandler(gameButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :game
-      switchContext :game
+      switchContext :game if @currentContext != :game
     }
     GtkHelper.applyEventHandler(accountButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :account
-      switchContext :account
+      switchContext :account if @currentContext != :account
     }
     GtkHelper.applyEventHandler(serverButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :server
-      switchContext :server
+      switchContext :server if @currentContext != :server
     }
     GtkHelper.applyEventHandler(statsButton, :clicked) {
-      return if @currentContext != nil && @currentContext == :stats
-      switchContext :stats
+      switchContext :stats if @currentContext != :stats
     }
     menu = GtkHelper.createBox('H',
       [ { :widget => gameButton },
@@ -60,7 +59,6 @@ class GtkView
     @window.add panels
     
     initNewGameWidget
-    initGameBoardWidget
     initLoginWidget
     initLogoutWidget
     initServerWidget
@@ -76,12 +74,11 @@ class GtkView
     @mainPanel.remove @mainPanel.child if @mainPanel.child != nil
     case newContext
     when :game
-      if @game == nil
+      if @isGameInProgress
+        @mainPanel.child = @gameBoardWidget
+      else
         @mainPanel.child = @newGameWidget
         updateNewGameWidget
-      else
-        @mainPanel.child = @gameBoardWidget
-        updateGameBoardWidget
       end
     when :account
       if @controller.clientSettings.sessionId.length < 1
@@ -108,7 +105,13 @@ class GtkView
   def startGame(boardControllerType)
     # sends options and create a custom boardController
     @bController = @controller.getBoardController(boardControllerType, @gameSettings)
-    #TODO: start board
+    @gameBoardWidget = Gtk::VBox.new
+    ViewGtkBoard.new(@window, @gameBoardWidget, @bController) {
+      @isGameInProgress = false
+      switchContext :game
+    }
+    @isGameInProgress = true
+    switchContext :game
   end
   
   def initNewGameWidget
@@ -140,26 +143,46 @@ class GtkView
     GtkHelper.applyEventHandler(playButton, :clicked) {startGame 'local'}
     @newGameWidget.pack_start playButton
     @newGameWidget.pack_start Gtk::Label.new "Play online:"
-    @serverGameListWidget = Gtk::Label.new "[server games go here]"
+    @serverGameListWidget = Gtk::EventBox.new
+    @serverGameListWidget.child = Gtk::Label.new "[server games go here]"
     @newGameWidget.pack_start @serverGameListWidget
   end
   
   def updateNewGameWidget
+    @serverGameListWidget.remove @serverGameListWidget.child if @serverGameListWidget.child != nil
     begin
-      @serverGameListWidget = Gtk::Label.new "TODO: Server games list"
+      games = @controller.getGames
+      scrollWindow = Gtk::ScrolledWindow.new
+      vbox = Gtk::VBox.new
+      newGameButton = Gtk::Button.new "New Game"
+      GtkHelper.applyEventHandler(newGameButton, :clicked) {startGame 'online'}
+      vbox.pack_start newGameButton
+      displayServerGames(vbox, "Active Games", games['active'])
+      displayServerGames(vbox, "Saved Games", games['saved'])
+      displayServerGames(vbox, "Joinable Games", games['joinable'])
+      scrollWindow.add_with_viewport vbox
+      scrollWindow.set_size_request(400,200)
+      @serverGameListWidget.child = scrollWindow
     rescue
-      @serverGameListWidget = Gtk::Label.new "Connect to a server to play Connect4.2 online."
+      @serverGameListWidget.child = Gtk::Label.new "Connect to a server and log in/create an account to play Connect4.2 online."
     end
+    @window.show_all
   end
   
-  def initGameBoardWidget
-    @gameBoardWidget = Gtk::Label.new "TODO: Game board widget"
-  end
-  
-  def updateGameBoardWidget
-    #Called with context switch or move made, game start/end
-    #Just meant to update the pieces displayed
-    #TODO
+  def displayServerGames(widget, title, games)
+    widget.pack_start Gtk::Label.new "#{title}: #{games.size}"
+    games.each_with_index do |gameEntry, i|
+      game = gameEntry['game_model']
+      button = Gtk::Button.new "Victory Mode: #{game.victory.name}, Turn: #{game.turn}"
+      GtkHelper.applyEventHandler(button, :clicked) {
+        @gameSettings = games[i]['game_id']
+        startGame 'online'
+      }
+      widget.pack_start button
+    end
+    
+    result = nil
+    return result
   end
   
   def initLoginWidget
@@ -263,7 +286,7 @@ class GtkView
     @yourStatsWidget = Gtk::Label.new "[player stats go here]"
     vbox.pack_start @yourStatsWidget
     @statsWidget.add_with_viewport vbox
-    @statsWidget.set_size_request(400,100)
+    @statsWidget.set_size_request(400,200)
   end
   
   def updateStatsWidget

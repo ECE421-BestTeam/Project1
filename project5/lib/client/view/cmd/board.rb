@@ -61,8 +61,8 @@ class ViewCmdBoard
           exitGame
         else
           puts 'Oppenent did no agree to save'
+          updateGame(@game)
         end
-        updateGame(@game)
     end
   end
   

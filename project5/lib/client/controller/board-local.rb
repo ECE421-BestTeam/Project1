@@ -29,11 +29,10 @@ class BoardLocalController
   
   #called when a player wishes to place a token
   def placeToken (col)
-    @refresh.call @game.placeToken (col)
-    
+    @refresh.call({'type' => 'game', 'data' => @game.placeToken(col)})
     if @settings.players == 1
       # let the model take the computer's turn
-      @refresh.call @game.computerTurn
+      @refresh.call({'type' => 'game', 'data' => @game.computerTurn})
     end
   end
   
