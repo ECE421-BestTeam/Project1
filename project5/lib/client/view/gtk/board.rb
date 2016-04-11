@@ -174,8 +174,8 @@ class ViewGtkBoard
     setUpBoard if @board == nil
     
     # update tokens
-    (0..(@cols-1)).each do |col|
-      (0..(@rows-1)).each do |row|
+    (0..(@game.settings.cols-1)).each do |col|
+      (0..(@game.settings.rows-1)).each do |row|
         case @game.board[row][col]
         when 0
           @cells[row][col].children[0].set_file(@player1token)
