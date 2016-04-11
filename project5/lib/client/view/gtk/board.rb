@@ -170,7 +170,7 @@ class ViewGtkBoard
     @extrasVbox.children.each do |widget|
       widget.destroy
     end
-    return if @controller.is_a? BoardLocalController
+    return if @controller.instance_of? BoardLocalController
     saveButton = Gtk::Button.new "Request Save"
     forfeitButton = Gtk::Button.new "Forfeit"
     saveButton.sensitive = @localPlayers.include?((@game.turn % 2) + 1)
@@ -188,5 +188,6 @@ class ViewGtkBoard
     @extrasVbox.pack_start GtkHelper.createBox('H', 
       [ { :widget => saveButton },
         { :widget => forfeitButton } ] )
+    @window.show_all
   end
 end
